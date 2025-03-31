@@ -38,21 +38,21 @@ fun SinusSliderScreen(handleSource: () -> Source) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Angle: %.4f".format(viewModel.sliderValue),
+                    text = "Angle: ${viewModel.formattedAngle}",
                     style = MaterialTheme.typography.h6
                 )
                 Text(
-                    text = "Actual sin: %.6f".format(viewModel.sinusValue),
+                    text = "Actual sin: ${viewModel.formattedSinusValue}",
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.primary
                 )
                 Text(
-                    text = "Approximated sin: %.6f".format(viewModel.modelSinusValue),
+                    text = "Approximated sin: ${viewModel.formattedModelSinusValue}",
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.secondary
                 )
                 Text(
-                    text = "Error: %.6f".format(viewModel.errorValue),
+                    text = "Error: ${viewModel.formattedErrorValue}",
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.error
                 )

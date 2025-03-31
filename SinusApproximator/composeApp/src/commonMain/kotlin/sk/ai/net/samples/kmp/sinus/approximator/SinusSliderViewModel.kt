@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.io.Source
 import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.round
 import kotlin.math.sin
 
 sealed interface ModelLoadingState {
@@ -39,18 +41,48 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
     var errorValue by mutableStateOf(0.0)
         private set
 
+    // Formatted values for display
+    var formattedAngle by mutableStateOf("0.0000")
+        private set
+
+    var formattedSinusValue by mutableStateOf("0.000000")
+        private set
+
+    var formattedModelSinusValue by mutableStateOf("0.000000")
+        private set
+
+    var formattedErrorValue by mutableStateOf("0.000000")
+        private set
+
+    private fun Double.formatDecimal(decimals: Int): String {
+        val factor = 10.0.pow(decimals.toDouble())
+        return (round(this * factor) / factor).toString()
+    }
+
+    private fun Float.formatDecimal(decimals: Int): String {
+        return this.toDouble().formatDecimal(decimals)
+    }
+
+    private fun updateFormattedValues() {
+        formattedAngle = sliderValue.formatDecimal(4)
+        formattedSinusValue = sinusValue.formatDecimal(6)
+        formattedModelSinusValue = modelSinusValue.formatDecimal(6)
+        formattedErrorValue = errorValue.formatDecimal(6)
+    }
+
     fun updateSliderValue(value: Float) {
         sliderValue = value
         sinusValue = sin(value.toDouble())
         modelSinusValue = calculator.calculate(value.toDouble())
         errorValue = abs(sinusValue - modelSinusValue)
+        updateFormattedValues()
     }
 
     fun loadModel() {
         viewModelScope.launch {
             _modelLoadingState.value = ModelLoadingState.Loading
             try {
-                launch(Dispatchers.IO) {
+                launch(Dispatchers.Default) {
                     calculator.loadModel()
                 }.join()
                 _modelLoadingState.value = ModelLoadingState.Success
