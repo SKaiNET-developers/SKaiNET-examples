@@ -17,10 +17,49 @@ fun SinusSliderScreen(handleSource: () -> Source) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
-        // Slider für Werte von 0 bis PI/2
+        // Visualization
+        SinusVisualization(
+            sliderValue = viewModel.sliderValue,
+            actualSinus = viewModel.sinusValue,
+            approximatedSinus = viewModel.modelSinusValue,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+
+        // Values display
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = 4.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Angle: %.4f".format(viewModel.sliderValue),
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = "Actual sin: %.6f".format(viewModel.sinusValue),
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.primary
+                )
+                Text(
+                    text = "Approximated sin: %.6f".format(viewModel.modelSinusValue),
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary
+                )
+                Text(
+                    text = "Error: %.6f".format(viewModel.errorValue),
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.error
+                )
+            }
+        }
+
+        // Slider
         Slider(
             value = viewModel.sliderValue,
             onValueChange = { viewModel.updateSliderValue(it) },
@@ -28,35 +67,19 @@ fun SinusSliderScreen(handleSource: () -> Source) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Anzeigen des aktuellen Sliderwertes und des berechneten Sinuswertes
-        Text(
-            text = "Winkel: ${viewModel.sliderValue}",
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = "Sinus: ${viewModel.sinusValue}",
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = "Model Sinus: ${viewModel.modelSinusValue}",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-
+        // Model loading state
         when (modelLoadingState) {
             ModelLoadingState.Initial -> {
                 Button(
                     onClick = { viewModel.loadModel() },
-                    modifier = Modifier.padding(top = 24.dp)
+                    modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text("Load Model")
                 }
             }
             ModelLoadingState.Loading -> {
                 CircularProgressIndicator(
-                    modifier = Modifier.padding(top = 24.dp)
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
             ModelLoadingState.Success -> {
@@ -64,12 +87,12 @@ fun SinusSliderScreen(handleSource: () -> Source) {
                     text = "Model loaded successfully",
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.primary,
-                    modifier = Modifier.padding(top = 24.dp)
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
             is ModelLoadingState.Error -> {
                 Column(
-                    modifier = Modifier.padding(top = 24.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
                 ) {
                     Text(

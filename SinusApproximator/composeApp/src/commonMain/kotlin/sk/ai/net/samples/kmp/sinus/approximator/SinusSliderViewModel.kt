@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.io.Source
+import kotlin.math.abs
 import kotlin.math.sin
 
 sealed interface ModelLoadingState {
@@ -35,10 +36,14 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
     var modelSinusValue by mutableStateOf(0.0)
         private set
 
+    var errorValue by mutableStateOf(0.0)
+        private set
+
     fun updateSliderValue(value: Float) {
         sliderValue = value
         sinusValue = sin(value.toDouble())
         modelSinusValue = calculator.calculate(value.toDouble())
+        errorValue = abs(sinusValue - modelSinusValue)
     }
 
     fun loadModel() {
@@ -49,6 +54,8 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
                     calculator.loadModel()
                 }.join()
                 _modelLoadingState.value = ModelLoadingState.Success
+                // Recalculate values after model is loaded
+                updateSliderValue(sliderValue)
             } catch (e: Exception) {
                 _modelLoadingState.value = ModelLoadingState.Error(e.message ?: "Unknown error")
             }
