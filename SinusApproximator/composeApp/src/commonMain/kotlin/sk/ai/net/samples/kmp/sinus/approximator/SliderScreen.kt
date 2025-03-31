@@ -5,26 +5,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kkon.kmp.ai.sinus.approximator.ASinusCalculator
-import kotlinx.coroutines.launch
 import kotlinx.io.Source
 import kotlin.math.PI
-import kotlin.math.sin
 
 @Composable
 fun SinusSliderScreen(handleSource: () -> Source) {
-    // State für den Sliderwert (0 bis PI/2)
-    var sliderValue by remember { mutableStateOf(0f) }
-
-    var calculator by remember { mutableStateOf(ASinusCalculator(handleSource)) }
-
-    // State für die Modellberechnung und ob das Modell geladen wurde
-    var isModelLoaded by remember { mutableStateOf(false) }
-    //var modelSinusValue by remember { mutableStateOf(0.0) }
-
-    // Sinus des aktuellen Wertes berechnen
-    val sinusValue = sin(sliderValue.toDouble())
-    val modelSinusValue = calculator.calculate(sliderValue.toDouble())
+    val viewModel = remember { SinusSliderViewModel(handleSource) }
 
     Column(
         modifier = Modifier
@@ -35,42 +21,34 @@ fun SinusSliderScreen(handleSource: () -> Source) {
     ) {
         // Slider für Werte von 0 bis PI/2
         Slider(
-            value = sliderValue,
-            onValueChange = { sliderValue = it },
+            value = viewModel.sliderValue,
+            onValueChange = { viewModel.updateSliderValue(it) },
             valueRange = 0f..(PI.toFloat() / 2),
             modifier = Modifier.fillMaxWidth()
         )
 
         // Anzeigen des aktuellen Sliderwertes und des berechneten Sinuswertes
         Text(
-            text = "Winkel: $sliderValue",
+            text = "Winkel: ${viewModel.sliderValue}",
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            text = "Sinus: $sinusValue",
+            text = "Sinus: ${viewModel.sinusValue}",
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            text = "Model Sinus: $modelSinusValue",
+            text = "Model Sinus: ${viewModel.modelSinusValue}",
             style = MaterialTheme.typography.h5,
             modifier = Modifier.padding(top = 16.dp)
         )
 
-        val coroutineScope = rememberCoroutineScope()
-
         // Nur anzeigen, wenn das Modell geladen wurde
-        if (!isModelLoaded) {
+        if (!viewModel.isModelLoaded) {
             // Button zum Laden des Modells
             Button(
-                onClick = {
-                    // Modell laden (hier einfach eine Berechnung, z.B. Sinus multipliziert mit einer Konstante)
-                    isModelLoaded = true
-                    coroutineScope.launch {
-                        calculator.loadModel()
-                    }
-                },
+                onClick = { viewModel.loadModel() },
                 modifier = Modifier.padding(top = 24.dp)
             ) {
                 Text("Load Model")
