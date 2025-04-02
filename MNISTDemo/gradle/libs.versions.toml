@@ -6,10 +6,14 @@ android-targetSdk = "35"
 androidx-activityCompose = "1.10.0"
 androidx-lifecycle = "2.8.4"
 compose-plugin = "1.7.3"
-skainet = "0.0.1"
+skainet = "0.0.5"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
 kotlinxIo = "0.6.0"
+uiGraphicsAndroid = "1.7.8"
+uiAndroid = "1.7.8"
+junitJupiter = "5.8.1"
+junit = "4.13.2"
 
 [libraries]
 skainet-core = { module = "sk.ai.net:core", version.ref = "skainet" }
@@ -20,6 +24,10 @@ androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIo" }
 kotlinx-io-bytestring = { module = "org.jetbrains.kotlinx:kotlinx-io-bytestring", version.ref = "kotlinxIo" }
+androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
+androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 
 [plugins]

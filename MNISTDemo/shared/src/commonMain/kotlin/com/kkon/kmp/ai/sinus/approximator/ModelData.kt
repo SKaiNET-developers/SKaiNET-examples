@@ -9,13 +9,12 @@ import sk.ai.net.nn.reflection.flattenParams
 import sk.ai.net.nn.reflection.summary
 
 
-class ASinusCalculator(private val handleSource: () -> Source) : SinusCalculator {
-    val model = SineNN()
+class ADigitClassifier(private val handleSource: () -> Source) : DigitClassifier {
 
+    private val model = DigitClassifierNN()
 
-    override fun calculate(x: Double): Double =
-        (model.of(x) as DoublesTensor)[0]
-
+    override fun classify(image: DigitClassifier.GrayScale28To28Image): Int =
+        5 //TODO implement real logic, its a placeholder now.
 
     override suspend fun loadModel() {
         print(model.summary(Shape(1)))
