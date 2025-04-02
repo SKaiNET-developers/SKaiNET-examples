@@ -33,14 +33,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageBitmapConfig
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kkon.kmp.ai.sinus.approximator.ASinusCalculator
+import com.kkon.kmp.ai.sinus.approximator.ADigitClassifier
+import com.kkon.kmp.ai.sinus.approximator.DigitClassifier
 import kotlinx.coroutines.launch
 import kotlinx.io.Source
 import mnistdemo.composeapp.generated.resources.Res
@@ -135,8 +143,12 @@ import mnistdemo.composeapp.generated.resources.img_89
 import mnistdemo.composeapp.generated.resources.img_9
 import mnistdemo.composeapp.generated.resources.img_90
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.ceil
+import kotlin.math.max
+
+typealias ARGB = Int
 
 // List of image resources
 val IMAGE_RESOURCES = listOf(
@@ -235,7 +247,7 @@ val IMAGE_RESOURCES = listOf(
 @Composable
 fun DrawingScreen(handleSource: () -> Source) {
 
-    val digitClassifier by remember { mutableStateOf(ASinusCalculator(handleSource)) }
+    val digitClassifier by remember { mutableStateOf(ADigitClassifier(handleSource)) }
 
     /* Screen mode controls*/
     var isModelLoaded by remember { mutableStateOf(false) }
@@ -249,8 +261,15 @@ fun DrawingScreen(handleSource: () -> Source) {
     var currentPathRef by remember { mutableStateOf(1) }
     var lastOffset by remember { mutableStateOf<Offset?>(null) }
 
+    val image = if (selectedImageIndex != -1) {
+        imageResource(IMAGE_RESOURCES[selectedImageIndex])
+    } else {
+        null
+    }
+
     Column(
         modifier = Modifier
+            .background(Color.LightGray)
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween,
@@ -284,7 +303,7 @@ fun DrawingScreen(handleSource: () -> Source) {
                     currentPathRef += 1
                     lastOffset = offset
                 },
-                onDrag = { _, offset ->
+                onDrag = { pointerInputChange, offset ->
                     if (lastOffset != null) {
                         val newOffset = Offset(
                             lastOffset!!.x + offset.x,
@@ -315,6 +334,7 @@ fun DrawingScreen(handleSource: () -> Source) {
         }
 
         val coroutineScope = rememberCoroutineScope()
+        val density = LocalDensity.current
 
         ButtonsPanel(
             isChooseImage = isChooseImageMode,
@@ -345,8 +365,23 @@ fun DrawingScreen(handleSource: () -> Source) {
                 classificationResult = null
             },
             onClassify = {
-                val result = digitClassifier.calculate(0.0)
-                classificationResult = "Predicted digit: $result"
+                val grayScaledImage = if (isChooseImageMode) {
+                    image?.let {
+                        createGrayScale28To28Image(it)
+                    }
+                } else {
+                    val w = with(density) { 300.dp.toPx().toInt() }
+                    val h = with(density) { 300.dp.toPx().toInt() }
+                    createGrayScale28To28Image(paths, w, h)
+                }
+
+                grayScaledImage?.debugPrintInConsoleOutput()
+
+                val result = grayScaledImage?.let {
+                    digitClassifier.classify(it)
+                }
+
+                classificationResult = "Predicted digit: ${result ?: "!!!bitmap render error!!!"}"
             },
         )
     }
@@ -476,13 +511,81 @@ fun ButtonsPanel(
     }
 }
 
-@Composable
-@Preview
-fun ChooseImagePanelPreview() {
-    ChooseImagePanel(
-        modifier = Modifier,
-        imageResources = emptyList(),
-        selectedImageIndex = 1,
-        onImageSelected = {},
-    )
+fun createGrayScale28To28Image(imageBitmap: ImageBitmap): DigitClassifier.GrayScale28To28Image {
+    val image = DigitClassifier.GrayScale28To28Image()
+
+    val pixelMap = imageBitmap.toPixelMap()
+    val width = imageBitmap.width
+    val height = imageBitmap.height
+
+    val zoom = ceil(max(width, height) / 28f).toInt()
+
+    for (y in 0 until height / zoom) {
+        for (x in 0 until width / zoom) {
+            val shift = List(zoom) { row -> List(zoom) { col -> row to col } }.flatten()
+
+            val grayScale = shift
+                .map { pixelMap[x * zoom + it.first, y * zoom + it.second] }
+                .maxOfOrNull { it.toArgb().toGrayScale() } ?: 0f
+
+            image.setPixel(x, y, grayScale)
+        }
+    }
+
+    return image
+}
+
+fun createGrayScale28To28Image(
+    paths: List<Path>,
+    widthInPixel: Int,
+    heightInPixel: Int
+): DigitClassifier.GrayScale28To28Image {
+    println("createGrayScale28To28Image: $widthInPixel x $heightInPixel")
+
+    val imageBitmap = ImageBitmap(widthInPixel, heightInPixel, ImageBitmapConfig.Argb8888).apply {
+        val canvas = androidx.compose.ui.graphics.Canvas(this)
+
+        val paint = Paint().apply {
+            this.color = Color.Black
+            this.style = PaintingStyle.Stroke
+            this.strokeWidth = 10f
+        }
+
+        paths.forEach { path ->
+            canvas.drawPath(path, paint)
+        }
+    }
+
+    return DigitClassifier.GrayScale28To28Image().apply {
+
+        val pixelMap = imageBitmap.toPixelMap()
+        val width = imageBitmap.width
+        val height = imageBitmap.height
+
+        val zoom = ceil(max(width, height) / 28f).toInt()
+
+        for (y in 0 until height / zoom) {
+            for (x in 0 until width / zoom) {
+                val shift = List(zoom) { row -> List(zoom) { col -> row to col } }.flatten()
+
+                val grayScale = shift
+                    .map { pixelMap[x * zoom + it.first, y * zoom + it.second] }
+                    .maxOfOrNull { if (it.toArgb() != 0) 1f else 0f } ?: 0f
+
+                this.setPixel(x, y, grayScale)
+            }
+        }
+    }
+}
+
+fun ARGB.toGrayScale(): Float {
+    val r = (this shr 16) and 0xFF
+    val g = (this shr 8) and 0xFF
+    val b = this and 0xFF
+
+    // Standard luminance formula for grayscale
+    val gray = 0.299f * r + 0.587f * g + 0.114f * b
+
+    // Normalize to 0..1 range
+    return gray / 255f
 }
