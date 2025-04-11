@@ -1,8 +1,7 @@
-package com.kkon.kmp.ai.sinus.approximator
+package com.kkon.kmp.mnist.demo
 
 import kotlinx.io.Source
 import sk.ai.net.Shape
-import sk.ai.net.impl.DoublesTensor
 import sk.ai.net.io.csv.CsvParametersLoader
 import sk.ai.net.io.mapper.NamesBasedValuesModelMapper
 import sk.ai.net.nn.reflection.flattenParams
