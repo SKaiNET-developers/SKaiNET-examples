@@ -1,4 +1,4 @@
-package sk.ai.net.samples.kmp.sinus.approximator
+package sk.ai.net.samples.kmp.mnist.demo
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*

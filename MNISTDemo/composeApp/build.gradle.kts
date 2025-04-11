@@ -53,7 +53,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.kkon.kmp.ai.sinus.approximator"
+    namespace = "com.kkon.kmp.ai.mnist.demo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -61,7 +61,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "sk.ai.net.samples.kmp.sinus.approximator"
+        applicationId = "sk.ai.net.samples.kmp.mnist.demo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -96,11 +96,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "sk.ai.net.samples.kmp.sinus.approximator.MainKt"
+        mainClass = "sk.ai.net.samples.kmp.mnist.demo.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.kkon.kmp.ai.sinus.approximator"
+            packageName = "com.kkon.kmp.ai.mnist.demo"
             packageVersion = "1.0.0"
         }
     }

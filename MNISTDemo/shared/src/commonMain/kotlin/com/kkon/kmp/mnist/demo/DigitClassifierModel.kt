@@ -1,4 +1,4 @@
-package com.kkon.kmp.ai.sinus.approximator
+package com.kkon.kmp.mnist.demo
 
 import sk.ai.net.Shape
 import sk.ai.net.Tensor

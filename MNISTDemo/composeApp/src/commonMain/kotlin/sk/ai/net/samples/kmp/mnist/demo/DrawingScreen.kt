@@ -1,4 +1,4 @@
-package sk.ai.net.samples.kmp.sinus.approximator
+package sk.ai.net.samples.kmp.mnist.demo
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -47,8 +47,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kkon.kmp.ai.sinus.approximator.ADigitClassifier
-import com.kkon.kmp.ai.sinus.approximator.DigitClassifier
+import com.kkon.kmp.mnist.demo.ADigitClassifier
+import com.kkon.kmp.mnist.demo.DigitClassifier
 import kotlinx.coroutines.launch
 import kotlinx.io.Source
 import mnistdemo.composeapp.generated.resources.Res
