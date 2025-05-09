@@ -16,7 +16,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "KotlinProject",
+        title = "Sinus approximator",
     ) {
         inputStream?.let {
             App {
