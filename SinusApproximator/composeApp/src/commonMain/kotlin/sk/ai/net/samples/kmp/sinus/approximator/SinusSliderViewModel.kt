@@ -78,7 +78,7 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
         val mapper = NamesBasedValuesModelMapper()
         print(model.summary(Shape(1)))
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Default).launch {
             parametersLoader.load { name, shape ->
                 mapper.mapToModel(model, mapOf(name to shape))
             }

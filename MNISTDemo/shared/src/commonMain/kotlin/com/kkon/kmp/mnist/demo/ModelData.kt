@@ -16,11 +16,11 @@ class ADigitClassifier(private val handleSource: () -> Source) : DigitClassifier
         5 //TODO implement real logic, its a placeholder now.
 
     override suspend fun loadModel() {
-        print(model.summary(Shape(1)))
+        print(model.summary(Shape(128, 784)))
         val parametersLoader = CsvParametersLoader(handleSource)
 
         val mapper = NamesBasedValuesModelMapper()
-        print(model.summary(Shape(1)))
+        print(model.summary(Shape(128, 784)))
 
         parametersLoader.load { name, shape ->
             mapper.mapToModel(model, mapOf(name to shape))
