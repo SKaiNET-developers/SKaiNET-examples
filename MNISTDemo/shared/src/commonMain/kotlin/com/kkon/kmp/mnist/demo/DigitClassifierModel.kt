@@ -5,6 +5,7 @@ import sk.ai.net.Tensor
 import sk.ai.net.dsl.network
 import sk.ai.net.impl.DoublesTensor
 import sk.ai.net.nn.Module
+import sk.ai.net.nn.activations.ReLU
 
 
 interface DigitClassifier {
@@ -50,31 +51,19 @@ interface DigitClassifier {
 class DigitClassifierNN(override val name: String = "digit_classifier") : Module() {
 
     private val module = network {
-        //Pseudo code
-//        input(1, 28, 28) // 1 channel (grayscale), 28x28 image size
-//
-//        conv2d(32, 3) { // 32 filters, 3x3 kernel
-//            activation = ReLU()::forward
-//        }
-//
-//        maxPool2d(2) // 2x2 pooling
-//
-//        conv2d(64, 3) { // 64 filters, 3x3 kernel
-//            activation = ReLU()::forward
-//        }
-//
-//        maxPool2d(2) // 2x2 pooling
-//
-//        flatten() // Flatten to feed into dense layers
-//
-//        dense(128) {
-//            activation = ReLU()::forward
-//        }
-//
-//        dense(10) { // 10 output neurons (digits 0-9)
-//            activation = Softmax()::forward
-//        }
+        input(784) // 28x28 = 784 pixels
+        flatten {
+
+        }
+        dense(128) {
+            activation = ReLU()::forward
+        }
+        dense(64) {
+            activation = ReLU()::forward
+        }
+        dense(10) // 10 output classes (digits 0-9)
     }
+
 
     override val modules: List<Module>
         get() = module.modules

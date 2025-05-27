@@ -1,13 +1,13 @@
 [versions]
-agp = "8.7.3"
-android-compileSdk = "35"
+agp = "8.1.4"
+android-compileSdk = "33"
 android-minSdk = "24"
-android-targetSdk = "35"
+android-targetSdk = "33"
 androidx-activityCompose = "1.10.1"
-androidx-lifecycle = "2.8.4"
-compose-plugin = "1.7.3"
-skainet = "0.0.5"
-kotlin = "2.1.20"
+androidx-lifecycle = "2.9.0"
+compose-plugin = "1.8.1"
+skainet = "0.0.6-SNAPSHOT"
+kotlin = "2.1.21"
 kotlinx-coroutines = "1.10.2"
 kotlinxIo = "0.7.0"
 
@@ -15,8 +15,8 @@ kotlinxIo = "0.7.0"
 skainet-core = { module = "sk.ai.net:core", version.ref = "skainet" }
 skainet-io = { module = "sk.ai.net:io", version.ref = "skainet" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIo" }
 kotlinx-io-bytestring = { module = "org.jetbrains.kotlinx:kotlinx-io-bytestring", version.ref = "kotlinxIo" }
