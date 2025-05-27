@@ -61,6 +61,9 @@ kotlin {
             implementation(projects.shared)
 
             implementation(libs.kotlinx.io.core)
+            implementation(libs.skainet.core)
+            implementation(libs.skainet.io)
+
 
         }
         desktopMain.dependencies {

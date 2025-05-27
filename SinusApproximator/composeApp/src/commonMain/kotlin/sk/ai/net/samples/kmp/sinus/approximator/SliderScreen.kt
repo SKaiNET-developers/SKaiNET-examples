@@ -5,75 +5,108 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kkon.kmp.ai.sinus.approximator.ASinusCalculator
-import kotlinx.coroutines.launch
 import kotlinx.io.Source
 import kotlin.math.PI
-import kotlin.math.sin
 
 @Composable
 fun SinusSliderScreen(handleSource: () -> Source) {
-    // State für den Sliderwert (0 bis PI/2)
-    var sliderValue by remember { mutableStateOf(0f) }
-
-    var calculator by remember { mutableStateOf(ASinusCalculator(handleSource)) }
-
-    // State für die Modellberechnung und ob das Modell geladen wurde
-    var isModelLoaded by remember { mutableStateOf(false) }
-    //var modelSinusValue by remember { mutableStateOf(0.0) }
-
-    // Sinus des aktuellen Wertes berechnen
-    val sinusValue = sin(sliderValue.toDouble())
-    val modelSinusValue = calculator.calculate(sliderValue.toDouble())
+    val viewModel = remember { SinusSliderViewModel(handleSource) }
+    val modelLoadingState by viewModel.modelLoadingState.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
     ) {
-        // Slider für Werte von 0 bis PI/2
+        // Visualization
+        SinusVisualization(
+            sliderValue = viewModel.sliderValue,
+            actualSinus = viewModel.sinusValue,
+            approximatedSinus = viewModel.modelSinusValue,
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+
+        // Values display
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = 4.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Angle: ${viewModel.formattedAngle}",
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = "Actual sin: ${viewModel.formattedSinusValue}",
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.primary
+                )
+                Text(
+                    text = "Approximated sin: ${viewModel.formattedModelSinusValue}",
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondary
+                )
+                Text(
+                    text = "Error: ${viewModel.formattedErrorValue}",
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.error
+                )
+            }
+        }
+
+        // Slider
         Slider(
-            value = sliderValue,
-            onValueChange = { sliderValue = it },
+            value = viewModel.sliderValue,
+            onValueChange = { viewModel.updateSliderValue(it) },
             valueRange = 0f..(PI.toFloat() / 2),
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Anzeigen des aktuellen Sliderwertes und des berechneten Sinuswertes
-        Text(
-            text = "Winkel: $sliderValue",
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = "Sinus: $sinusValue",
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = "Model Sinus: $modelSinusValue",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(top = 16.dp)
-        )
-
-        val coroutineScope = rememberCoroutineScope()
-
-        // Nur anzeigen, wenn das Modell geladen wurde
-        if (!isModelLoaded) {
-            // Button zum Laden des Modells
-            Button(
-                onClick = {
-                    // Modell laden (hier einfach eine Berechnung, z.B. Sinus multipliziert mit einer Konstante)
-                    isModelLoaded = true
-                    coroutineScope.launch {
-                        calculator.loadModel()
+        // Model loading state
+        when (modelLoadingState) {
+            ModelLoadingState.Initial -> {
+                Button(
+                    onClick = { viewModel.loadModel() },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text("Load Model")
+                }
+            }
+            ModelLoadingState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            ModelLoadingState.Success -> {
+                Text(
+                    text = "Model loaded successfully",
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.primary,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            is ModelLoadingState.Error -> {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Error: ${(modelLoadingState as ModelLoadingState.Error).message}",
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.error
+                    )
+                    Button(
+                        onClick = { viewModel.loadModel() },
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Retry")
                     }
-                },
-                modifier = Modifier.padding(top = 24.dp)
-            ) {
-                Text("Load Model")
+                }
             }
         }
     }
