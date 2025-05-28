@@ -3,25 +3,41 @@ package com.kkon.kmp.ai.sinus.approximator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import kotlinx.io.asSource
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import kotlinx.io.Buffer
 import sk.ai.net.samples.kmp.sinus.approximator.App
-import java.io.InputStream
-import kotlinx.io.buffered
-
-
+import sk.ai.net.samples.kmp.sinus.approximator.LoadingState
+import sk.ai.net.samples.kmp.sinus.approximator.ResourceUtils
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Suppose we have a file to read from:
-        val inputStream: InputStream? = assets.open("sinus.json");
-
         setContent {
-            inputStream?.let {
+            val loadingState by ResourceUtils.loadingState.collectAsState()
+
+            // Load the sinus.json resource when the app starts
+            LaunchedEffect(Unit) {
+                ResourceUtils.loadResource("files/sinus.json")
+            }
+
+            // Only show the app when the resource is loaded
+            if (loadingState == LoadingState.Success) {
                 App {
-                    it.asSource().buffered()
+                    // Provide a Source for the sinus.json file
+                    ResourceUtils.getSourceFromResource("files/sinus.json") ?: Buffer()
                 }
+            } else if (loadingState is LoadingState.Error) {
+                // Show error message
+                val errorMessage = (loadingState as LoadingState.Error).message
+                Text("Error loading resource: $errorMessage")
+            } else {
+                // Show loading indicator
+                CircularProgressIndicator()
             }
         }
     }

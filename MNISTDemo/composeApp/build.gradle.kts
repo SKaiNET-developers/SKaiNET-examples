@@ -7,8 +7,8 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
@@ -21,14 +21,32 @@ kotlin {
 
     jvm("desktop")
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
+        browser {
+            val rootDirPath = project.rootDir.path
+            val projectDirPath = project.projectDir.path
+            commonWebpackConfig {
+                outputFileName = "composeApp.js"
+                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                    static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
+                        add(rootDirPath)
+                        add(projectDirPath)
+                    }
+                }
+            }
+        }
+        binaries.executable()
+    }
+
     sourceSets {
         val desktopMain by getting
 
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
-            implementation(libs.androidx.ui.android)
         }
         commonMain.dependencies {
 
@@ -39,7 +57,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
 
             implementation(libs.kotlinx.io.core)
@@ -47,7 +65,7 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.kotlinx.coroutinesSwing)
         }
     }
 }
@@ -90,8 +108,8 @@ android {
 }
 
 dependencies {
-    testImplementation(libs.junit.jupiter)
-    testImplementation(libs.junit)
+    //testImplementation(libs.junit.jupiter)
+    //testImplementation(libs.junit)
 }
 
 compose.desktop {

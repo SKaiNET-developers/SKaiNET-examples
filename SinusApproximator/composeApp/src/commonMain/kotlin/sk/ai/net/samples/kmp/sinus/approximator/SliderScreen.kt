@@ -1,7 +1,12 @@
 package sk.ai.net.samples.kmp.sinus.approximator
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,7 +36,6 @@ fun SinusSliderScreen(handleSource: () -> Source) {
         // Values display
         Card(
             modifier = Modifier.fillMaxWidth(),
-            elevation = 4.dp
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -39,22 +43,34 @@ fun SinusSliderScreen(handleSource: () -> Source) {
             ) {
                 Text(
                     text = "Angle: ${viewModel.formattedAngle}",
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Text(
                     text = "Actual sin: ${viewModel.formattedSinusValue}",
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.primary
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "Approximated sin: ${viewModel.formattedModelSinusValue}",
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.secondary
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Text(
                     text = "Error: ${viewModel.formattedErrorValue}",
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.error
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+
+        // Neural Network Visualization
+        if (modelLoadingState == ModelLoadingState.Success) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                NeuralNetworkVisualization(
+                    model = viewModel.neuralNetworkModel,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
         }
@@ -85,8 +101,8 @@ fun SinusSliderScreen(handleSource: () -> Source) {
             ModelLoadingState.Success -> {
                 Text(
                     text = "Model loaded successfully",
-                    style = MaterialTheme.typography.body1,
-                    color = MaterialTheme.colors.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
@@ -97,8 +113,8 @@ fun SinusSliderScreen(handleSource: () -> Source) {
                 ) {
                     Text(
                         text = "Error: ${(modelLoadingState as ModelLoadingState.Error).message}",
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.error
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
                     )
                     Button(
                         onClick = { viewModel.loadModel() },
