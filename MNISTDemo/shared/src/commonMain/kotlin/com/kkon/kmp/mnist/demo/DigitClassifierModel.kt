@@ -3,13 +3,13 @@ package com.kkon.kmp.mnist.demo
 import sk.ai.net.Shape
 import sk.ai.net.Tensor
 import sk.ai.net.dsl.network
-import sk.ai.net.impl.DoublesTensor
 import sk.ai.net.nn.Module
 import sk.ai.net.nn.activations.ReLU
 
 
 interface DigitClassifier {
     fun classify(image: GrayScale28To28Image): Int
+
     suspend fun loadModel()
 
     class GrayScale28To28Image {
@@ -52,13 +52,10 @@ class DigitClassifierNN(override val name: String = "digit_classifier") : Module
 
     private val module = network {
         input(784) // 28x28 = 784 pixels
-        flatten {
-
-        }
         dense(128) {
             activation = ReLU()::forward
         }
-        dense(64) {
+        dense(128) {
             activation = ReLU()::forward
         }
         dense(10) // 10 output classes (digits 0-9)
@@ -71,6 +68,3 @@ class DigitClassifierNN(override val name: String = "digit_classifier") : Module
     override fun forward(input: Tensor): Tensor =
         module.forward(input)
 }
-
-fun DigitClassifierNN.of(angle: Double): Tensor =
-    this.forward(DoublesTensor(Shape(1), listOf(angle).toDoubleArray()))

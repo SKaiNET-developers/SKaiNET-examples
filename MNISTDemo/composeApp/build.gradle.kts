@@ -118,7 +118,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.kkon.kmp.ai.mnist.demo"
+            packageName = "sk.ai.net.samples.kmp.mnist.demo"
             packageVersion = "1.0.0"
         }
     }

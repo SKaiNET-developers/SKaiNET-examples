@@ -32,11 +32,11 @@ class ADigitClassifier(private val handleSource: () -> Source) : DigitClassifier
         // Find the index of the maximum value in the output tensor
         // This corresponds to the predicted digit (0-9)
         var maxIndex = 0
-        var maxValue = outputTensor[0]
+        var maxValue = outputTensor[0, 0]
 
         // The output tensor should have 10 elements (one for each digit 0-9)
         for (i in 1 until 10) {
-            val value = outputTensor[i]
+            val value = outputTensor[0, i]
             if (value > maxValue) {
                 maxValue = value
                 maxIndex = i

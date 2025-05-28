@@ -7,7 +7,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import kotlinx.browser.document
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import sk.ai.net.samples.kmp.sinus.approximator.App
 import sk.ai.net.samples.kmp.sinus.approximator.LoadingState
 import sk.ai.net.samples.kmp.sinus.approximator.ResourceUtils
