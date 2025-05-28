@@ -3,37 +3,41 @@ agp = "8.7.3"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
+androidx-activity = "1.10.1"
 androidx-activityCompose = "1.10.1"
+androidx-appcompat = "1.7.0"
+androidx-constraintlayout = "2.2.1"
+androidx-core = "1.16.0"
+androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.9.0"
-compose-plugin = "1.8.1"
-skainet = "0.0.6-SNAPSHOT"
+androidx-testExt = "1.2.1"
+composeHotReload = "1.0.0-alpha10"
+composeMultiplatform = "1.8.1"
+junit = "4.13.2"
 kotlin = "2.1.21"
 kotlinx-coroutines = "1.10.2"
+ktor = "3.1.3"
+logback = "1.5.18"
+skainet = "0.0.6-SNAPSHOT"
 kotlinxIo = "0.7.0"
-uiGraphicsAndroid = "1.8.2"
-uiAndroid = "1.8.2"
-junitJupiter = "5.12.1"
-junit = "4.13.2"
 
 [libraries]
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 skainet-core = { module = "sk.ai.net:core", version.ref = "skainet" }
 skainet-io = { module = "sk.ai.net:io", version.ref = "skainet" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIo" }
 kotlinx-io-bytestring = { module = "org.jetbrains.kotlinx:kotlinx-io-bytestring", version.ref = "kotlinxIo" }
-androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
-androidx-ui-android = { group = "androidx.compose.ui", name = "ui-android", version.ref = "uiAndroid" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

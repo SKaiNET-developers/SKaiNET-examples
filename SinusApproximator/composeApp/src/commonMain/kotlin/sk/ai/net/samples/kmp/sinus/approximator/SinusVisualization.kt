@@ -2,7 +2,7 @@ package sk.ai.net.samples.kmp.sinus.approximator
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -20,9 +20,9 @@ fun SinusVisualization(
     approximatedSinus: Double,
     modifier: Modifier = Modifier
 ) {
-    val primary = MaterialTheme.colors.primary
-    val secondary = MaterialTheme.colors.secondary
-    val error = MaterialTheme.colors.error
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val error = MaterialTheme.colorScheme.error
 
     Canvas(
         modifier = modifier

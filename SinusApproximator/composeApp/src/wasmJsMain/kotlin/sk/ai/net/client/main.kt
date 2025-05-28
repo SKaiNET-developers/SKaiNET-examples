@@ -1,19 +1,20 @@
-package sk.ai.net.samples.kmp.sinus.approximator
+package sk.ai.net.client
 
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.ComposeViewport
+import kotlinx.browser.document
 import kotlinx.io.Buffer
+import kotlinx.io.Source
+import sk.ai.net.samples.kmp.sinus.approximator.App
+import sk.ai.net.samples.kmp.sinus.approximator.LoadingState
+import sk.ai.net.samples.kmp.sinus.approximator.ResourceUtils
 
-fun main() = application {
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Sinus approximator",
-    ) {
+@OptIn(ExperimentalComposeUiApi::class)
+fun main() {
+    ComposeViewport(document.body!!) {
         val loadingState by ResourceUtils.loadingState.collectAsState()
 
         // Load the sinus.json resource when the app starts
@@ -30,10 +31,10 @@ fun main() = application {
         } else if (loadingState is LoadingState.Error) {
             // Show error message
             val errorMessage = (loadingState as LoadingState.Error).message
-            Text("Error loading resource: $errorMessage")
+            androidx.compose.material3.Text("Error loading resource: $errorMessage")
         } else {
             // Show loading indicator
-            CircularProgressIndicator()
+            androidx.compose.material3.CircularProgressIndicator()
         }
     }
 }

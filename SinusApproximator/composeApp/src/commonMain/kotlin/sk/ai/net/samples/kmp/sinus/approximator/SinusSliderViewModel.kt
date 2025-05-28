@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import sk.ai.net.nn.Module
 import com.kkon.kmp.ai.sinus.approximator.ASinusCalculator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +17,7 @@ import kotlinx.io.Source
 import sk.ai.net.Shape
 import sk.ai.net.io.csv.CsvParametersLoader
 import sk.ai.net.io.mapper.NamesBasedValuesModelMapper
+import sk.ai.net.nn.Module
 import sk.ai.net.nn.reflection.flattenParams
 import sk.ai.net.nn.reflection.summary
 import kotlin.math.abs
@@ -36,6 +36,9 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
     private val calculator = ASinusCalculator(::handleModelLoad)
     private val _modelLoadingState = MutableStateFlow<ModelLoadingState>(ModelLoadingState.Initial)
     val modelLoadingState: StateFlow<ModelLoadingState> = _modelLoadingState.asStateFlow()
+
+    // Expose the neural network model
+    val neuralNetworkModel get() = calculator.model
 
     var sliderValue by mutableStateOf(0f)
         private set
@@ -71,7 +74,7 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
         return this.toDouble().formatDecimal(decimals)
     }
 
-    private fun handleModelLoad(model:Module) {
+    private fun handleModelLoad(model: Module) {
         print(model.summary(Shape(1)))
         val parametersLoader = CsvParametersLoader(handleSource)
 
