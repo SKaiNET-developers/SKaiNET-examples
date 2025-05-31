@@ -23,11 +23,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -47,7 +44,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kkon.kmp.mnist.demo.ADigitClassifier
 import com.kkon.kmp.mnist.demo.DigitClassifier
 import kotlinx.coroutines.launch
 import kotlinx.io.Source
@@ -340,7 +336,7 @@ fun DrawingScreen(handleSource: () -> Source) {
                     if (grayScaledImage != null) {
                         // For now, we'll use the ViewModel's classify method with null
                         // In a real implementation, we would pass the image bitmap
-                        viewModel.classify(null)
+                        viewModel.classify(grayScaledImage)
                     }
                 }
             },

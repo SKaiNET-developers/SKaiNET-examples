@@ -115,22 +115,11 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     }
 
     // Classify the drawn digit or selected image
-    fun classify(imageBitmap: ImageBitmap?) {
+    fun classify(image: DigitClassifier.GrayScale28To28Image) {
         if (!isModelLoaded) return
 
         viewModelScope.launch {
             try {
-                val image = DigitClassifier.GrayScale28To28Image()
-
-                // Process the image (either drawn or selected)
-                if (imageBitmap != null) {
-                    // Process the selected image
-                    processImageBitmap(imageBitmap, image)
-                } else {
-                    // No implementation for now
-                    // This would process the drawn paths
-                }
-
                 // Classify the image
                 val result = digitClassifier.classify(image)
                 classificationResult = "Predicted digit: $result"

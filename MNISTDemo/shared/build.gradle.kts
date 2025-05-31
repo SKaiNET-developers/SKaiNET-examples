@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -41,7 +42,13 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.skainet.core)
             implementation(libs.skainet.io)
+            implementation(libs.skainet.modelZoo)
+            implementation(libs.skainet.gguf)
             implementation(libs.kotlinx.io.core)
+            implementation(libs.kotlinx.coroutines)
+
+            implementation(libs.ktor.client.logging)
+
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.kkon.kmp.mnist.demo
 
-import sk.ai.net.Shape
-import sk.ai.net.Tensor
-import sk.ai.net.impl.DoublesTensor
+/*
 import sk.ai.net.nn.Module
 
 /**
@@ -307,3 +305,6 @@ fun batchTrainingExample() {
     // Get the trained model for use in applications
     val trainedModel = trainer.getModel()
 }
+
+
+ */
