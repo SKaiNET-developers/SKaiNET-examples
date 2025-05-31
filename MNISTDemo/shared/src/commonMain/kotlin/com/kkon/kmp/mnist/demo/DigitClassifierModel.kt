@@ -1,11 +1,5 @@
 package com.kkon.kmp.mnist.demo
 
-import sk.ai.net.Shape
-import sk.ai.net.Tensor
-import sk.ai.net.dsl.network
-import sk.ai.net.nn.Module
-import sk.ai.net.nn.activations.ReLU
-
 
 interface DigitClassifier {
     fun classify(image: GrayScale28To28Image): Int
@@ -16,6 +10,15 @@ interface DigitClassifier {
         private val width = 28
         private val height = 28
         private val pixels: Array<FloatArray> = Array(height) { FloatArray(width) }
+
+        val data: DoubleArray
+            get() =
+                DoubleArray(height * width) { idx ->
+                    val i = idx / width
+                    val j = idx % width
+                    pixels[j][i].toDouble()
+                }
+
 
         // Set pixel value (normalized between 0 and 1)
         fun setPixel(x: Int, y: Int, value: Float) {
@@ -45,26 +48,4 @@ interface DigitClassifier {
             }
         }
     }
-}
-
-
-class DigitClassifierNN(override val name: String = "digit_classifier") : Module() {
-
-    private val module = network {
-        input(784) // 28x28 = 784 pixels
-        dense(128) {
-            activation = ReLU()::forward
-        }
-        dense(128) {
-            activation = ReLU()::forward
-        }
-        dense(10) // 10 output classes (digits 0-9)
-    }
-
-
-    override val modules: List<Module>
-        get() = module.modules
-
-    override fun forward(input: Tensor): Tensor =
-        module.forward(input)
 }

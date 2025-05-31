@@ -11,7 +11,7 @@ import kotlinx.io.Buffer
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    val resourcePath = "files/mnist.json"
+    val resourcePath = "files/mnist_mlp.gguf"
 
     // Add debug logging
     println("Starting MNIST Demo application")
