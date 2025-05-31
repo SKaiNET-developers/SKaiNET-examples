@@ -50,14 +50,14 @@ fun App(handleSource: () -> Source) {
                                             label = { Text("Home") },
                                             icon = { /* No icon for now */ }
                                         )
-
+                                        
                                         NavigationRailItem(
                                             selected = navigator.current is DrawingTab,
                                             onClick = { navigator.current = DrawingTab(handleSource) },
                                             label = { Text("Draw") },
                                             icon = { /* No icon for now */ }
                                         )
-
+                                        
                                         NavigationRailItem(
                                             selected = navigator.current == SettingsTab,
                                             onClick = { navigator.current = SettingsTab },
@@ -66,7 +66,7 @@ fun App(handleSource: () -> Source) {
                                         )
                                     }
                                 }
-
+                                
                                 // Content area
                                 Box(
                                     modifier = Modifier
@@ -88,7 +88,7 @@ fun App(handleSource: () -> Source) {
                                             icon = { /* No icon for now */ },
                                             label = { Text("Home") }
                                         )
-
+                                        
                                         // Drawing tab
                                         NavigationBarItem(
                                             selected = navigator.current is DrawingTab,
@@ -96,7 +96,7 @@ fun App(handleSource: () -> Source) {
                                             icon = { /* No icon for now */ },
                                             label = { Text("Draw") }
                                         )
-
+                                        
                                         // Settings tab
                                         NavigationBarItem(
                                             selected = navigator.current == SettingsTab,

@@ -1,15 +1,29 @@
 package sk.ai.net.samples.kmp.mnist.demo
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,16 +32,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -242,8 +266,19 @@ val IMAGE_RESOURCES = listOf(
 
 @Composable
 fun DrawingScreen(handleSource: () -> Source) {
-    // Create and remember the ViewModel
-    val viewModel = remember { DrawingScreenViewModel(handleSource) }
+    // Create and remember the ViewModel with rememberSaveable to persist across recompositions
+    val viewModel = remember(handleSource) { DrawingScreenViewModel(handleSource) }
+
+    // Animation for loading state
+    val infiniteTransition = rememberInfiniteTransition()
+    val loadingAlpha = infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
 
     val image = if (viewModel.selectedImageIndex != -1) {
         imageResource(IMAGE_RESOURCES[viewModel.selectedImageIndex])
@@ -251,96 +286,152 @@ fun DrawingScreen(handleSource: () -> Source) {
         null
     }
 
-    Column(
-        modifier = Modifier
-            .background(Color.LightGray)
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        // Instruction Text
-        Text(
-            text = "Draw a digit (0-9) in the canvas below.\nPress 'Classify' to recognize the digit or 'Clear' to start over.",
-            style = MaterialTheme.typography.body1,
-            textAlign = TextAlign.Center,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            // Instruction Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Text(
+                    text = "Draw a digit (0-9) in the canvas below.\nPress 'Classify' to recognize the digit or 'Clear' to start over.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            }
 
-        if (viewModel.isChooseImageMode) {
-            ChooseImagePanel(
+            // Main content area with card-based UI
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                imageResources = IMAGE_RESOURCES,
-                selectedImageIndex = viewModel.selectedImageIndex,
-                onImageSelected = { viewModel.selectImage(it) }
-            )
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (viewModel.isChooseImageMode) {
+                        ChooseImagePanel(
+                            modifier = Modifier.fillMaxSize(),
+                            imageResources = IMAGE_RESOURCES,
+                            selectedImageIndex = viewModel.selectedImageIndex,
+                            onImageSelected = { viewModel.selectImage(it) }
+                        )
+                    } else {
+                        DrawingPanel(
+                            onDragStart = { offset ->
+                                viewModel.onDragStart(offset)
+                            },
+                            onDrag = { pointerInputChange, offset ->
+                                viewModel.onDrag(pointerInputChange, offset)
+                            },
+                            onDragEnd = {
+                                viewModel.onDragEnd()
+                            },
+                            onDraw = {
+                                viewModel.paths.forEach { drawPath(path = it, color = Color.Black, style = Stroke(10f)) }
 
-        } else {
-            DrawingPanel(
-                onDragStart = { offset ->
-                    viewModel.onDragStart(offset)
-                },
-                onDrag = { pointerInputChange, offset ->
-                    viewModel.onDrag(pointerInputChange, offset)
-                },
-                onDragEnd = {
-                    viewModel.onDragEnd()
-                },
-                onDraw = {
-                    viewModel.paths.forEach { drawPath(path = it, color = Color.Black, style = Stroke(10f)) }
+                                if (viewModel.currentPath != null && viewModel.currentPathRef > 0) {
+                                    drawPath(path = viewModel.currentPath!!, color = Color.Black, style = Stroke(10f))
+                                }
+                            },
+                        )
+                    }
 
-                    if (viewModel.currentPath != null && viewModel.currentPathRef > 0) {
-                        drawPath(path = viewModel.currentPath!!, color = Color.Black, style = Stroke(10f))
+                    // Loading overlay
+                    if (!viewModel.isModelLoaded) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0x80000000)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .alpha(loadingAlpha.value),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Loading model...",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            val coroutineScope = rememberCoroutineScope()
+            val density = LocalDensity.current
+
+            ButtonsPanel(
+                isChooseImage = viewModel.isChooseImageMode,
+                isModelLoaded = viewModel.isModelLoaded,
+                classificationResult = viewModel.classificationResult,
+                onLoadModel = {
+                    coroutineScope.launch {
+                        viewModel.loadModel()
+                    }
+                },
+                onSwitchMode = {
+                    viewModel.switchMode()
+                },
+                onClearCanvas = {
+                    viewModel.clearCanvas()
+                },
+                onClassify = {
+                    val grayScaledImage = if (viewModel.isChooseImageMode) {
+                        image?.let {
+                            createGrayScale28To28Image(it)
+                        }
+                    } else {
+                        val w = with(density) { 300.dp.toPx().toInt() }
+                        val h = with(density) { 300.dp.toPx().toInt() }
+                        createGrayScale28To28Image(viewModel.paths, w, h)
+                    }
+
+                    grayScaledImage?.debugPrintInConsoleOutput()
+
+                    // Use the ViewModel to classify the image
+                    coroutineScope.launch {
+                        if (grayScaledImage != null) {
+                            // For now, we'll use the ViewModel's classify method with null
+                            // In a real implementation, we would pass the image bitmap
+                            viewModel.classify(grayScaledImage)
+                        }
                     }
                 },
             )
         }
-
-        val coroutineScope = rememberCoroutineScope()
-        val density = LocalDensity.current
-
-        ButtonsPanel(
-            isChooseImage = viewModel.isChooseImageMode,
-            isModelLoaded = viewModel.isModelLoaded,
-            classificationResult = viewModel.classificationResult,
-            onLoadModel = {
-                coroutineScope.launch {
-                    viewModel.loadModel()
-                }
-            },
-            onSwitchMode = {
-                viewModel.switchMode()
-            },
-            onClearCanvas = {
-                viewModel.clearCanvas()
-            },
-            onClassify = {
-                val grayScaledImage = if (viewModel.isChooseImageMode) {
-                    image?.let {
-                        createGrayScale28To28Image(it)
-                    }
-                } else {
-                    val w = with(density) { 300.dp.toPx().toInt() }
-                    val h = with(density) { 300.dp.toPx().toInt() }
-                    createGrayScale28To28Image(viewModel.paths, w, h)
-                }
-
-                grayScaledImage?.debugPrintInConsoleOutput()
-
-                // Use the ViewModel to classify the image
-                coroutineScope.launch {
-                    if (grayScaledImage != null) {
-                        // For now, we'll use the ViewModel's classify method with null
-                        // In a real implementation, we would pass the image bitmap
-                        viewModel.classify(grayScaledImage)
-                    }
-                }
-            },
-        )
     }
 }
 
@@ -351,28 +442,56 @@ fun ChooseImagePanel(
     selectedImageIndex: Int,
     onImageSelected: (Int) -> Unit,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(5), // 5 columns in the grid
+    Column(
         modifier = modifier,
-        content = {
-            items(imageResources.size) { index ->
-                Image(
-                    painter = painterResource(imageResources[index]),
-                    contentDescription = "Image",
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(48.dp)
-                        .clickable {
-                            onImageSelected.invoke(index)
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Select a sample digit image",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(5), // 5 columns in the grid
+            modifier = Modifier.fillMaxSize(),
+            content = {
+                items(imageResources.size) { index ->
+                    Card(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(56.dp)
+                            .clickable {
+                                onImageSelected.invoke(index)
+                            },
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = if (selectedImageIndex == index) 8.dp else 2.dp
+                        ),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (selectedImageIndex == index) 
+                                MaterialTheme.colorScheme.primaryContainer 
+                            else 
+                                MaterialTheme.colorScheme.surface
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(imageResources[index]),
+                                contentDescription = "Sample digit image ${index + 1}",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(4.dp)
+                            )
                         }
-                        .border(
-                            width = if (selectedImageIndex == index) 2.dp else 0.dp,
-                            color = if (selectedImageIndex == index) Color.Blue else Color.Transparent // Highlight selected image
-                        )
-                )
+                    }
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -382,26 +501,31 @@ fun DrawingPanel(
     onDragEnd: () -> Unit,
     onDraw: DrawScope.() -> Unit,
 ) {
-    Box(
+    Card(
         modifier = Modifier
             .width(300.dp)
             .height(300.dp),
-
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-        Canvas(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .clipToBounds()
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = onDragStart,
-                        onDrag = onDrag,
-                        onDragEnd = onDragEnd
-                    )
-                },
-            onDraw = onDraw
-        )
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .clipToBounds()
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = onDragStart,
+                            onDrag = onDrag,
+                            onDragEnd = onDragEnd
+                        )
+                    },
+                onDraw = onDraw
+            )
+        }
     }
 }
 
@@ -419,7 +543,7 @@ fun ButtonsPanel(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Buttons Row
+        // FAB Row with modern design
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -427,43 +551,74 @@ fun ButtonsPanel(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row {
-                // Switch Button
-                Button(
-                    onClick = onSwitchMode,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (isChooseImage) Color.Green else Color.Cyan
-                    )
-                ) {
-                    if (isChooseImage) {
-                        Text("Draw image")
-                    } else {
-                        Text("Choose image")
-                    }
-                }
+            // Switch Mode FAB
+            FloatingActionButton(
+                onClick = onSwitchMode,
+                containerColor = if (isChooseImage) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
+            ) {
+                Text(
+                    text = if (isChooseImage) "✓" else "🖼️",
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
 
+            // Load Model or Classify FAB
             if (!isModelLoaded) {
-                Button(onClick = onLoadModel) {
-                    Text("Load Model")
+                FloatingActionButton(
+                    onClick = onLoadModel,
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        text = "⬇️",
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 }
             } else {
-                Button(onClick = onClassify) {
-                    Text("Classify")
+                FloatingActionButton(
+                    onClick = onClassify,
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Text(
+                        text = "✓",
+                        style = MaterialTheme.typography.titleLarge
+                    )
                 }
             }
 
-            Button(onClick = onClearCanvas) {
-                Text("Clear")
+            // Clear Canvas FAB
+            FloatingActionButton(
+                onClick = onClearCanvas,
+                containerColor = MaterialTheme.colorScheme.error
+            ) {
+                Text(
+                    text = "🗑️",
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
 
-        classificationResult?.let { result ->
-            Text(
-                text = result,
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+        // Animated result display
+        AnimatedVisibility(
+            visible = classificationResult != null,
+            enter = fadeIn() + slideInVertically(),
+            exit = fadeOut() + slideOutVertically()
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .fillMaxWidth(0.8f),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Text(
+                    text = classificationResult ?: "",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
