@@ -52,6 +52,9 @@ kotlin {
 
             implementation(compose.runtime)
             implementation(compose.foundation)
+            // Material Design 3
+            implementation(compose.material3)
+            // Keep Material Design 2 for backward compatibility during migration
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
@@ -61,6 +64,12 @@ kotlin {
             implementation(projects.shared)
 
             implementation(libs.kotlinx.io.core)
+
+            // Voyager navigation for Compose Multiplatform
+            implementation("cafe.adriel.voyager:voyager-navigator:1.0.0")
+            implementation("cafe.adriel.voyager:voyager-bottom-sheet-navigator:1.0.0")
+            implementation("cafe.adriel.voyager:voyager-tab-navigator:1.0.0")
+            implementation("cafe.adriel.voyager:voyager-transitions:1.0.0")
 
         }
         desktopMain.dependencies {
