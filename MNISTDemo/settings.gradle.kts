@@ -11,14 +11,12 @@ pluginManagement {
             }
         }
         mavenCentral()
-        mavenLocal()
         gradlePluginPortal()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        mavenLocal()
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -27,7 +25,13 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        mavenLocal()
+        maven {
+            url = uri("https://maven.pkg.github.com/sk-ai-net/skainet")
+            credentials {
+                username = providers.gradleProperty("gpr.user").orElse(System.getenv("GITHUB_ACTOR")).get()
+                password = providers.gradleProperty("gpr.token").orElse(System.getenv("GITHUB_TOKEN")).get()
+            }
+        }
     }
 }
 
