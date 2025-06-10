@@ -6,13 +6,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.tab.CurrentTab
-import cafe.adriel.voyager.navigator.tab.TabNavigator
 import kotlinx.io.Source
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import sk.ai.net.samples.kmp.mnist.demo.navigation.DrawingTab
-import sk.ai.net.samples.kmp.mnist.demo.navigation.HomeTab
-import sk.ai.net.samples.kmp.mnist.demo.navigation.SettingsTab
+import sk.ai.net.samples.kmp.mnist.demo.navigation.NavigationHost
+import sk.ai.net.samples.kmp.mnist.demo.navigation.Screen
+import sk.ai.net.samples.kmp.mnist.demo.navigation.rememberNavigationState
+import sk.ai.net.samples.kmp.mnist.demo.screens.HomeScreen
+import sk.ai.net.samples.kmp.mnist.demo.screens.SettingsScreen
 import sk.ai.net.samples.kmp.mnist.demo.theme.AppTheme
 import sk.ai.net.samples.kmp.mnist.demo.theme.AppSurface
 import sk.ai.net.samples.kmp.mnist.demo.ui.LocalHandleSource
@@ -28,93 +28,115 @@ fun App(handleSource: () -> Source) {
         AppSurface {
             // Provide the handleSource function to all composables in the app
             CompositionLocalProvider(LocalHandleSource provides handleSource) {
-                // Create tab navigator with HomeTab as the initial tab
-                TabNavigator(HomeTab) { navigator ->
-                    // Use ResponsiveLayout to adapt to different screen sizes and orientations
-                    ResponsiveLayout { windowSizeClass, orientation ->
-                        if (orientation.isLandscape() && windowSizeClass != WindowSizeClass.COMPACT) {
-                            // Use side navigation for landscape on larger screens
-                            Row(modifier = Modifier.fillMaxSize()) {
-                                // Side navigation
-                                NavigationRail(
-                                    modifier = Modifier.fillMaxHeight()
+                // Create navigation state
+                val navigationState = rememberNavigationState(handleSource)
+
+                // Use ResponsiveLayout to adapt to different screen sizes and orientations
+                ResponsiveLayout { windowSizeClass, orientation ->
+                    if (orientation.isLandscape() && windowSizeClass != WindowSizeClass.COMPACT) {
+                        // Use side navigation for landscape on larger screens
+                        Row(modifier = Modifier.fillMaxSize()) {
+                            // Side navigation
+                            NavigationRail(
+                                modifier = Modifier.fillMaxHeight()
+                            ) {
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
                                 ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxHeight(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
-                                    ) {
-                                        NavigationRailItem(
-                                            selected = navigator.current == HomeTab,
-                                            onClick = { navigator.current = HomeTab },
-                                            label = { Text("Home") },
-                                            icon = { /* No icon for now */ }
-                                        )
+                                    NavigationRailItem(
+                                        selected = navigationState.currentScreen == Screen.HOME,
+                                        onClick = { navigationState.currentScreen = Screen.HOME },
+                                        label = { Text("Home") },
+                                        icon = { /* No icon for now */ }
+                                    )
 
-                                        NavigationRailItem(
-                                            selected = navigator.current is DrawingTab,
-                                            onClick = { navigator.current = DrawingTab(handleSource) },
-                                            label = { Text("Draw") },
-                                            icon = { /* No icon for now */ }
-                                        )
+                                    NavigationRailItem(
+                                        selected = navigationState.currentScreen == Screen.DRAWING,
+                                        onClick = { navigationState.currentScreen = Screen.DRAWING },
+                                        label = { Text("Draw") },
+                                        icon = { /* No icon for now */ }
+                                    )
 
-                                        NavigationRailItem(
-                                            selected = navigator.current == SettingsTab,
-                                            onClick = { navigator.current = SettingsTab },
-                                            label = { Text("Settings") },
-                                            icon = { /* No icon for now */ }
-                                        )
-                                    }
-                                }
-
-                                // Content area
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                ) {
-                                    CurrentTab()
+                                    NavigationRailItem(
+                                        selected = navigationState.currentScreen == Screen.SETTINGS,
+                                        onClick = { navigationState.currentScreen = Screen.SETTINGS },
+                                        label = { Text("Settings") },
+                                        icon = { /* No icon for now */ }
+                                    )
                                 }
                             }
-                        } else {
-                            // Use bottom navigation for portrait and compact screens
-                            Scaffold(
-                                bottomBar = {
-                                    NavigationBar {
-                                        // Home tab
-                                        NavigationBarItem(
-                                            selected = navigator.current == HomeTab,
-                                            onClick = { navigator.current = HomeTab },
-                                            icon = { /* No icon for now */ },
-                                            label = { Text("Home") }
-                                        )
 
-                                        // Drawing tab
-                                        NavigationBarItem(
-                                            selected = navigator.current is DrawingTab,
-                                            onClick = { navigator.current = DrawingTab(handleSource) },
-                                            icon = { /* No icon for now */ },
-                                            label = { Text("Draw") }
-                                        )
+                            // Content area
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                            ) {
+                                NavigationHost(
+                                    navigationState = navigationState,
+                                    homeScreen = { 
+                                        HomeScreen(
+                                            onGetStarted = { 
+                                                navigationState.currentScreen = Screen.DRAWING 
+                                            }
+                                        ) 
+                                    },
+                                    drawingScreen = { source -> DrawingScreen(source) },
+                                    settingsScreen = { SettingsScreen() }
+                                )
+                            }
+                        }
+                    } else {
+                        // Use bottom navigation for portrait and compact screens
+                        Scaffold(
+                            bottomBar = {
+                                NavigationBar {
+                                    // Home tab
+                                    NavigationBarItem(
+                                        selected = navigationState.currentScreen == Screen.HOME,
+                                        onClick = { navigationState.currentScreen = Screen.HOME },
+                                        icon = { /* No icon for now */ },
+                                        label = { Text("Home") }
+                                    )
 
-                                        // Settings tab
-                                        NavigationBarItem(
-                                            selected = navigator.current == SettingsTab,
-                                            onClick = { navigator.current = SettingsTab },
-                                            icon = { /* No icon for now */ },
-                                            label = { Text("Settings") }
-                                        )
-                                    }
+                                    // Drawing tab
+                                    NavigationBarItem(
+                                        selected = navigationState.currentScreen == Screen.DRAWING,
+                                        onClick = { navigationState.currentScreen = Screen.DRAWING },
+                                        icon = { /* No icon for now */ },
+                                        label = { Text("Draw") }
+                                    )
+
+                                    // Settings tab
+                                    NavigationBarItem(
+                                        selected = navigationState.currentScreen == Screen.SETTINGS,
+                                        onClick = { navigationState.currentScreen = Screen.SETTINGS },
+                                        icon = { /* No icon for now */ },
+                                        label = { Text("Settings") }
+                                    )
                                 }
-                            ) { paddingValues ->
-                                // Display the current tab content
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(paddingValues)
-                                ) {
-                                    CurrentTab()
-                                }
+                            }
+                        ) { paddingValues ->
+                            // Display the current screen content
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues)
+                            ) {
+                                NavigationHost(
+                                    navigationState = navigationState,
+                                    homeScreen = { 
+                                        HomeScreen(
+                                            onGetStarted = { 
+                                                navigationState.currentScreen = Screen.DRAWING 
+                                            }
+                                        ) 
+                                    },
+                                    drawingScreen = { source -> DrawingScreen(source) },
+                                    settingsScreen = { SettingsScreen() }
+                                )
                             }
                         }
                     }
