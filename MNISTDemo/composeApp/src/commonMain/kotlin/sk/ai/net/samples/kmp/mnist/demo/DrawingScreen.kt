@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -269,6 +270,11 @@ fun DrawingScreen(handleSource: () -> Source) {
     // Create and remember the ViewModel with rememberSaveable to persist across recompositions
     val viewModel = remember(handleSource) { DrawingScreenViewModel(handleSource) }
 
+    // Load the model automatically when the screen is first displayed
+    LaunchedEffect(Unit) {
+        viewModel.loadModel()
+    }
+
     // Animation for loading state
     val infiniteTransition = rememberInfiniteTransition()
     val loadingAlpha = infiniteTransition.animateFloat(
@@ -297,25 +303,6 @@ fun DrawingScreen(handleSource: () -> Source) {
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Instruction Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Text(
-                    text = "Draw a digit (0-9) in the canvas below.\nPress 'Classify' to recognize the digit or 'Clear' to start over.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
 
             // Main content area with card-based UI
             Card(
@@ -551,26 +538,28 @@ fun ButtonsPanel(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Switch Mode FAB
+            // Switch Mode Button
             FloatingActionButton(
                 onClick = onSwitchMode,
                 containerColor = if (isChooseImage) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.secondary
             ) {
                 Text(
-                    text = if (isChooseImage) "✓" else "🖼️",
-                    style = MaterialTheme.typography.titleLarge
+                    text = if (isChooseImage) "Select" else "Images",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
 
-            // Load Model or Classify FAB
+            // Load Model or Classify Button
             if (!isModelLoaded) {
                 FloatingActionButton(
                     onClick = onLoadModel,
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Text(
-                        text = "⬇️",
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Load Model",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
             } else {
@@ -579,45 +568,50 @@ fun ButtonsPanel(
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Text(
-                        text = "✓",
-                        style = MaterialTheme.typography.titleLarge
+                        text = "Classify",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
             }
 
-            // Clear Canvas FAB
+            // Clear Canvas Button
             FloatingActionButton(
                 onClick = onClearCanvas,
                 containerColor = MaterialTheme.colorScheme.error
             ) {
                 Text(
-                    text = "🗑️",
-                    style = MaterialTheme.typography.titleLarge
+                    text = "Clear",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
         }
 
-        // Animated result display
-        AnimatedVisibility(
-            visible = classificationResult != null,
-            enter = fadeIn() + slideInVertically(),
-            exit = fadeOut() + slideOutVertically()
+        // Result display with fixed height to prevent layout jumps
+        Box(
+            modifier = Modifier
+                .height(80.dp)  // Fixed height container
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Card(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .fillMaxWidth(0.8f),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
-            ) {
-                Text(
-                    text = classificationResult ?: "",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp),
-                    textAlign = TextAlign.Center
-                )
+            // Only show the card when there's a result
+            if (classificationResult != null) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Text(
+                        text = classificationResult,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

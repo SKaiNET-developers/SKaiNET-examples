@@ -16,12 +16,27 @@ import kotlinx.io.Source
 
 class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
 
-    // Digit classifier
-    private val digitClassifier = ADigitClassifier(false, handleSource)
+    // Get the classifier from the singleton
+    private val handleSourceFn = handleSource
 
     // Screen mode states
-    var isModelLoaded by mutableStateOf(false)
+    var isModelLoaded by mutableStateOf(DigitClassifierSingleton.isModelLoaded)
         private set
+
+    init {
+        // Update isModelLoaded whenever DigitClassifierSingleton.isModelLoaded changes
+        viewModelScope.launch {
+            // This is a simple polling mechanism to check for changes
+            // In a real app, you might want to use a StateFlow or other reactive approach
+            while (true) {
+                val newValue = DigitClassifierSingleton.isModelLoaded
+                if (isModelLoaded != newValue) {
+                    isModelLoaded = newValue
+                }
+                kotlinx.coroutines.delay(100) // Check every 100ms
+            }
+        }
+    }
     var isChooseImageMode by mutableStateOf(false)
         private set
     var selectedImageIndex by mutableStateOf(-1)
@@ -41,16 +56,13 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
 
     // Load the model
     fun loadModel() {
-        if (isModelLoaded) return
+        // Initialize the classifier if needed
+        DigitClassifierSingleton.getClassifier(handleSourceFn)
 
-        viewModelScope.launch {
-            try {
-                digitClassifier.loadModel()
-                isModelLoaded = true
-            } catch (e: Exception) {
-                // Handle error
-                println("Error loading model: ${e.message}")
-            }
+        // Load the model if needed
+        DigitClassifierSingleton.loadModelIfNeeded {
+            // Update our local state when loading is complete
+            isModelLoaded = DigitClassifierSingleton.isModelLoaded
         }
     }
 
@@ -120,9 +132,14 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Classify the image
-                val result = digitClassifier.classify(image)
-                classificationResult = "Predicted digit: $result"
+                // Classify the image using the singleton
+                val result = DigitClassifierSingleton.classify(image)
+                if (result != null) {
+                    classificationResult = "Predicted digit: $result"
+                } else {
+                    classificationResult = "Classification error: Model not initialized"
+                    println("Classification error: Model not initialized")
+                }
             } catch (e: Exception) {
                 classificationResult = "Classification error: ${e.message}"
                 println("Classification error: ${e.message}")
