@@ -17,7 +17,7 @@ import kotlinx.io.Source
 class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
 
     // Digit classifier
-    private val digitClassifier = ADigitClassifier(handleSource)
+    private val digitClassifier = ADigitClassifier(false, handleSource)
 
     // Screen mode states
     var isModelLoaded by mutableStateOf(false)

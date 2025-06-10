@@ -30,7 +30,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "KotlinProject",
+        title = "MNIST Demo",
     ) {
 
         if (loadingState == LoadingState.Success) {
