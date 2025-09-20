@@ -1,0 +1,315 @@
+= GitFlow Workflow
+:toc:
+:toclevels: 3
+:sectanchors:
+:sectlinks:
+:source-highlighter: highlight.js
+
+This document describes the GitFlow workflow used in the SKaiNET project for managing feature development, releases, and hotfixes.
+
+== Overview
+
+GitFlow is a branching model for Git that defines specific branch types and their purposes. It provides a robust framework for managing larger projects with scheduled releases and helps teams collaborate effectively while maintaining code stability.
+
+== Branch Types
+
+=== Main Branches
+
+==== `main` Branch
+* **Purpose**: Contains production-ready code
+* **Lifetime**: Permanent
+* **Protection**: Direct commits are not allowed
+* **Merges from**: `release/*` and `hotfix/*` branches only
+
+==== `develop` Branch  
+* **Purpose**: Integration branch for features under development
+* **Lifetime**: Permanent
+* **Protection**: Direct commits should be minimal
+* **Merges from**: `feature/*`, `release/*`, and `hotfix/*` branches
+
+=== Supporting Branches
+
+==== Feature Branches (`feature/*`)
+* **Purpose**: Develop new features for upcoming releases
+* **Naming convention**: `feature/feature-name` or `feature/ISSUE-123-feature-name` (e.g., `feature/cnn-layers`, `feature/transformer-embeddings`)
+* **Branch from**: `develop`
+* **Merge back to**: `develop`
+* **Lifetime**: Until feature is complete
+* **Deletion**: After successful merge to `develop`
+
+==== Release Branches (`release/*`)
+* **Purpose**: Prepare new production releases
+* **Naming convention**: `release/1.2.0` (following semantic versioning)
+* **Branch from**: `develop`
+* **Merge back to**: `main` and `develop`
+* **Lifetime**: Until release is deployed
+* **Activities**: Bug fixes, documentation updates, release preparation
+
+==== Hotfix Branches (`hotfix/*`)
+* **Purpose**: Quick fixes for critical production issues
+* **Naming convention**: `hotfix/1.2.1` or `hotfix/critical-fix`
+* **Branch from**: `main`
+* **Merge back to**: `main` and `develop`
+* **Lifetime**: Until fix is deployed
+* **Priority**: High - should be processed immediately
+
+== Workflow Diagram
+
+[mermaid]
+ifdef::env-github[[source,mermaid]]
+....
+gitGraph
+    commit id: "Initial"
+    branch develop
+    checkout develop
+    commit id: "Dev setup"
+    
+    branch feature/cnn-layers
+    checkout feature/cnn-layers
+    commit id: "Add conv2d layer"
+    commit id: "Add pooling layer"
+    
+    checkout develop
+    merge feature/cnn-layers
+    commit id: "Merge CNN layers"
+    
+    branch feature/tokenizer
+    checkout feature/tokenizer
+    commit id: "Add word embeddings"
+    commit id: "Add BPE tokenizer"
+    
+    checkout develop
+    merge feature/tokenizer
+    commit id: "Integration"
+    
+    branch release/1.0.0
+    checkout release/1.0.0
+    commit id: "Prepare v1.0.0"
+    commit id: "Fix tests"
+    
+    checkout main
+    merge release/1.0.0
+    commit id: "Release v1.0.0" tag: "v1.0.0"
+    
+    checkout develop
+    merge release/1.0.0
+    
+    checkout main
+    branch hotfix/1.0.1
+    checkout hotfix/1.0.1
+    commit id: "Fix gradient explosion"
+    
+    checkout main
+    merge hotfix/1.0.1
+    commit id: "Hotfix v1.0.1" tag: "v1.0.1"
+    
+    checkout develop
+    merge hotfix/1.0.1
+    
+    checkout develop
+    branch feature/transformer-attention
+    checkout feature/transformer-attention
+    commit id: "Add self-attention"
+....
+
+== Detailed Workflows
+
+=== Feature Development
+
+. Create a feature branch from `develop`:
++
+[source,bash]
+----
+git checkout develop
+git pull origin develop
+git checkout -b feature/lstm-layers
+----
+
+. Develop the feature with regular commits:
++
+[source,bash]
+----
+git add .
+git commit -m "Implement LSTM forward pass"
+git push origin feature/lstm-layers
+----
+
+. When feature is complete, create a pull request to `develop`
+
+. After code review and approval, merge to `develop`:
++
+[source,bash]
+----
+git checkout develop
+git pull origin develop
+git merge --no-ff feature/lstm-layers
+git push origin develop
+git branch -d feature/lstm-layers
+----
+
+=== Release Process
+
+. Create a release branch from `develop`:
++
+[source,bash]
+----
+git checkout develop
+git pull origin develop
+git checkout -b release/1.2.0
+----
+
+. Perform release preparations:
+** Update version numbers
+** Update documentation
+** Run final tests
+** Fix any release-blocking bugs
+
+. When ready, merge to `main`:
++
+[source,bash]
+----
+git checkout main
+git pull origin main
+git merge --no-ff release/1.2.0
+git tag -a v1.2.0 -m "Release version 1.2.0"
+git push origin main --tags
+----
+
+. Merge back to `develop`:
++
+[source,bash]
+----
+git checkout develop
+git merge --no-ff release/1.2.0
+git push origin develop
+git branch -d release/1.2.0
+----
+
+=== Hotfix Process
+
+. Create a hotfix branch from `main`:
++
+[source,bash]
+----
+git checkout main
+git pull origin main
+git checkout -b hotfix/1.2.1
+----
+
+. Implement the fix:
++
+[source,bash]
+----
+git add .
+git commit -m "Fix memory leak in tensor operations"
+----
+
+. Merge to `main`:
++
+[source,bash]
+----
+git checkout main
+git merge --no-ff hotfix/1.2.1
+git tag -a v1.2.1 -m "Hotfix version 1.2.1"
+git push origin main --tags
+----
+
+. Merge to `develop`:
++
+[source,bash]
+----
+git checkout develop
+git merge --no-ff hotfix/1.2.1
+git push origin develop
+git branch -d hotfix/1.2.1
+----
+
+== Best Practices
+
+=== Branch Naming
+* Use descriptive names that reflect the purpose
+* Include issue numbers when applicable: `feature/ISSUE-123-transformer-embeddings`
+* Use lowercase with hyphens: `feature/add-attention-mechanism`
+
+=== Commit Messages
+* Use present tense: "Add feature" not "Added feature"
+* Keep first line under 50 characters
+* Provide detailed description for complex changes
+* Reference issue numbers: "Fix gradient clipping in LSTM (closes #123)"
+
+=== Pull Requests
+* Always create pull requests for merging to `main` and `develop`
+* Require code review before merging
+* Include comprehensive description of changes
+* Ensure all tests pass before merging
+* Use `--no-ff` flag to preserve branch history
+
+=== Version Management
+* Follow https://semver.org/[Semantic Versioning]
+* Tag all releases with version numbers
+* Update version in project files before release
+* Maintain CHANGELOG.md with release notes
+
+== Integration with CI/CD
+
+=== Automated Testing
+* Run tests on all feature branches
+* Run comprehensive test suite on `develop` and `main`
+* Block merges if tests fail
+
+=== Deployment Pipeline
+* `main` branch deploys to production
+* `develop` branch deploys to staging environment
+* Feature branches deploy to development environment for testing
+
+=== Branch Protection Rules
+* Protect `main` and `develop` branches
+* Require pull request reviews
+* Require status checks to pass
+* Require branches to be up to date before merging
+
+== Troubleshooting
+
+=== Common Issues
+
+==== Merge Conflicts
+When encountering merge conflicts:
+
+. Update your branch with latest changes:
++
+[source,bash]
+----
+git checkout your-branch
+git fetch origin
+git merge origin/develop
+----
+
+. Resolve conflicts manually in your editor
+. Test the resolution
+. Commit the merge resolution
+
+==== Mistaken Commits
+If you commit to wrong branch:
+
+. Create a new branch from the correct base:
++
+[source,bash]
+----
+git checkout correct-base-branch
+git checkout -b new-feature-branch
+git cherry-pick commit-hash
+----
+
+. Reset the wrong branch:
++
+[source,bash]
+----
+git checkout wrong-branch
+git reset --hard HEAD~1
+----
+
+== Conclusion
+
+GitFlow provides a structured approach to managing code changes in collaborative environments. By following this workflow consistently, the SKaiNET project maintains code quality, enables parallel development, and ensures stable releases.
+
+For questions or clarifications about this workflow, please refer to the original https://nvie.com/posts/a-successful-git-branching-model/[GitFlow article] or reach out to the project maintainers.
