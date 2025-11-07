@@ -6,8 +6,8 @@ import kotlinx.io.Source
 
 
 @Composable
-fun App(handleSource: () -> Source) {
+fun App() {
     MaterialTheme {
-        SinusSliderScreen(handleSource)
+        SinusSliderScreen()
     }
 }

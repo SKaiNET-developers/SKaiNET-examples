@@ -5,21 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kkon.kmp.ai.sinus.approximator.ASinusCalculator
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.*
 import kotlinx.io.Source
-import sk.ai.net.Shape
-import sk.ai.net.io.csv.CsvParametersLoader
-import sk.ai.net.io.mapper.NamesBasedValuesModelMapper
-import sk.ai.net.nn.Module
-import sk.ai.net.nn.reflection.flattenParams
-import sk.ai.net.nn.reflection.summary
+import sk.ainet.app.samples.sinus.MLPSinusCalculator
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.round
@@ -32,8 +24,8 @@ sealed interface ModelLoadingState {
     data object Initial : ModelLoadingState
 }
 
-class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel() {
-    private val calculator = ASinusCalculator(::handleModelLoad)
+class SinusSliderViewModel() : ViewModel() {
+    private val calculator = MLPSinusCalculator()
     private val _modelLoadingState = MutableStateFlow<ModelLoadingState>(ModelLoadingState.Initial)
     val modelLoadingState: StateFlow<ModelLoadingState> = _modelLoadingState.asStateFlow()
 
@@ -46,7 +38,7 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
     var sinusValue by mutableStateOf(0.0)
         private set
 
-    var modelSinusValue by mutableStateOf(0.0)
+    var modelSinusValue by mutableStateOf(0.0f)
         private set
 
     var errorValue by mutableStateOf(0.0)
@@ -74,23 +66,6 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
         return this.toDouble().formatDecimal(decimals)
     }
 
-    private fun handleModelLoad(model: Module) {
-        print(model.summary(Shape(1)))
-        val parametersLoader = CsvParametersLoader(handleSource)
-
-        val mapper = NamesBasedValuesModelMapper()
-        print(model.summary(Shape(1)))
-
-        CoroutineScope(Dispatchers.Default).launch {
-            parametersLoader.load { name, shape ->
-                mapper.mapToModel(model, mapOf(name to shape))
-            }
-            val params = flattenParams(model)
-            println(params)
-        }
-
-    }
-
     private fun updateFormattedValues() {
         formattedAngle = sliderValue.formatDecimal(4)
         formattedSinusValue = sinusValue.formatDecimal(6)
@@ -101,7 +76,7 @@ class SinusSliderViewModel(private val handleSource: () -> Source) : ViewModel()
     fun updateSliderValue(value: Float) {
         sliderValue = value
         sinusValue = sin(value.toDouble())
-        modelSinusValue = calculator.calculate(value.toDouble())
+        modelSinusValue = calculator.calculate(value.toFloat())
         errorValue = abs(sinusValue - modelSinusValue)
         updateFormattedValues()
     }

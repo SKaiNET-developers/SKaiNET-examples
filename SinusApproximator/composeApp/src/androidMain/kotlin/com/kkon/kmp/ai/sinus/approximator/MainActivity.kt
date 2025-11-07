@@ -20,11 +20,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val loadingState by ResourceUtils.loadingState.collectAsState()
 
-            // Load the sinus.json resource when the app starts
-            LaunchedEffect(Unit) {
-                ResourceUtils.loadResource("files/sinus.json")
-            }
-
             // Only show the app when the resource is loaded
             if (loadingState == LoadingState.Success) {
                 App {

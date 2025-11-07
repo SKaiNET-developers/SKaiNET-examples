@@ -7,15 +7,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import sk.ai.net.nn.Module
+import sk.ainet.lang.nn.Module
+import sk.ainet.lang.types.FP32
 
 /**
  * A composable that visualizes a dense neural network structure.
@@ -25,7 +24,7 @@ import sk.ai.net.nn.Module
  */
 @Composable
 fun NeuralNetworkVisualization(
-    model: Module?,
+    model: Module<FP32,Float>?,
     modifier: Modifier = Modifier
 ) {
     if (model == null) {
