@@ -14,8 +14,8 @@ import kotlinx.io.Source
 import kotlin.math.PI
 
 @Composable
-fun SinusSliderScreen(handleSource: () -> Source) {
-    val viewModel = remember { SinusSliderViewModel(handleSource) }
+fun SinusSliderScreen() {
+    val viewModel = remember { SinusSliderViewModel() }
     val modelLoadingState by viewModel.modelLoadingState.collectAsState()
 
     Column(

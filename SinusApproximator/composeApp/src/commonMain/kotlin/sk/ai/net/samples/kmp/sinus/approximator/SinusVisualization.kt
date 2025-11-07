@@ -17,7 +17,7 @@ import kotlin.math.sin
 fun SinusVisualization(
     sliderValue: Float,
     actualSinus: Double,
-    approximatedSinus: Double,
+    approximatedSinus: Float,
     modifier: Modifier = Modifier
 ) {
     val primary = MaterialTheme.colorScheme.primary

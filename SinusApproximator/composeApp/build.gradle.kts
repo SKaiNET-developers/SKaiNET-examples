@@ -21,7 +21,6 @@ kotlin {
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -33,23 +32,14 @@ kotlin {
 
     jvm("desktop")
 
+    js {
+        browser()
+        binaries.executable()
+    }
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "composeApp"
-        browser {
-            val rootDirPath = project.rootDir.path
-            val projectDirPath = project.projectDir.path
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                    static = (static ?: mutableListOf()).apply {
-                        // Serve sources to debug inside browser
-                        add(rootDirPath)
-                        add(projectDirPath)
-                    }
-                }
-            }
-        }
+        browser()
         binaries.executable()
     }
 
@@ -71,10 +61,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.io.core)
 
-            implementation(libs.skainet.core)
-            implementation(libs.skainet.io)
-
-
+            implementation(libs.skainet.lang.core)
+            implementation(libs.skainet.lang.models)
+            implementation(libs.skainet.compile.core)
+            implementation(libs.skainet.backend.cpu)
 
             implementation(projects.shared)
         }

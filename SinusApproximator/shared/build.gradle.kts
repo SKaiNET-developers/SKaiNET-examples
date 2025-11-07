@@ -13,37 +13,30 @@ kotlin {
 
     jvm()
 
-    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
 
-    // Temporarily disable wasmJs target to fix build issues
-     @OptIn(ExperimentalWasmDsl::class)
-     wasmJs {
-         browser {
-             val rootDirPath = project.rootDir.path
-             val projectDirPath = project.projectDir.path
-             commonWebpackConfig {
-                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-                     static = (static ?: mutableListOf()).apply {
-                         // Serve sources to debug inside browser
-                         add(rootDirPath)
-                         add(projectDirPath)
-                     }
-                 }
-             }
-         }
-     }
+    js {
+        browser()
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
 
     sourceSets {
         // Temporarily disable wasmJsMain source set
         val wasmJsMain by getting
 
         commonMain.dependencies {
-            implementation(libs.skainet.core)
-            implementation(libs.skainet.io)
             implementation(libs.kotlinx.io.core)
+
+            implementation(libs.skainet.lang.core)
+            implementation(libs.skainet.lang.models)
+            implementation(libs.skainet.compile.core)
+            implementation(libs.skainet.backend.cpu)
         }
 
          wasmJsMain.dependencies {
