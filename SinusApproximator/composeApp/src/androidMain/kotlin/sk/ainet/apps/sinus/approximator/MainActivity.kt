@@ -1,4 +1,4 @@
-package com.kkon.kmp.ai.sinus.approximator
+package sk.ainet.apps.sinus.approximator
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
