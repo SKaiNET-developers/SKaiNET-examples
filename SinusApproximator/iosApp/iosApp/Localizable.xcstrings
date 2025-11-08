@@ -1,10 +1,8 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Model Sinus: %@" : {
-
-    },
     "Modell Laden" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14,10 +12,8 @@
         }
       }
     },
-    "Sinus: %@" : {
-
-    },
     "Winkel: %@ rad" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
