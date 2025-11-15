@@ -73,6 +73,8 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            // Optimized JVM ops variant for Desktop
+            implementation(libs.skainet.backend.cpu.jvm)
         }
     }
 }

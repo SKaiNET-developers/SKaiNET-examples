@@ -12,7 +12,7 @@ androidx-core = "1.16.0"
 androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.9.6"
 androidx-testExt = "1.2.1"
-composeHotReload = "1.0.0-rc02"
+composeHotReload = "1.0.0-rc03"
 composeMultiplatform = "1.9.3"
 junit = "4.13.2"
 kotlin = "2.2.21"
@@ -36,6 +36,7 @@ skainet-lang-core = { module = "sk.ainet.core:skainet-lang-core", version.ref = 
 skainet-lang-models = { module = "sk.ainet.core:skainet-lang-models", version.ref = "skainet" }
 skainet-compile-core = { module = "sk.ainet.core:skainet-compile-core", version.ref = "skainet" }
 skainet-backend-cpu = { module = "sk.ainet.core:skainet-backend-cpu", version.ref = "skainet" }
+skainet-backend-cpu-jvm = { module = "sk.ainet.core:skainet-backend-cpu-jvm", version.ref = "skainet" }
 
 
 [plugins]
