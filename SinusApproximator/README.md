@@ -3,8 +3,9 @@
 This project demonstrates a small Kotlin Multiplatform (KMP) app that approximates the sine function with a tiny neural network and visualizes it with Compose Multiplatform UI. The same codebase runs on Android, iOS, WebAssembly (Wasm), Desktop, and can be extended to Server. It also showcases capabilities of the SKaiNET ML framework.
 
 What you can do in the app:
-- Adjust sliders to change neural network parameters (e.g., layer sizes, learning steps) and see the approximation change in real time.
+- Adjust sliders to change input value(angle) and see the result of the approximation in real time.
 - Visualize the target sine curve and the model’s predicted curve.
+- Visualization of Neural network architecture
 
 ## Screenshots
 
@@ -27,23 +28,38 @@ This project depends on SKaiNET libraries that, for now, need to be built locall
 
 Known working SKaiNET commit: 22cfbbe
 
-Steps:
-1. Clone the SKaiNET repository
-   - git clone https://github.com/sk-ai-net/SKaiNET.git
-   - cd SKaiNET
-2. Check out the known good commit
-   - git checkout 22cfbbe
-3. Build and publish artifacts to Maven Local
-   - macOS/Linux: ./gradlew clean publishToMavenLocal -x test
-   - Windows:    gradlew.bat clean publishToMavenLocal -x test
-4. Verify the artifacts exist (optional)
-   - Look under ~/.m2/repository/sk/ainet/core/ (or %USERPROFILE%\.m2\repository\sk\ainet\core on Windows)
+Before you start
+- Require Git and JDK 17+ installed (Gradle wrapper will download Gradle automatically).
+- Close any IDE builds of this project while publishing, to avoid file locks on Windows.
+
+Option A — macOS/Linux (Terminal)
+Copy–paste these lines into your terminal:
+```bash
+git clone https://github.com/sk-ai-net/SKaiNET.git
+cd SKaiNET
+git checkout 22cfbbe
+./gradlew clean publishToMavenLocal -x test
+```
+
+Option B — Windows (PowerShell or CMD)
+Copy–paste these lines into PowerShell or CMD:
+```bat
+git clone https://github.com/sk-ai-net/SKaiNET.git
+cd SKaiNET
+git checkout 22cfbbe
+gradlew.bat clean publishToMavenLocal -x test
+```
+
+Verify (optional)
+- Check that artifacts are present in your local Maven repository:
+  - macOS/Linux: `~/.m2/repository/sk/ainet/core/`
+  - Windows: `%USERPROFILE%\.m2\repository\sk\ainet\core\`
 
 Version alignment note:
-- This sample currently references SKaiNET version defined in gradle/libs.versions.toml under the key skainet (e.g., 0.2.0).
+- This sample uses the SKaiNET version defined in `gradle/libs.versions.toml` under the key `skainet` (for example `0.2.0`).
 - If the version you published from SKaiNET differs, either:
-  - change the skainet version in gradle/libs.versions.toml to match what you just published, or
-  - publish SKaiNET with the same version (if applicable) so the sample can resolve it from mavenLocal.
+  - change the `skainet` version in `gradle/libs.versions.toml` to match what you just published, or
+  - publish SKaiNET using that same version so this sample can resolve it from `mavenLocal()`.
 
 ## How to run
 - Desktop (Compose for Desktop): run the `run` configuration under `composeApp/src/desktopMain` or Gradle task `:composeApp:run`.
