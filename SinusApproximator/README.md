@@ -6,24 +6,14 @@ What you can do in the app:
 - Adjust sliders to change neural network parameters (e.g., layer sizes, learning steps) and see the approximation change in real time.
 - Visualize the target sine curve and the model’s predicted curve.
 
-## Screenshots 
+## Screenshots
 
-### Android
-
-![Android screenshot placeholder](docs/screenshots/android.png)
-
-### JVM Desktop
-
-![Android screenshot placeholder](docs/screenshots/jvm.png)
-
-
-### iOS
-
-![iOS screenshot placeholder](docs/screenshots/ios.png)
-
-### WebAssembly (Wasm / Browser)
-
-![Wasm screenshot placeholder](docs/screenshots/wasm.png)
+| Platform | Screenshot                                                                      |
+| --- |---------------------------------------------------------------------------------|
+| Android | <img src="docs/screenshots/android.png" alt="Android screenshot" width="640" /> |
+| JVM Desktop | ![JVM Desktop screenshot](docs/screenshots/jvm.png)                             |
+| iOS | <img src="docs/screenshots/ios.png" alt="iOS screenshot" width="640" />         |
+| WebAssembly (Wasm / Browser) | ![Wasm screenshot](docs/screenshots/wasm.png)                                   |
 
 ## Project layout
 - `/composeApp` — shared UI and platform code for Compose Multiplatform.
