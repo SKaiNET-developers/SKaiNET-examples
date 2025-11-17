@@ -23,49 +23,22 @@ What you can do in the app:
 - `/iosApp` — iOS application host (entry point and Xcode project).
 - `/shared` — platform-agnostic logic shared across all targets (e.g., ML/Sinus calculator).
 
-## Prerequisite: build and publish SKaiNET to Maven Local
-This project depends on SKaiNET libraries that, for now, need to be built locally and published to your Maven Local repository. This will be simpler with the upcoming 0.2.2 release of SKaiNET.
-
-Known working SKaiNET commit: 22cfbbe
-
-Before you start
-- Require Git and JDK 17+ installed (Gradle wrapper will download Gradle automatically).
-- Close any IDE builds of this project while publishing, to avoid file locks on Windows.
-
-Option A — macOS/Linux (Terminal)
-Copy–paste these lines into your terminal:
-```bash
-git clone https://github.com/sk-ai-net/SKaiNET.git
-cd SKaiNET
-git checkout 22cfbbe
-./gradlew clean publishToMavenLocal -x test
-```
-
-Option B — Windows (PowerShell or CMD)
-Copy–paste these lines into PowerShell or CMD:
-```bat
-git clone https://github.com/sk-ai-net/SKaiNET.git
-cd SKaiNET
-git checkout 22cfbbe
-gradlew.bat clean publishToMavenLocal -x test
-```
-
-Verify (optional)
-- Check that artifacts are present in your local Maven repository:
-  - macOS/Linux: `~/.m2/repository/sk/ainet/core/`
-  - Windows: `%USERPROFILE%\.m2\repository\sk\ainet\core\`
-
-Version alignment note:
-- This sample uses the SKaiNET version defined in `gradle/libs.versions.toml` under the key `skainet` (for example `0.2.0`).
-- If the version you published from SKaiNET differs, either:
-  - change the `skainet` version in `gradle/libs.versions.toml` to match what you just published, or
-  - publish SKaiNET using that same version so this sample can resolve it from `mavenLocal()`.
-
 ## How to run
 - Desktop (Compose for Desktop): run the `run` configuration under `composeApp/src/desktopMain` or Gradle task `:composeApp:run`.
 - Android: open the project in Android Studio and run the `androidApp` target/device.
 - iOS: open `iosApp/iosApp.xcodeproj` in Xcode and run on a simulator or device.
-- WebAssembly (browser): `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+- WebAssembly (browser): `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task. WebAsemmbly target is also dockerized.
+
+### Wasm in Docker
+
+Running localy on port `8080`
+
+```shell
+docker build -t skainet/sinus .
+docker run -p 8080:80 skainet/sinus
+```
+  
+ 
 
 ## Learn more
 - SKaiNET framework: https://github.com/sk-ai-net/SKaiNET

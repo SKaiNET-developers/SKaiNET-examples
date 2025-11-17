@@ -1,13 +1,6 @@
 # =========== BUILD STAGE ===========
-FROM gradle:8.10-jdk17 AS build
+FROM gradle:9.0-jdk17 AS build
 
-# Define build arguments
-ARG GITHUB_ACTOR
-ARG GITHUB_TOKEN
-
-# Set environment variables (optional, if needed by your gradle build)
-ENV GITHUB_ACTOR=${GITHUB_ACTOR}
-ENV GITHUB_TOKEN=${GITHUB_TOKEN}
 
 WORKDIR /app
 
