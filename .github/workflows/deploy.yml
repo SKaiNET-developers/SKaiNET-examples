@@ -27,13 +27,43 @@ jobs:
           distribution: temurin
           java-version: "22"
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
-
-      # Generic KMP build for all JS browser targets
-      - name: Build all JS browser distributions
+      - name: Make gradlew executable (if present)
         run: |
-          ./gradlew jsBrowserDistribution --continue
+          if [ -f "./gradlew" ]; then
+            chmod +x ./gradlew
+          fi
+
+      - name: Build all web apps (per subproject)
+        run: |
+          set -e
+
+          # Optional: ensure jq exists (Ubuntu images usually have it already)
+          if ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y jq
+          fi
+
+          # Find all webapp.json files
+          while IFS= read -r meta; do
+            app_dir="$(dirname "$meta")"
+
+            build_cmd="$(jq -r '.build.command // empty' "$meta")"
+
+            if [ -z "$build_cmd" ]; then
+              echo "[INFO] $meta has no build.command, skipping build step."
+              continue
+            fi
+
+            echo "[INFO] Building app in $app_dir with: $build_cmd"
+
+            (
+              cd "$app_dir"
+              # Execute the command as defined in webapp.json
+              set -e
+              eval "$build_cmd"
+            )
+
+          done < <(find . -name webapp.json -print)
 
       - name: Prepare static site folder (scan apps & generate index)
         run: |
@@ -71,12 +101,11 @@ jobs:
             description = meta.get("description", "")
             screenshot_rel = meta.get("screenshot")
 
-            # NEW: allow distDirs list, fallback to single distDir string for compatibility
+            # Allow distDirs list, fallback to single distDir
             dist_dirs_rel = []
-
-            if "distDirs" in meta and isinstance(meta["distDirs"], list):
+            if isinstance(meta.get("distDirs"), list):
               dist_dirs_rel = meta["distDirs"]
-            elif "distDir" in meta and isinstance(meta["distDir"], str):
+            elif isinstance(meta.get("distDir"), str):
               dist_dirs_rel = [meta["distDir"]]
 
             if not app_id:
@@ -89,7 +118,7 @@ jobs:
 
             project_root = dirpath
 
-            # Choose the first distDir that contains index.html
+            # Choose first distDir that contains index.html
             chosen_dist_dir = None
             for rel in dist_dirs_rel:
               cand_dist = os.path.join(project_root, rel)
@@ -99,7 +128,7 @@ jobs:
                 break
 
             if not chosen_dist_dir:
-              print(f"[INFO] No index.html found in any distDir for app {app_id}, skipping.")
+              print(f"[INFO] No index.html in any distDir for {app_id}, skipping.")
               continue
 
             print(f"[OK] Using dist dir {chosen_dist_dir} for app {app_id}")
