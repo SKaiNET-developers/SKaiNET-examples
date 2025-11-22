@@ -2,7 +2,8 @@ name: Build & Deploy Web Apps to GitHub Pages
 
 on:
   push:
-    branches: [ "**" ]
+    tags:
+      - '*' # Push events to matching *, i.e. 1.0, 20.15.10
 
 permissions:
   contents: read
