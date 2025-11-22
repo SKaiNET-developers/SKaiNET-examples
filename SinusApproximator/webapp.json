@@ -1,0 +1,15 @@
+{
+  "id": "sinusapproximator",
+  "name": "Sinus Approximator",
+  "description": "Sinus Approximator als web app",
+  "distDirs": [
+    "composeApp/build/kotlin-webpack/wasmJs/productionExecutable",
+    "composeApp/build/processedResources/wasmJs/main"
+  ],
+  "build": {
+    "type": "gradle",
+    "task": ":composeApp:wasmJsBrowserProductionWebpack",
+    "command": "./gradlew --stacktrace --no-daemon :composeApp:wasmJsBrowserProductionWebpack"
+  },
+  "screenshot": "docs/screenshots/wasm.png"
+}
