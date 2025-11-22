@@ -102,43 +102,49 @@ jobs:
             description = meta.get("description", "")
             screenshot_rel = meta.get("screenshot")
 
-            # Allow distDirs list, fallback to single distDir
-            dist_dirs_rel = []
-            if isinstance(meta.get("distDirs"), list):
-              dist_dirs_rel = meta["distDirs"]
-            elif isinstance(meta.get("distDir"), str):
-              dist_dirs_rel = [meta["distDir"]]
+            # Only support multi dist directories; ignore legacy single distDir
+            dist_dirs_rel = meta.get("distDirs", []) if isinstance(meta.get("distDirs"), list) else []
 
             if not app_id:
               print(f"[WARN] {meta_path} missing 'id', skipping.")
               continue
 
+            # If no distDirs provided, just register app for index but skip copy
             if not dist_dirs_rel:
-              print(f"[WARN] {meta_path} missing 'distDirs'/'distDir', skipping.")
-              continue
+              print(f"[INFO] {meta_path} has no 'distDirs'; will only list app on index (no files copied).")
 
             project_root = dirpath
 
-            # Choose first distDir that contains index.html
-            chosen_dist_dir = None
-            for rel in dist_dirs_rel:
-              cand_dist = os.path.join(project_root, rel)
-              cand_index = os.path.join(cand_dist, "index.html")
-              if os.path.exists(cand_index):
-                chosen_dist_dir = cand_dist
-                break
+            # Helper: merge-copy contents of src into dst (overwrite on conflicts)
+            def merge_copy(src: str, dst: str):
+              if not os.path.exists(src):
+                return
+              os.makedirs(dst, exist_ok=True)
+              for name in os.listdir(src):
+                s = os.path.join(src, name)
+                d = os.path.join(dst, name)
+                if os.path.isdir(s):
+                  merge_copy(s, d)
+                else:
+                  os.makedirs(os.path.dirname(d), exist_ok=True)
+                  try:
+                    shutil.copy2(s, d)
+                  except Exception as e:
+                    print(f"[WARN] Failed to copy {s} -> {d}: {e}")
 
-            if not chosen_dist_dir:
-              print(f"[INFO] No index.html in any distDir for {app_id}, skipping.")
-              continue
-
-            print(f"[OK] Using dist dir {chosen_dist_dir} for app {app_id}")
-
-            # Copy dist folder into site/<id>/
+            # Copy contents of every configured distDir into site/<id>/ (no validation)
             target_app_dir = os.path.join(SITE_DIR, app_id)
             if os.path.exists(target_app_dir):
               shutil.rmtree(target_app_dir)
-            shutil.copytree(chosen_dist_dir, target_app_dir)
+            os.makedirs(target_app_dir, exist_ok=True)
+
+            for rel in dist_dirs_rel:
+              src_dir = os.path.join(project_root, rel)
+              if not os.path.exists(src_dir):
+                print(f"[INFO] distDir does not exist (skipped): {src_dir}")
+                continue
+              print(f"[OK] Merging distDir for {app_id}: {src_dir} -> {target_app_dir}")
+              merge_copy(src_dir, target_app_dir)
 
             screenshot_target = None
             if screenshot_rel:
