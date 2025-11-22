@@ -2,8 +2,7 @@ name: Build & Deploy Web Apps to GitHub Pages
 
 on:
   push:
-    tags:
-      - "v*"   # runs on tags like v1.0.0
+    branches: [ "**" ]
 
 permissions:
   contents: read
