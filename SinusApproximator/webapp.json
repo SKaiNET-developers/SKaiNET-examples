@@ -7,9 +7,8 @@
     "composeApp/build/processedResources/wasmJs/main"
   ],
   "build": {
-    "type": "gradle",
-    "task": ":composeApp:wasmJsBrowserProductionWebpack",
-    "command": "./gradlew --stacktrace --no-daemon :composeApp:wasmJsBrowserProductionWebpack"
+    "command": "./gradlew :composeApp:wasmJsBrowserProductionWebpack",
+    "description": "Builds the JS browser distribution for Foo from the repo root."
   },
   "screenshot": "docs/screenshots/wasm.png"
 }
