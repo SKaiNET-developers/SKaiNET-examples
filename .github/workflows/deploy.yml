@@ -1,89 +1,196 @@
-# SPDX-FileCopyrightText: 2024 Deutsche Telekom AG
-#
-# SPDX-License-Identifier: Apache-2.0
-
-name: Publish
+name: Build & Deploy Web Apps to GitHub Pages
 
 on:
   push:
     tags:
-      - '*' # Push events to matching *, i.e. 1.0, 20.15.10
+      - "v*"   # runs on tags like v1.0.0
 
-env:
-  REGISTRY_URL: ghcr.io
-  REGISTRY_USERNAME: ${{ github.actor }}
-  REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-  REGISTRY_NAMESPACE: sk-ai-net
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: "22"
 
-      - name: Build WASM target
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # Generic KMP build for all JS browser targets
+      - name: Build all JS browser distributions
         run: |
-          for dir in */ ; do
-            # Check if the directory contains a build.gradle.kts file
-            if [ -f "${dir}build.gradle.kts" ]; then
-              echo "==> Building project in directory: ${dir}"
-              (
-                cd "$dir" || exit 1
-                ./gradlew clean :composeApp:wasmJsBrowserProductionWebpack
-              )
-            else
-              echo "Skipping ${dir} (no build.gradle.kts found)"
-            fi
-          done
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+          ./gradlew jsBrowserDistribution --continue
+
+      - name: Prepare static site folder (scan apps & generate index)
+        run: |
+          set -e
+
+          SITE_DIR="site"
+          mkdir -p "$SITE_DIR"
+
+          python << 'PYTHON_EOF'
+          import json, os, shutil, html
+
+          ROOT = os.getcwd()
+          SITE_DIR = os.path.join(ROOT, "site")
+          os.makedirs(SITE_DIR, exist_ok=True)
+
+          release_tag = os.environ.get("GITHUB_REF_NAME", "")
+
+          apps = []
+
+          # Walk repo and look for webapp.json
+          for dirpath, dirnames, filenames in os.walk(ROOT):
+            if "webapp.json" not in filenames:
+              continue
+
+            meta_path = os.path.join(dirpath, "webapp.json")
+            with open(meta_path, "r", encoding="utf-8") as f:
+              try:
+                meta = json.load(f)
+              except Exception as e:
+                print(f"[WARN] Cannot parse {meta_path}: {e}")
+                continue
+
+            app_id = meta.get("id")
+            name = meta.get("name", app_id)
+            description = meta.get("description", "")
+            screenshot_rel = meta.get("screenshot")
+
+            # NEW: allow distDirs list, fallback to single distDir string for compatibility
+            dist_dirs_rel = []
+
+            if "distDirs" in meta and isinstance(meta["distDirs"], list):
+              dist_dirs_rel = meta["distDirs"]
+            elif "distDir" in meta and isinstance(meta["distDir"], str):
+              dist_dirs_rel = [meta["distDir"]]
+
+            if not app_id:
+              print(f"[WARN] {meta_path} missing 'id', skipping.")
+              continue
+
+            if not dist_dirs_rel:
+              print(f"[WARN] {meta_path} missing 'distDirs'/'distDir', skipping.")
+              continue
+
+            project_root = dirpath
+
+            # Choose the first distDir that contains index.html
+            chosen_dist_dir = None
+            for rel in dist_dirs_rel:
+              cand_dist = os.path.join(project_root, rel)
+              cand_index = os.path.join(cand_dist, "index.html")
+              if os.path.exists(cand_index):
+                chosen_dist_dir = cand_dist
+                break
+
+            if not chosen_dist_dir:
+              print(f"[INFO] No index.html found in any distDir for app {app_id}, skipping.")
+              continue
+
+            print(f"[OK] Using dist dir {chosen_dist_dir} for app {app_id}")
+
+            # Copy dist folder into site/<id>/
+            target_app_dir = os.path.join(SITE_DIR, app_id)
+            if os.path.exists(target_app_dir):
+              shutil.rmtree(target_app_dir)
+            shutil.copytree(chosen_dist_dir, target_app_dir)
+
+            screenshot_target = None
+            if screenshot_rel:
+              screenshot_src = os.path.join(project_root, screenshot_rel)
+              if os.path.exists(screenshot_src):
+                screenshot_name = os.path.basename(screenshot_src)
+                screenshot_target = f"{app_id}/{screenshot_name}"
+                shutil.copy2(screenshot_src, os.path.join(target_app_dir, screenshot_name))
+              else:
+                print(f"[WARN] Screenshot configured but not found: {screenshot_src}")
+
+            apps.append({
+              "id": app_id,
+              "name": name or app_id,
+              "description": description,
+              "screenshot": screenshot_target
+            })
+
+          # Generate root index.html
+          apps.sort(key=lambda a: a["id"])
+          index_html_path = os.path.join(SITE_DIR, "index.html")
+
+          with open(index_html_path, "w", encoding="utf-8") as f:
+            f.write("<!DOCTYPE html>\n<html lang='en'>\n<head>\n")
+            f.write("  <meta charset='UTF-8'>\n")
+            f.write("  <meta name='viewport' content='width=device-width, initial-scale=1.0'>\n")
+            f.write("  <title>KMP Web Apps</title>\n")
+            f.write("  <style>\n")
+            f.write("    body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }\n")
+            f.write("    h1 { margin-bottom: 0.25rem; }\n")
+            f.write("    .tag { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }\n")
+            f.write("    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }\n")
+            f.write("    .card { border: 1px solid #ddd; border-radius: 0.75rem; padding: 1rem; text-decoration: none; color: inherit; background: #fafafa; transition: box-shadow 0.15s, transform 0.15s; }\n")
+            f.write("    .card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.08); transform: translateY(-2px); }\n")
+            f.write("    .card h2 { margin-top: 0; margin-bottom: 0.25rem; font-size: 1.1rem; }\n")
+            f.write("    .card p { margin: 0.25rem 0 0.5rem 0; font-size: 0.9rem; color: #555; }\n")
+            f.write("    .badge { display: inline-block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: #555; background: #eaeaea; padding: 0.1rem 0.45rem; border-radius: 999px; margin-bottom: 0.3rem; }\n")
+            f.write("    .screenshot { width: 100%; border-radius: 0.5rem; margin-top: 0.5rem; border: 1px solid #e0e0e0; object-fit: cover; max-height: 180px; }\n")
+            f.write("    .empty { color: #777; font-style: italic; }\n")
+            f.write("  </style>\n")
+            f.write("</head>\n<body>\n")
+
+            f.write("  <h1>KMP Web Apps</h1>\n")
+            if release_tag:
+              f.write(f"  <div class='tag'>Deployed from release <strong>{html.escape(release_tag)}</strong></div>\n")
+
+            if not apps:
+              f.write("  <p class='empty'>No web apps detected for this release (no valid <code>webapp.json</code> with a working <code>index.html</code>).</p>\n")
+            else:
+              f.write("  <div class='grid'>\n")
+              for app in apps:
+                href = f"./{app['id']}/"
+                name = html.escape(app["name"])
+                desc = html.escape(app["description"] or "")
+                f.write(f"    <a class='card' href='{href}'>\n")
+                f.write(f"      <div class='badge'>/{html.escape(app['id'])}</div>\n")
+                f.write(f"      <h2>{name}</h2>\n")
+                if desc:
+                  f.write(f"      <p>{desc}</p>\n")
+                if app["screenshot"]:
+                  f.write(f"      <img class='screenshot' src='{html.escape(app['screenshot'])}' alt='Screenshot of {name}' />\n")
+                f.write("    </a>\n")
+              f.write("  </div>\n")
+
+            f.write("</body>\n</html>\n")
+
+          print(f"[OK] Root index generated at {index_html_path}")
+          PYTHON_EOF
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
         with:
-            registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+          path: site
 
-      - name: Build and Push Docker image with wasm web app
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Iterate through each subdirectory in the current directory
-          for dir in */ ; do
-            # Check if the directory contains a Dockerfile
-            if [ -f "${dir}Dockerfile" ]; then
-              # Extract version from gradle.properties if exists
-              version="latest"
-              if [ -f "${dir}gradle.properties" ]; then
-                version=$(grep '^version=' "${dir}gradle.properties" | cut -d'=' -f2)
-              fi
-              # Convert directory name to lowercase and remove trailing slash
-              imagename=$(echo "${dir%/}" | tr '[:upper:]' '[:lower:]')
-              echo "==> Building Docker image '${imagename}' from directory: ${dir}"
-              (
-                  cd "$dir" || exit 1
-                  docker build \
-                      --build-arg GITHUB_ACTOR="$GITHUB_ACTOR" \
-                      --build-arg GITHUB_TOKEN="$GITHUB_TOKEN" \
-                      --build-arg VERSION=$version \
-                      -t ghcr.io/sk-ai-net/samples-$imagename:$version .         
-                  docker push ghcr.io/sk-ai-net/samples-$imagename:$version
-              )
-            else
-              echo "Skipping ${dir} (no Dockerfile found)"
-            fi
-          done
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
