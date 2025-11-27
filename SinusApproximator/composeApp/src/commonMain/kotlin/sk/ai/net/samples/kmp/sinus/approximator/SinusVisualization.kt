@@ -17,11 +17,13 @@ import kotlin.math.sin
 fun SinusVisualization(
     sliderValue: Float,
     actualSinus: Double,
-    approximatedSinus: Float,
+    approximatedSinusKan: Float,
+    approximatedSinusMlp: Float,
     modifier: Modifier = Modifier
 ) {
     val primary = MaterialTheme.colorScheme.primary
     val secondary = MaterialTheme.colorScheme.secondary
+    val tertiary = MaterialTheme.colorScheme.tertiary
     val error = MaterialTheme.colorScheme.error
 
     Canvas(
@@ -56,20 +58,31 @@ fun SinusVisualization(
 
         // Draw points for actual and approximated values
         val actualY = centerY - (actualSinus * centerY).toFloat()
-        val approximatedY = centerY - (approximatedSinus * centerY).toFloat()
+        val approximatedYKan = centerY - (approximatedSinusKan * centerY).toFloat()
+        val approximatedYMlp = centerY - (approximatedSinusMlp * centerY).toFloat()
 
-        // Draw line between points to show error
+        // Draw lines between points to show errors (use same colors as the dots)
         drawLine(
-            error.copy(alpha = 0.5f),
+            secondary.copy(alpha = 0.5f),
             Offset(x, actualY),
-            Offset(x, approximatedY),
+            Offset(x, approximatedYKan),
+            strokeWidth = 2f,
+            cap = StrokeCap.Round
+        )
+        drawLine(
+            tertiary.copy(alpha = 0.5f),
+            Offset(x, actualY),
+            Offset(x, approximatedYMlp),
             strokeWidth = 2f,
             cap = StrokeCap.Round
         )
 
         // Draw points
         drawCircle(primary, 6f, Offset(x, actualY))
-        drawCircle(secondary, 6f, Offset(x, approximatedY))
+        // KAN dot
+        drawCircle(secondary, 6f, Offset(x, approximatedYKan))
+        // MLP dot
+        drawCircle(tertiary, 6f, Offset(x, approximatedYMlp))
     }
 }
 

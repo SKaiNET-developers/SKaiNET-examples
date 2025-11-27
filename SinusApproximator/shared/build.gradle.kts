@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
@@ -36,6 +37,12 @@ kotlin {
             implementation(libs.skainet.lang.models)
             implementation(libs.skainet.compile.core)
             implementation(libs.skainet.backend.cpu)
+            implementation(libs.skainet.lang.core)
+            implementation(libs.skainet.lang.models)
+            implementation(libs.skainet.lang.kan)
+            implementation(libs.skainet.data.api)
+            implementation(libs.skainet.data.simple)
+
         }
 
          wasmJsMain.dependencies {
