@@ -29,7 +29,8 @@ fun SinusSliderScreen() {
         SinusVisualization(
             sliderValue = viewModel.sliderValue,
             actualSinus = viewModel.sinusValue,
-            approximatedSinus = viewModel.modelSinusValue,
+            approximatedSinusKan = viewModel.modelSinusValueKan,
+            approximatedSinusMlp = viewModel.modelSinusValueMlp,
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
@@ -39,8 +40,9 @@ fun SinusSliderScreen() {
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Header values spanning full width
                 Text(
                     text = "Angle: ${viewModel.formattedAngle}",
                     style = MaterialTheme.typography.titleSmall
@@ -50,16 +52,43 @@ fun SinusSliderScreen() {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Text(
-                    text = "Approximated sin: ${viewModel.formattedModelSinusValue}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Text(
-                    text = "Error: ${viewModel.formattedErrorValue}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
-                )
+
+                // Two columns: KAN on the left, MLP on the right
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "KAN approximated sin: ${viewModel.formattedModelSinusValueKan}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = "KAN error: ${viewModel.formattedErrorValueKan}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "MLP approximated sin: ${viewModel.formattedModelSinusValueMlp}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        Text(
+                            text = "MLP error: ${viewModel.formattedErrorValueMlp}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
             }
         }
 
