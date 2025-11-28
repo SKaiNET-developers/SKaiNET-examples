@@ -112,11 +112,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "sk.ai.net.compiler.composable.demo.MainKt"
+        mainClass = "sk.ainet.samples.kmp.sinus.approximator.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "sk.ai.net.compiler.composable.demo"
+            packageName = "sk.ainet.samples.kmp.sinus.approximator"
             packageVersion = "1.0.0"
         }
     }
