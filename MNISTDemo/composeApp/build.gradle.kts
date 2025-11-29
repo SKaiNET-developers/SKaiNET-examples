@@ -73,7 +73,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.kkon.kmp.ai.mnist.demo"
+    namespace = "sk.ainet.app.sample.mnist"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
