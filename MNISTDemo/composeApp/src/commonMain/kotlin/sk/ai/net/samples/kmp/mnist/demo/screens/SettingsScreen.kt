@@ -9,6 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
+import androidx.compose.runtime.collectAsState
+import sk.ainet.clean.domain.model.ModelId
 
 /**
  * Settings screen for app configuration
@@ -22,6 +25,7 @@ fun SettingsScreen() {
     var darkMode by remember { mutableStateOf(false) }
     var autoClassify by remember { mutableStateOf(false) }
     var showProbabilities by remember { mutableStateOf(false) }
+    val selectedModel by AppSettings.selectedModelId.collectAsState(initial = ModelId.CNN_MNIST)
     
     Column(
         modifier = Modifier
@@ -73,6 +77,40 @@ fun SettingsScreen() {
         
         // Recognition Settings
         SettingsSection(title = "Recognition Settings") {
+            // Model selector (radio buttons)
+            Text(
+                text = "Model",
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // CNN option
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("CNN (MNIST)", style = MaterialTheme.typography.bodyMedium)
+                    RadioButton(
+                        selected = selectedModel == ModelId.CNN_MNIST,
+                        onClick = { AppSettings.setSelectedModel(ModelId.CNN_MNIST) }
+                    )
+                }
+                // MLP option
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("MLP (MNIST)", style = MaterialTheme.typography.bodyMedium)
+                    RadioButton(
+                        selected = selectedModel == ModelId.MLP_MNIST,
+                        onClick = { AppSettings.setSelectedModel(ModelId.MLP_MNIST) }
+                    )
+                }
+            }
             // Auto Classify Switch
             SettingItem(title = "Auto Classify") {
                 Switch(
@@ -115,6 +153,7 @@ fun SettingsScreen() {
                 darkMode = false
                 autoClassify = false
                 showProbabilities = false
+                AppSettings.setSelectedModel(ModelId.CNN_MNIST)
             },
             modifier = Modifier
                 .padding(vertical = 16.dp)

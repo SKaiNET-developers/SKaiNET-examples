@@ -14,6 +14,8 @@ import sk.ainet.clean.di.ServiceLocator
 import sk.ainet.clean.domain.model.ModelId
 import sk.ainet.clean.domain.port.DigitClassifier
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.StateFlow
+import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
 import kotlinx.io.Source
 
 class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
@@ -22,8 +24,29 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     @Suppress("UnusedPrivateMember")
     private val handleSourceFn = handleSource
 
+    // Selected model (default to CNN). Exposed to UI for selection.
+    var selectedModelId by mutableStateOf(ModelId.CNN_MNIST)
+        private set
+
+    // Available model options for the selector
+    val availableModelIds: List<ModelId> = listOf(ModelId.CNN_MNIST, ModelId.MLP_MNIST)
+
     // Clean-architecture DigitClassifier obtained via ServiceLocator (PRD §6)
-    private val classifier: DigitClassifier = ServiceLocator.provideDigitClassifier(ModelId.CNN_MNIST)
+    private var classifier: DigitClassifier = ServiceLocator.provideDigitClassifier(selectedModelId)
+
+    init {
+        // Sync initial value from AppSettings
+        selectedModelId = AppSettings.selectedModelId.value
+
+        // Observe changes from settings and update classifier accordingly
+        viewModelScope.launch {
+            AppSettings.selectedModelId.collect { newId ->
+                if (newId != selectedModelId) {
+                    changeModel(newId)
+                }
+            }
+        }
+    }
 
     // Screen mode states
     var isModelLoaded by mutableStateOf(false)
@@ -47,17 +70,28 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     var lastOffset by mutableStateOf<Offset?>(null)
         private set
 
-    // Load the model via the clean DigitClassifier port
+    // Load the model for the current selection via the clean DigitClassifier port
     fun loadModel() {
         if (isModelLoaded) return
         viewModelScope.launch {
             try {
-                classifier.loadModel(ModelId.CNN_MNIST)
+                classifier.loadModel(selectedModelId)
                 isModelLoaded = true
             } catch (e: Exception) {
                 classificationResult = "Model load error: ${e.message}"
             }
         }
+    }
+
+    // Change selected model. This resets loaded state and prepares a classifier for the new model.
+    fun changeModel(modelId: ModelId) {
+        if (selectedModelId == modelId) return
+        selectedModelId = modelId
+        // New strategy instance for the selected model
+        classifier = ServiceLocator.provideDigitClassifier(selectedModelId)
+        // Force reload for the new model
+        isModelLoaded = false
+        classificationResult = null
     }
 
     // Switch between drawing and image selection modes
