@@ -9,6 +9,50 @@ Clean architecture overview (MNIST demo)
 - Data (Repositories + Data Sources): ModelWeightsRepositoryImpl composes cache and local resource readers to provide model weights.
 - Framework/DI (Platform Adapters): expect/actual ResourceReader and a lightweight ServiceLocator for wiring dependencies.
 
+Simple class diagram (Mermaid)
+
+```mermaid
+classDiagram
+    class ServiceLocator
+    class ModelId
+
+    class DigitClassifierFactory {
+        +create(modelId: ModelId): DigitClassifier
+    }
+
+    class DigitClassifier {
+        +suspend loadModel(modelId: ModelId)
+        +classify(image): Int
+    }
+
+    class ModelWeightsRepository {
+        +suspend getWeights(modelId: ModelId): ByteArray
+    }
+
+    class ModelWeightsRepositoryImpl
+    class ModelWeightsCacheDataSource
+    class ModelWeightsLocalDataSource
+    class ResourceReader {
+        +suspend read(path: String): ByteArray?
+    }
+
+    class LoadModel
+    class ClassifyDigit
+
+    ServiceLocator --> DigitClassifierFactory : provides
+    ServiceLocator --> ModelWeightsRepository : provides
+    DigitClassifierFactory --> DigitClassifier : creates
+
+    LoadModel --> ModelWeightsRepository : getWeights()
+    LoadModel --> DigitClassifier : loadModel()
+    ClassifyDigit --> DigitClassifier : classify()
+
+    ModelWeightsRepository <|.. ModelWeightsRepositoryImpl
+    ModelWeightsRepositoryImpl --> ModelWeightsCacheDataSource
+    ModelWeightsRepositoryImpl --> ModelWeightsLocalDataSource
+    ModelWeightsLocalDataSource --> ResourceReader
+```
+
 Entry points for developers
 - ServiceLocator: central place to wire platform resources and obtain a classifier.
   - Configure once at app startup: ServiceLocator.configure(resourceReader, digitClassifierFactory)
