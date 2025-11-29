@@ -1,5 +1,6 @@
 # Sinus Approximator (Kotlin Multiplatform Sample)
 
+Add branch.
 This project demonstrates a small Kotlin Multiplatform (KMP) app that approximates the sine function with a tiny neural network and visualizes it with Compose Multiplatform UI. The same codebase runs on Android, iOS, WebAssembly (Wasm), Desktop, and can be extended to Server. It also showcases capabilities of the SKaiNET ML framework.
 
 What you can do in the app:
