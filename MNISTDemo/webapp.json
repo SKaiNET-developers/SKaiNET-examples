@@ -1,7 +1,7 @@
 {
-  "id": "sinusapproximator",
-  "name": "Sinus Approximator",
-  "description": "Sinus Approximator as web app",
+  "id": "mnist",
+  "name": "MNIST sample",
+  "description": "MNIST sample web app",
   "distDirs": [
     "composeApp/build/kotlin-webpack/wasmJs/productionExecutable",
     "composeApp/build/processedResources/wasmJs/main"
