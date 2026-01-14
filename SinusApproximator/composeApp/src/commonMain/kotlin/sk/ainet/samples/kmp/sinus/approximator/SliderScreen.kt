@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.PI
 import kotlin.math.abs
 
@@ -18,8 +19,11 @@ fun SinusSliderScreen(
     trainingViewModel: SinusTrainingViewModel? = null
 ) {
     val modelLoadingState by viewModel.modelLoadingState.collectAsState()
+    val trainedModelUpdate by (trainingViewModel?.trainedModelUpdate ?: MutableStateFlow(0)).collectAsState()
     
-    val trainedValue = trainingViewModel?.trainedCalculator?.calculate(viewModel.sliderValue)
+    val trainedValue = remember(viewModel.sliderValue, trainedModelUpdate) { 
+        trainingViewModel?.trainedCalculator?.calculate(viewModel.sliderValue) 
+    }
 
     Column(
         modifier = Modifier

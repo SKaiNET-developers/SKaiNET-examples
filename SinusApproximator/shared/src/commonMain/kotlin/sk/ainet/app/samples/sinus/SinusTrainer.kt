@@ -2,6 +2,7 @@ package sk.ainet.app.samples.sinus
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.yield
 import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.context.Phase
 import sk.ainet.lang.graph.DefaultGradientTape
@@ -67,6 +68,7 @@ class SinusTrainer {
             val averageLoss = totalLoss / dataset.size
             if (epoch % 5 == 0 || epoch == 1 || epoch == epochs) {
                 emit(TrainingProgress(epoch, averageLoss, isCompleted = (epoch == epochs)))
+                yield()
             }
         }
     }

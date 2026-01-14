@@ -30,6 +30,9 @@ class SinusTrainingViewModel : ViewModel() {
     private val trainer = SinusTrainer()
     val trainedCalculator = TrainedSinusCalculator(trainer.getModel())
 
+    private val _trainedModelUpdate = MutableStateFlow(0)
+    val trainedModelUpdate: StateFlow<Int> = _trainedModelUpdate.asStateFlow()
+
     fun startTraining() {
         if (_trainingState.value.isTraining) return
 
@@ -54,6 +57,7 @@ class SinusTrainingViewModel : ViewModel() {
                             isTraining = !progress.isCompleted
                         )
                     }
+                    _trainedModelUpdate.value++
                 }
         }
     }

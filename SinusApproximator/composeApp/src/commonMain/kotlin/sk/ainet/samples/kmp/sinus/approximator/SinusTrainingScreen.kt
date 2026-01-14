@@ -15,6 +15,7 @@ import kotlin.math.PI
 @Composable
 fun SinusTrainingScreen(viewModel: SinusTrainingViewModel) {
     val trainingState by viewModel.trainingState.collectAsState()
+    val trainedModelUpdate by viewModel.trainedModelUpdate.collectAsState()
     
     // We want to show the current model performance on a plot
     // We'll use a fixed angle for demonstration or maybe just show the whole curve
@@ -79,13 +80,14 @@ fun SinusTrainingScreen(viewModel: SinusTrainingViewModel) {
                 
                 // Reusing SinusVisualization
                 // For the preview, we'll just show the trained model at a fixed position or ignore the others
+                val trainedValue = remember(trainedModelUpdate) { viewModel.trainedCalculator.calculate(PI.toFloat() / 4f) }
                 SinusVisualization(
                     sliderValue = (PI.toFloat() / 4f), // Show at 45 degrees
                     actualSinus = kotlin.math.sin(PI / 4.0),
                     approximatedSinusKan = 0f,
                     approximatedSinusMlp = 0f,
                     approximatedSinusPretrained = 0f,
-                    approximatedSinusTrained = viewModel.trainedCalculator.calculate(PI.toFloat() / 4f),
+                    approximatedSinusTrained = trainedValue,
                     modifier = Modifier.height(150.dp)
                 )
                 
