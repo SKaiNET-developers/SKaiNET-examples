@@ -7,6 +7,7 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(21)
 
     androidTarget()
 
@@ -32,6 +33,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(libs.kotlinx.io.core)
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
             implementation(libs.skainet.lang.core)
             implementation(libs.skainet.lang.models)
@@ -46,6 +48,11 @@ kotlin {
 
         }
 
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+        }
+
          wasmJsMain.dependencies {
              implementation(libs.kotlinx.io.core)
          }
@@ -56,8 +63,8 @@ android {
     namespace = "sk.ai.net.client.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

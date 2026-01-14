@@ -27,7 +27,7 @@ class SinusTrainingViewModel : ViewModel() {
     val trainingState: StateFlow<TrainingState> = _trainingState.asStateFlow()
 
     private val trainer = SinusTrainer()
-    val trainedCalculator = TrainedSinusCalculator(trainer.model)
+    val trainedCalculator = TrainedSinusCalculator(trainer.getModel())
 
     fun startTraining() {
         if (_trainingState.value.isTraining) return
