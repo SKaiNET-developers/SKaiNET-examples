@@ -16,9 +16,11 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 
 @Composable
-fun SinusSliderScreen() {
+fun SinusSliderScreen(trainingViewModel: SinusTrainingViewModel? = null) {
     val viewModel = remember { SinusSliderViewModel() }
     val modelLoadingState by viewModel.modelLoadingState.collectAsState()
+    
+    val trainedValue = trainingViewModel?.trainedCalculator?.calculate(viewModel.sliderValue)
 
     Column(
         modifier = Modifier
@@ -34,6 +36,7 @@ fun SinusSliderScreen() {
             actualSinus = viewModel.sinusValue,
             approximatedSinusKan = viewModel.modelSinusValueKan,
             approximatedSinusMlp = viewModel.modelSinusValueMlp,
+            approximatedSinusTrained = trainedValue,
             modifier = Modifier.padding(vertical = 16.dp)
         )
 

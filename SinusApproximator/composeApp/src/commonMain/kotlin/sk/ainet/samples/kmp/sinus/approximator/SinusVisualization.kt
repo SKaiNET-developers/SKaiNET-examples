@@ -20,11 +20,13 @@ fun SinusVisualization(
     actualSinus: Double,
     approximatedSinusKan: Float,
     approximatedSinusMlp: Float,
+    approximatedSinusTrained: Float? = null,
     modifier: Modifier = Modifier
 ) {
     val primary = MaterialTheme.colorScheme.primary
     val secondary = MaterialTheme.colorScheme.secondary
     val tertiary = MaterialTheme.colorScheme.tertiary
+    val trainedColor = Color(0xFF4CAF50) // Green for trained
     val error = MaterialTheme.colorScheme.error
 
     Canvas(
@@ -77,6 +79,18 @@ fun SinusVisualization(
             strokeWidth = 2f,
             cap = StrokeCap.Round
         )
+
+        if (approximatedSinusTrained != null) {
+            val approximatedYTrained = centerY - (approximatedSinusTrained * centerY).toFloat()
+            drawLine(
+                trainedColor.copy(alpha = 0.5f),
+                Offset(x, actualY),
+                Offset(x, approximatedYTrained),
+                strokeWidth = 2f,
+                cap = StrokeCap.Round
+            )
+            drawCircle(trainedColor, 6f, Offset(x, approximatedYTrained))
+        }
 
         // Draw points
         drawCircle(primary, 6f, Offset(x, actualY))

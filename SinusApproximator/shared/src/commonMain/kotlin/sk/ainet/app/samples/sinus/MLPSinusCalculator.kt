@@ -142,8 +142,28 @@ class KanSinusCalculator() : SinusCalculator {
     }
 }
 
-/*
+class TrainedSinusCalculator(val model: sk.ainet.lang.nn.Module<FP32, Float>) : SinusCalculator {
+    private val ctx = DirectCpuExecutionContext()
 
- */
+    fun sk.ainet.lang.nn.Module<FP32, Float>.calcSine(ctx: ExecutionContext, angle: Float): Float {
+        val model_: sk.ainet.lang.nn.Module<FP32, kotlin.Float> = this
+        return computation<Float>(ctx) {
+            model_.forward(
+                data<FP32, Float>(ctx) {
+                    tensor<FP32, Float>() {
+                        shape(1, 1) {
+                            fromArray(floatArrayOf(angle))
+                        }
+                    }
+                }, sk.ainet.lang.graph.DefaultGraphExecutionContext(baseOps = ctx.ops, phase = sk.ainet.context.Phase.EVAL)
+            ).data[0, 0]
+        }
+    }
+
+    override fun calculate(angle: Float): Float = model.calcSine(ctx, angle)
+
+    override suspend fun loadModel() {
+    }
+}
 
 

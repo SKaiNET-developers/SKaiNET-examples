@@ -61,8 +61,12 @@ kotlin {
             implementation(libs.kotlinx.io.core)
 
             implementation(libs.skainet.lang.core)
+            implementation(libs.skainet.lang.dag)
+
             implementation(libs.skainet.lang.models)
             implementation(libs.skainet.compile.core)
+            implementation(libs.skainet.compile.dag)
+
             implementation(libs.skainet.backend.cpu)
 
             implementation(projects.shared)

@@ -17,16 +17,11 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
+  //  repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
-        mavenLocal()
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        google()
         mavenCentral()
+        mavenLocal()
     }
 }
 
