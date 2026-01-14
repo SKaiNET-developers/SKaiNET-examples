@@ -5,7 +5,8 @@ This project demonstrates a small Kotlin Multiplatform (KMP) app that approximat
 What you can do in the app:
 - Adjust sliders to change input value(angle) and see the result of the approximation in real time.
 - Visualize the target sine curve and the model’s predicted curve.
-- Visualization of Neural network architecture
+- Visualization of Neural network architecture.
+- Train the model directly in the app on a separate Training screen.
 
 ## Screenshots
 
