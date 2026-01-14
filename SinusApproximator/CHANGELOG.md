@@ -1,0 +1,29 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.6.0]
+
+### Added
+- Initial implementation of training into the sample.
+- Loss values visualization in time during training.
+- Model visualization in a separate screen tab.
+
+### Changed
+- Improved UI and visualization.
+- Refactored training logic into a separate class.
+- Upgraded to Compose Multiplatform 1.10.0.
+- Fixed frozen UI on Wasm builds.
+
+## [0.5.0] - 2025-12-04
+
+### Changed
+- Update to latest SKaiNET 0.5.0.
+
+## [0.4.0] - 2025-12-04
+
+### Changed
+- Update to SKaiNET 0.4.0.
