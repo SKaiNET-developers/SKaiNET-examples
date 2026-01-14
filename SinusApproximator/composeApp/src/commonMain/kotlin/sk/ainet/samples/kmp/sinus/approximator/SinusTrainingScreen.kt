@@ -44,7 +44,16 @@ fun SinusTrainingScreen(viewModel: SinusTrainingViewModel) {
                     progress = { trainingState.epoch.toFloat() / trainingState.totalEpochs },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                Text("Current Loss: ${trainingState.currentLoss}")
+                
+                // Manual rounding for KMP common code
+                val roundedLoss = try {
+                   val factor = 100000.0
+                   (kotlin.math.round(trainingState.currentLoss.toDouble() * factor) / factor).toString()
+                } catch(e: Exception) {
+                   trainingState.currentLoss.toString()
+                }
+                
+                Text("Current Loss: $roundedLoss")
                 
                 if (trainingState.lossHistory.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -75,6 +84,7 @@ fun SinusTrainingScreen(viewModel: SinusTrainingViewModel) {
                     actualSinus = kotlin.math.sin(PI / 4.0),
                     approximatedSinusKan = 0f,
                     approximatedSinusMlp = 0f,
+                    approximatedSinusPretrained = 0f,
                     approximatedSinusTrained = viewModel.trainedCalculator.calculate(PI.toFloat() / 4f),
                     modifier = Modifier.height(150.dp)
                 )

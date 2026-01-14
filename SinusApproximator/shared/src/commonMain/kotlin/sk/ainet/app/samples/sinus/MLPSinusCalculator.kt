@@ -166,4 +166,14 @@ class TrainedSinusCalculator(val model: sk.ainet.lang.nn.Module<FP32, Float>) : 
     }
 }
 
+class PretrainedSinusCalculator() : SinusCalculator {
+    private val ctx = DirectCpuExecutionContext()
+    private val _model = SineNN(ctx)
+
+    override fun calculate(angle: Float): Float = _model.calcSine(angle)
+
+    override suspend fun loadModel() {
+    }
+}
+
 

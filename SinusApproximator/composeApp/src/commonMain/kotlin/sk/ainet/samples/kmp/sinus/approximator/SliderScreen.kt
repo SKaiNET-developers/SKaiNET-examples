@@ -3,17 +3,14 @@ package sk.ainet.samples.kmp.sinus.approximator
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlin.math.PI
+import kotlin.math.abs
 
 @Composable
 fun SinusSliderScreen(
@@ -38,6 +35,7 @@ fun SinusSliderScreen(
             actualSinus = viewModel.sinusValue,
             approximatedSinusKan = viewModel.modelSinusValueKan,
             approximatedSinusMlp = viewModel.modelSinusValueMlp,
+            approximatedSinusPretrained = viewModel.modelSinusValuePretrained,
             approximatedSinusTrained = trainedValue,
             modifier = Modifier.padding(vertical = 16.dp)
         )
@@ -50,18 +48,26 @@ fun SinusSliderScreen(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Header values spanning full width
-                Text(
-                    text = "Angle: ${viewModel.formattedAngle}",
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Text(
-                    text = "Actual sin: ${viewModel.formattedSinusValue}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                // Header values
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Angle: ${viewModel.formattedAngle}",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = "Actual sin: ${viewModel.formattedSinusValue}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
 
-                // Two columns: KAN on the left, MLP on the right
+                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
+
+                // First Row: KAN and MLP
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -71,12 +77,17 @@ fun SinusSliderScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "KAN approximated sin: ${viewModel.formattedModelSinusValueKan}",
+                            text = "KAN approximated",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = viewModel.formattedModelSinusValueKan,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
-                            text = "KAN error: ${viewModel.formattedErrorValueKan}",
+                            text = "Error: ${viewModel.formattedErrorValueKan}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -86,14 +97,69 @@ fun SinusSliderScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "MLP approximated sin: ${viewModel.formattedModelSinusValueMlp}",
+                            text = "MLP approximated",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        Text(
+                            text = viewModel.formattedModelSinusValueMlp,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.tertiary
                         )
                         Text(
-                            text = "MLP error: ${viewModel.formattedErrorValueMlp}",
+                            text = "Error: ${viewModel.formattedErrorValueMlp}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Second Row: Pretrained and Trained
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "Pretrained",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFF673AB7)
+                        )
+                        Text(
+                            text = viewModel.formattedModelSinusValuePretrained,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF673AB7)
+                        )
+                        Text(
+                            text = "Error: ${viewModel.formattedErrorValuePretrained}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF673AB7)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        val trainedColor = Color(0xFF4CAF50)
+                        Text(
+                            text = "Trained (Local)",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = trainedColor
+                        )
+                        Text(
+                            text = trainedValue?.let { viewModel.formatValue(it) } ?: "N/A",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = trainedColor
+                        )
+                        Text(
+                            text = trainedValue?.let { "Error: ${viewModel.formatValue(abs(viewModel.sinusValue - it))}" } ?: "Error: N/A",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = trainedColor
                         )
                     }
                 }
