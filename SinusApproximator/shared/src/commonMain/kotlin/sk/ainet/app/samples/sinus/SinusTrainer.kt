@@ -65,7 +65,7 @@ class SinusTrainer {
             }
 
             val averageLoss = totalLoss / dataset.size
-            if (epoch % 10 == 0 || epoch == 1 || epoch == epochs) {
+            if (epoch % 5 == 0 || epoch == 1 || epoch == epochs) {
                 emit(TrainingProgress(epoch, averageLoss, isCompleted = (epoch == epochs)))
             }
         }

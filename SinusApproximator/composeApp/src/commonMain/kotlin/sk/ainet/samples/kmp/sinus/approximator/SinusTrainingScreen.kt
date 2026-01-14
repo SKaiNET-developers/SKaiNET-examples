@@ -45,6 +45,15 @@ fun SinusTrainingScreen(viewModel: SinusTrainingViewModel) {
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text("Current Loss: ${trainingState.currentLoss}")
+                
+                if (trainingState.lossHistory.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Loss History", style = MaterialTheme.typography.titleSmall)
+                    LossVisualization(
+                        lossHistory = trainingState.lossHistory,
+                        modifier = Modifier.fillMaxWidth().height(100.dp)
+                    )
+                }
             }
         }
 

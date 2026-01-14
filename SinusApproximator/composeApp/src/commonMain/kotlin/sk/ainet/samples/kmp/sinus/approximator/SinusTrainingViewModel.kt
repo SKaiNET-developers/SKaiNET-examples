@@ -18,6 +18,7 @@ data class TrainingState(
     val epoch: Int = 0,
     val totalEpochs: Int = 1000,
     val currentLoss: Float = 0f,
+    val lossHistory: List<Float> = emptyList(),
     val isTraining: Boolean = false,
     val isCompleted: Boolean = false
 )
@@ -33,17 +34,26 @@ class SinusTrainingViewModel : ViewModel() {
         if (_trainingState.value.isTraining) return
 
         viewModelScope.launch(Dispatchers.Default) {
-            _trainingState.value = _trainingState.value.copy(isTraining = true, isCompleted = false)
+            _trainingState.value = _trainingState.value.copy(
+                isTraining = true,
+                isCompleted = false,
+                lossHistory = emptyList(),
+                epoch = 0,
+                currentLoss = 0f
+            )
 
             trainer.train(epochs = _trainingState.value.totalEpochs)
                 .conflate()
                 .collect { progress ->
-                    _trainingState.value = _trainingState.value.copy(
-                        epoch = progress.epoch,
-                        currentLoss = progress.loss,
-                        isCompleted = progress.isCompleted,
-                        isTraining = !progress.isCompleted
-                    )
+                    _trainingState.value = _trainingState.value.let { state ->
+                        state.copy(
+                            epoch = progress.epoch,
+                            currentLoss = progress.loss,
+                            lossHistory = state.lossHistory + progress.loss,
+                            isCompleted = progress.isCompleted,
+                            isTraining = !progress.isCompleted
+                        )
+                    }
                 }
         }
     }
