@@ -16,8 +16,10 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.PI
 
 @Composable
-fun SinusSliderScreen(trainingViewModel: SinusTrainingViewModel? = null) {
-    val viewModel = remember { SinusSliderViewModel() }
+fun SinusSliderScreen(
+    viewModel: SinusSliderViewModel,
+    trainingViewModel: SinusTrainingViewModel? = null
+) {
     val modelLoadingState by viewModel.modelLoadingState.collectAsState()
     
     val trainedValue = trainingViewModel?.trainedCalculator?.calculate(viewModel.sliderValue)
@@ -95,18 +97,6 @@ fun SinusSliderScreen(trainingViewModel: SinusTrainingViewModel? = null) {
                         )
                     }
                 }
-            }
-        }
-
-        // Neural Network Visualization
-        if (modelLoadingState == ModelLoadingState.Success) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                NeuralNetworkVisualization(
-                    model = viewModel.neuralNetworkModel,
-                    modifier = Modifier.padding(16.dp)
-                )
             }
         }
 
