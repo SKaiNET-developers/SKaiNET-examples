@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import sk.ainet.app.samples.sinus.KanSinusCalculator
 import sk.ainet.app.samples.sinus.MLPSinusCalculator
+import sk.ainet.app.samples.sinus.PretrainedSinusCalculator
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.round
@@ -26,6 +27,7 @@ sealed interface ModelLoadingState {
 class SinusSliderViewModel() : ViewModel() {
     private val calculator = MLPSinusCalculator()
     private val kanCalculator = KanSinusCalculator()
+    private val pretrainedCalculator = PretrainedSinusCalculator()
 
     private val _modelLoadingState = MutableStateFlow<ModelLoadingState>(ModelLoadingState.Initial)
     val modelLoadingState: StateFlow<ModelLoadingState> = _modelLoadingState.asStateFlow()
@@ -50,6 +52,9 @@ class SinusSliderViewModel() : ViewModel() {
     var modelSinusValueMlp by mutableStateOf(0.0f)
         private set
 
+    var modelSinusValuePretrained by mutableStateOf(0.0f)
+        private set
+
     var errorValue by mutableStateOf(0.0)
         private set
 
@@ -59,31 +64,48 @@ class SinusSliderViewModel() : ViewModel() {
     var errorValueMlp by mutableStateOf(0.0)
         private set
 
+    var errorValuePretrained by mutableStateOf(0.0)
+        private set
+
     // Formatted values for display
     var formattedAngle by mutableStateOf("0.0000")
         private set
 
-    var formattedSinusValue by mutableStateOf("0.000000")
+    var formattedSinusValue by mutableStateOf("0.00000")
         private set
 
-    var formattedModelSinusValue by mutableStateOf("0.000000")
+    var formattedModelSinusValue by mutableStateOf("0.00000")
         private set
 
-    var formattedErrorValue by mutableStateOf("0.000000")
+    var formattedErrorValue by mutableStateOf("0.00000")
         private set
 
     // New formatted values for dual display
-    var formattedModelSinusValueKan by mutableStateOf("0.000000")
+    var formattedModelSinusValueKan by mutableStateOf("0.00000")
         private set
 
-    var formattedModelSinusValueMlp by mutableStateOf("0.000000")
+    var formattedModelSinusValueMlp by mutableStateOf("0.00000")
         private set
 
-    var formattedErrorValueKan by mutableStateOf("0.000000")
+    var formattedModelSinusValuePretrained by mutableStateOf("0.00000")
         private set
 
-    var formattedErrorValueMlp by mutableStateOf("0.000000")
+    var formattedErrorValueKan by mutableStateOf("0.00000")
         private set
+
+    var formattedErrorValueMlp by mutableStateOf("0.00000")
+        private set
+
+    var formattedErrorValuePretrained by mutableStateOf("0.00000")
+        private set
+
+    fun formatValue(value: Double, decimals: Int = 5): String {
+        return value.formatDecimal(decimals)
+    }
+
+    fun formatValue(value: Float, decimals: Int = 5): String {
+        return value.formatDecimal(decimals)
+    }
 
     private fun Double.formatDecimal(decimals: Int): String {
         val factor = 10.0.pow(decimals.toDouble())
@@ -96,23 +118,26 @@ class SinusSliderViewModel() : ViewModel() {
 
     private fun updateFormattedValues() {
         formattedAngle = sliderValue.formatDecimal(4)
-        formattedSinusValue = sinusValue.formatDecimal(6)
-        formattedModelSinusValue = modelSinusValue.formatDecimal(6)
-        formattedErrorValue = errorValue.formatDecimal(6)
+        formattedSinusValue = sinusValue.formatDecimal(5)
+        formattedModelSinusValue = modelSinusValue.formatDecimal(5)
+        formattedErrorValue = errorValue.formatDecimal(5)
 
         // New ones
-        formattedModelSinusValueKan = modelSinusValueKan.formatDecimal(6)
-        formattedModelSinusValueMlp = modelSinusValueMlp.formatDecimal(6)
-        formattedErrorValueKan = errorValueKan.formatDecimal(6)
-        formattedErrorValueMlp = errorValueMlp.formatDecimal(6)
+        formattedModelSinusValueKan = modelSinusValueKan.formatDecimal(5)
+        formattedModelSinusValueMlp = modelSinusValueMlp.formatDecimal(5)
+        formattedModelSinusValuePretrained = modelSinusValuePretrained.formatDecimal(5)
+        formattedErrorValueKan = errorValueKan.formatDecimal(5)
+        formattedErrorValueMlp = errorValueMlp.formatDecimal(5)
+        formattedErrorValuePretrained = errorValuePretrained.formatDecimal(5)
     }
 
     fun updateSliderValue(value: Float) {
         sliderValue = value
         sinusValue = sin(value.toDouble())
-        // Compute both models
+        // Compute models
         modelSinusValueKan = kanCalculator.calculate(value)
         modelSinusValueMlp = calculator.calculate(value)
+        modelSinusValuePretrained = pretrainedCalculator.calculate(value)
 
         // Keep legacy fields aligned to KAN for compatibility
         modelSinusValue = modelSinusValueKan
@@ -120,6 +145,7 @@ class SinusSliderViewModel() : ViewModel() {
         // Errors
         errorValueKan = abs(sinusValue - modelSinusValueKan)
         errorValueMlp = abs(sinusValue - modelSinusValueMlp)
+        errorValuePretrained = abs(sinusValue - modelSinusValuePretrained)
         // Legacy single error equals KAN error for now
         errorValue = errorValueKan
         updateFormattedValues()
@@ -129,9 +155,10 @@ class SinusSliderViewModel() : ViewModel() {
         viewModelScope.launch {
             _modelLoadingState.value = ModelLoadingState.Loading
             try {
-                // Load both models (currently no-ops as they are preloaded with weights)
+                // Load models (currently no-ops as they are preloaded with weights)
                 kanCalculator.loadModel()
                 calculator.loadModel()
+                pretrainedCalculator.loadModel()
                 _modelLoadingState.value = ModelLoadingState.Success
                 // Recalculate values after model is loaded
                 updateSliderValue(sliderValue)
