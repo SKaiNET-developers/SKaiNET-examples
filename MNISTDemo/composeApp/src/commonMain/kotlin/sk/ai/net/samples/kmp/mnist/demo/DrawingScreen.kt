@@ -66,6 +66,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import sk.ai.net.samples.kmp.mnist.demo.settings.ModelStatus
+import androidx.compose.ui.text.font.FontWeight
+import sk.ainet.clean.domain.model.ModelId
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -266,6 +270,54 @@ val IMAGE_RESOURCES = listOf(
 )
 
 @Composable
+fun ModelInfoBanner(modelId: ModelId, status: ModelStatus) {
+    val modelName = if (modelId == ModelId.CNN_MNIST) "CNN (Convolutional)" else "MLP (Multi-Layer Perceptron)"
+    val statusColor = if (status == ModelStatus.RETRAINED) Color(0xFF4CAF50) else Color(0xFF2196F3)
+    val statusText = if (status == ModelStatus.RETRAINED) "Custom Trained" else "GGUF Pretrained"
+
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = "Active Model",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = modelName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            
+            Surface(
+                color = statusColor.copy(alpha = 0.1f),
+                shape = CircleShape,
+                border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(alpha = 0.5f))
+            ) {
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = statusColor,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun DrawingScreen(handleSource: () -> Source) {
     // Create and remember the ViewModel with rememberSaveable to persist across recompositions
     val viewModel = remember(handleSource) { DrawingScreenViewModel(handleSource) }
@@ -303,6 +355,8 @@ fun DrawingScreen(handleSource: () -> Source) {
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // Active Model Information Banner
+            ModelInfoBanner(viewModel.selectedModelId, viewModel.selectedModelStatus)
 
             // Main content area with card-based UI
             Card(
@@ -557,7 +611,7 @@ fun ButtonsPanel(
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Text(
-                        text = "Load Model",
+                        text = "Load",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )

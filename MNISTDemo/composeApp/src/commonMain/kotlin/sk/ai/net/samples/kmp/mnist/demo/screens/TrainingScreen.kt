@@ -17,9 +17,67 @@ import androidx.compose.ui.unit.dp
 import sk.ai.net.samples.kmp.mnist.demo.training.MnistTrainingState
 import sk.ai.net.samples.kmp.mnist.demo.training.MnistTrainingViewModel
 
+import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
+import sk.ai.net.samples.kmp.mnist.demo.settings.ModelStatus
+import sk.ainet.clean.domain.model.ModelId
+
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+
+@Composable
+fun ModelStatusBanner(modelId: ModelId, status: ModelStatus) {
+    val modelName = if (modelId == ModelId.CNN_MNIST) "CNN (Convolutional)" else "MLP (Multi-Layer Perceptron)"
+    val statusColor = if (status == ModelStatus.RETRAINED) Color(0xFF4CAF50) else Color(0xFF2196F3)
+    val statusText = if (status == ModelStatus.RETRAINED) "Custom Trained" else "GGUF Pretrained"
+
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = "Target Model",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = modelName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            
+            Surface(
+                color = statusColor.copy(alpha = 0.1f),
+                shape = CircleShape,
+                border = androidx.compose.foundation.BorderStroke(1.dp, statusColor.copy(alpha = 0.5f))
+            ) {
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = statusColor,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun TrainingScreen(viewModel: MnistTrainingViewModel) {
     val trainingState by viewModel.trainingState.collectAsState()
+    val selectedModel by AppSettings.selectedModelId.collectAsState(initial = ModelId.CNN_MNIST)
+    val modelStatuses by AppSettings.modelStatuses.collectAsState()
+    val status = modelStatuses[selectedModel] ?: ModelStatus.PRETRAINED
 
     Column(
         modifier = Modifier
@@ -30,9 +88,12 @@ fun TrainingScreen(viewModel: MnistTrainingViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "MNIST Training",
+            text = "Train ${if (selectedModel == ModelId.CNN_MNIST) "CNN" else "MLP"}",
             style = MaterialTheme.typography.headlineMedium
         )
+        
+        // Active Model Status Banner (same style as Drawing Screen)
+        ModelStatusBanner(selectedModel, status)
 
         // Training Configuration Card
         TrainingConfigCard(
@@ -175,6 +236,16 @@ private fun TrainingProgressCard(trainingState: MnistTrainingState) {
                 Text("Epoch: ${trainingState.epoch}/${trainingState.totalEpochs}")
                 Text("Loss: ${formatFloat(trainingState.currentLoss)}")
                 Text("Accuracy: ${formatPercent(trainingState.currentAccuracy)}")
+            }
+
+            if (trainingState.isCompleted) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "This model is now marked as Custom Trained.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF4CAF50),
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

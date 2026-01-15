@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import sk.ainet.clean.domain.training.MnistTrainer
+import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
+import sk.ai.net.samples.kmp.mnist.demo.settings.ModelStatus
 import kotlin.random.Random
 
 data class MnistTrainingState(
@@ -84,6 +86,11 @@ class MnistTrainingViewModel : ViewModel() {
             )
                 .conflate()
                 .collect { progress ->
+                    if (progress.isCompleted) {
+                        // Mark the currently selected model as RETRAINED in settings
+                        AppSettings.setModelStatus(AppSettings.selectedModelId.value, ModelStatus.RETRAINED)
+                    }
+
                     _trainingState.update { state ->
                         state.copy(
                             epoch = progress.epoch,

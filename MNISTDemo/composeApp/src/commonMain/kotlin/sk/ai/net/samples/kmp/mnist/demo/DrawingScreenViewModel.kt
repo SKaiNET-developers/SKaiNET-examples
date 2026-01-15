@@ -16,6 +16,7 @@ import sk.ainet.clean.domain.port.DigitClassifier
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow
 import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
+import sk.ai.net.samples.kmp.mnist.demo.settings.ModelStatus
 import kotlinx.io.Source
 
 class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
@@ -28,6 +29,10 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     var selectedModelId by mutableStateOf(ModelId.CNN_MNIST)
         private set
 
+    // Current model status
+    var selectedModelStatus by mutableStateOf(ModelStatus.PRETRAINED)
+        private set
+
     // Available model options for the selector
     val availableModelIds: List<ModelId> = listOf(ModelId.CNN_MNIST, ModelId.MLP_MNIST)
 
@@ -35,8 +40,9 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     private var classifier: DigitClassifier = ServiceLocator.provideDigitClassifier(selectedModelId)
 
     init {
-        // Sync initial value from AppSettings
+        // Sync initial values from AppSettings
         selectedModelId = AppSettings.selectedModelId.value
+        selectedModelStatus = AppSettings.getModelStatus(selectedModelId)
 
         // Observe changes from settings and update classifier accordingly
         viewModelScope.launch {
@@ -44,6 +50,13 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
                 if (newId != selectedModelId) {
                     changeModel(newId)
                 }
+            }
+        }
+
+        // Observe status changes
+        viewModelScope.launch {
+            AppSettings.modelStatuses.collect { statuses ->
+                selectedModelStatus = statuses[selectedModelId] ?: ModelStatus.PRETRAINED
             }
         }
     }
@@ -87,6 +100,7 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     fun changeModel(modelId: ModelId) {
         if (selectedModelId == modelId) return
         selectedModelId = modelId
+        selectedModelStatus = AppSettings.getModelStatus(modelId)
         // New strategy instance for the selected model
         classifier = ServiceLocator.provideDigitClassifier(selectedModelId)
         // Force reload for the new model

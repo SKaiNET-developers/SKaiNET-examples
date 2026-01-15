@@ -10,8 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
+import sk.ai.net.samples.kmp.mnist.demo.settings.ModelStatus
 import androidx.compose.runtime.collectAsState
 import sk.ainet.clean.domain.model.ModelId
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 
 /**
  * Settings screen for app configuration
@@ -26,6 +31,7 @@ fun SettingsScreen() {
     var autoClassify by remember { mutableStateOf(false) }
     var showProbabilities by remember { mutableStateOf(false) }
     val selectedModel by AppSettings.selectedModelId.collectAsState(initial = ModelId.CNN_MNIST)
+    val modelStatuses by AppSettings.modelStatuses.collectAsState()
     
     Column(
         modifier = Modifier
@@ -79,37 +85,31 @@ fun SettingsScreen() {
         SettingsSection(title = "Recognition Settings") {
             // Model selector (radio buttons)
             Text(
-                text = "Model",
-                style = MaterialTheme.typography.bodyLarge
+                text = "Neural Network Model",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
             )
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 // CNN option
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("CNN (MNIST)", style = MaterialTheme.typography.bodyMedium)
-                    RadioButton(
-                        selected = selectedModel == ModelId.CNN_MNIST,
-                        onClick = { AppSettings.setSelectedModel(ModelId.CNN_MNIST) }
-                    )
-                }
+                ModelOptionItem(
+                    title = "CNN (Convolutional)",
+                    description = "Best for spatial patterns (digit shapes). Uses 2D kernels and pooling layers.",
+                    isSelected = selectedModel == ModelId.CNN_MNIST,
+                    status = modelStatuses[ModelId.CNN_MNIST] ?: ModelStatus.PRETRAINED,
+                    onClick = { AppSettings.setSelectedModel(ModelId.CNN_MNIST) }
+                )
+                
                 // MLP option
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("MLP (MNIST)", style = MaterialTheme.typography.bodyMedium)
-                    RadioButton(
-                        selected = selectedModel == ModelId.MLP_MNIST,
-                        onClick = { AppSettings.setSelectedModel(ModelId.MLP_MNIST) }
-                    )
-                }
+                ModelOptionItem(
+                    title = "MLP (Multi-Layer Perceptron)",
+                    description = "Classic dense neural network. Every input pixel connects to every neuron.",
+                    isSelected = selectedModel == ModelId.MLP_MNIST,
+                    status = modelStatuses[ModelId.MLP_MNIST] ?: ModelStatus.PRETRAINED,
+                    onClick = { AppSettings.setSelectedModel(ModelId.MLP_MNIST) }
+                )
             }
             // Auto Classify Switch
             SettingItem(title = "Auto Classify") {
@@ -161,6 +161,67 @@ fun SettingsScreen() {
         ) {
             Text("Reset to Defaults")
         }
+    }
+}
+
+@Composable
+fun ModelOptionItem(
+    title: String,
+    description: String,
+    isSelected: Boolean,
+    status: ModelStatus,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp),
+        color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    ModelStatusBadge(status)
+                }
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            RadioButton(
+                selected = isSelected,
+                onClick = onClick
+            )
+        }
+    }
+}
+
+@Composable
+fun ModelStatusBadge(status: ModelStatus) {
+    val color = if (status == ModelStatus.RETRAINED) Color(0xFF4CAF50) else Color(0xFF2196F3)
+    val text = if (status == ModelStatus.RETRAINED) "Custom Trained" else "GGUF Pretrained"
+    
+    Surface(
+        color = color.copy(alpha = 0.1f),
+        shape = CircleShape,
+        border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.5f))
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            color = color,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+        )
     }
 }
 
