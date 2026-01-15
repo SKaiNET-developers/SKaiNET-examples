@@ -24,7 +24,6 @@ import sk.ai.net.samples.kmp.mnist.demo.ui.WindowSizeClass
 import sk.ai.net.samples.kmp.mnist.demo.ui.isLandscape
 
 @Composable
-@Preview
 fun App(handleSource: () -> Source) {
     AppTheme {
         AppSurface {
@@ -38,6 +37,7 @@ fun App(handleSource: () -> Source) {
 
                 // Use ResponsiveLayout to adapt to different screen sizes and orientations
                 ResponsiveLayout { windowSizeClass, orientation ->
+                    println("[DEBUG_LOG] ResponsiveLayout: size=$windowSizeClass, orientation=$orientation")
                     if (orientation.isLandscape() && windowSizeClass != WindowSizeClass.COMPACT) {
                         // Use side navigation for landscape on larger screens
                         Row(modifier = Modifier.fillMaxSize()) {
@@ -52,28 +52,40 @@ fun App(handleSource: () -> Source) {
                                 ) {
                                     NavigationRailItem(
                                         selected = navigationState.currentScreen == Screen.HOME,
-                                        onClick = { navigationState.currentScreen = Screen.HOME },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: HOME clicked")
+                                            navigationState.currentScreen = Screen.HOME 
+                                        },
                                         label = { Text("Home") },
                                         icon = { /* No icon for now */ }
                                     )
 
                                     NavigationRailItem(
                                         selected = navigationState.currentScreen == Screen.DRAWING,
-                                        onClick = { navigationState.currentScreen = Screen.DRAWING },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: DRAWING clicked")
+                                            navigationState.currentScreen = Screen.DRAWING 
+                                        },
                                         label = { Text("Draw") },
                                         icon = { /* No icon for now */ }
                                     )
 
                                     NavigationRailItem(
                                         selected = navigationState.currentScreen == Screen.TRAINING,
-                                        onClick = { navigationState.currentScreen = Screen.TRAINING },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: TRAINING clicked")
+                                            navigationState.currentScreen = Screen.TRAINING 
+                                        },
                                         label = { Text("Train") },
                                         icon = { /* No icon for now */ }
                                     )
 
                                     NavigationRailItem(
                                         selected = navigationState.currentScreen == Screen.SETTINGS,
-                                        onClick = { navigationState.currentScreen = Screen.SETTINGS },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: SETTINGS clicked")
+                                            navigationState.currentScreen = Screen.SETTINGS 
+                                        },
                                         label = { Text("Settings") },
                                         icon = { /* No icon for now */ }
                                     )
@@ -91,6 +103,7 @@ fun App(handleSource: () -> Source) {
                                     homeScreen = {
                                         HomeScreen(
                                             onGetStarted = {
+                                                println("[DEBUG_LOG] Home: Get Started clicked")
                                                 navigationState.currentScreen = Screen.DRAWING
                                             }
                                         )
@@ -109,7 +122,10 @@ fun App(handleSource: () -> Source) {
                                     // Home tab
                                     NavigationBarItem(
                                         selected = navigationState.currentScreen == Screen.HOME,
-                                        onClick = { navigationState.currentScreen = Screen.HOME },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: HOME clicked")
+                                            navigationState.currentScreen = Screen.HOME 
+                                        },
                                         icon = { /* No icon for now */ },
                                         label = { Text("Home") }
                                     )
@@ -117,7 +133,10 @@ fun App(handleSource: () -> Source) {
                                     // Drawing tab
                                     NavigationBarItem(
                                         selected = navigationState.currentScreen == Screen.DRAWING,
-                                        onClick = { navigationState.currentScreen = Screen.DRAWING },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: DRAWING clicked")
+                                            navigationState.currentScreen = Screen.DRAWING 
+                                        },
                                         icon = { /* No icon for now */ },
                                         label = { Text("Draw") }
                                     )
@@ -125,7 +144,10 @@ fun App(handleSource: () -> Source) {
                                     // Training tab
                                     NavigationBarItem(
                                         selected = navigationState.currentScreen == Screen.TRAINING,
-                                        onClick = { navigationState.currentScreen = Screen.TRAINING },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: TRAINING clicked")
+                                            navigationState.currentScreen = Screen.TRAINING 
+                                        },
                                         icon = { /* No icon for now */ },
                                         label = { Text("Train") }
                                     )
@@ -133,7 +155,10 @@ fun App(handleSource: () -> Source) {
                                     // Settings tab
                                     NavigationBarItem(
                                         selected = navigationState.currentScreen == Screen.SETTINGS,
-                                        onClick = { navigationState.currentScreen = Screen.SETTINGS },
+                                        onClick = { 
+                                            println("[DEBUG_LOG] Nav: SETTINGS clicked")
+                                            navigationState.currentScreen = Screen.SETTINGS 
+                                        },
                                         icon = { /* No icon for now */ },
                                         label = { Text("Settings") }
                                     )
@@ -151,6 +176,7 @@ fun App(handleSource: () -> Source) {
                                     homeScreen = {
                                         HomeScreen(
                                             onGetStarted = {
+                                                println("[DEBUG_LOG] Home: Get Started clicked")
                                                 navigationState.currentScreen = Screen.DRAWING
                                             }
                                         )
