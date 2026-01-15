@@ -13,6 +13,7 @@ import kotlinx.io.Source
 enum class Screen {
     HOME,
     DRAWING,
+    TRAINING,
     SETTINGS
 }
 
@@ -42,6 +43,7 @@ fun NavigationHost(
     navigationState: NavigationState,
     homeScreen: @Composable () -> Unit,
     drawingScreen: @Composable (() -> Source) -> Unit,
+    trainingScreen: @Composable () -> Unit,
     settingsScreen: @Composable () -> Unit
 ) {
     when (navigationState.currentScreen) {
@@ -49,6 +51,7 @@ fun NavigationHost(
         Screen.DRAWING -> {
             navigationState.handleSource?.let { drawingScreen(it) }
         }
+        Screen.TRAINING -> trainingScreen()
         Screen.SETTINGS -> settingsScreen()
     }
 }

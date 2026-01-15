@@ -13,6 +13,8 @@ import sk.ai.net.samples.kmp.mnist.demo.navigation.Screen
 import sk.ai.net.samples.kmp.mnist.demo.navigation.rememberNavigationState
 import sk.ai.net.samples.kmp.mnist.demo.screens.HomeScreen
 import sk.ai.net.samples.kmp.mnist.demo.screens.SettingsScreen
+import sk.ai.net.samples.kmp.mnist.demo.screens.TrainingScreen
+import sk.ai.net.samples.kmp.mnist.demo.training.MnistTrainingViewModel
 import sk.ai.net.samples.kmp.mnist.demo.theme.AppTheme
 import sk.ai.net.samples.kmp.mnist.demo.theme.AppSurface
 import sk.ai.net.samples.kmp.mnist.demo.ui.LocalHandleSource
@@ -30,6 +32,9 @@ fun App(handleSource: () -> Source) {
             CompositionLocalProvider(LocalHandleSource provides handleSource) {
                 // Create navigation state
                 val navigationState = rememberNavigationState(handleSource)
+
+                // Create training ViewModel (shared across screens)
+                val trainingViewModel = remember { MnistTrainingViewModel() }
 
                 // Use ResponsiveLayout to adapt to different screen sizes and orientations
                 ResponsiveLayout { windowSizeClass, orientation ->
@@ -60,6 +65,13 @@ fun App(handleSource: () -> Source) {
                                     )
 
                                     NavigationRailItem(
+                                        selected = navigationState.currentScreen == Screen.TRAINING,
+                                        onClick = { navigationState.currentScreen = Screen.TRAINING },
+                                        label = { Text("Train") },
+                                        icon = { /* No icon for now */ }
+                                    )
+
+                                    NavigationRailItem(
                                         selected = navigationState.currentScreen == Screen.SETTINGS,
                                         onClick = { navigationState.currentScreen = Screen.SETTINGS },
                                         label = { Text("Settings") },
@@ -76,14 +88,15 @@ fun App(handleSource: () -> Source) {
                             ) {
                                 NavigationHost(
                                     navigationState = navigationState,
-                                    homeScreen = { 
+                                    homeScreen = {
                                         HomeScreen(
-                                            onGetStarted = { 
-                                                navigationState.currentScreen = Screen.DRAWING 
+                                            onGetStarted = {
+                                                navigationState.currentScreen = Screen.DRAWING
                                             }
-                                        ) 
+                                        )
                                     },
                                     drawingScreen = { source -> DrawingScreen(source) },
+                                    trainingScreen = { TrainingScreen(trainingViewModel) },
                                     settingsScreen = { SettingsScreen() }
                                 )
                             }
@@ -109,6 +122,14 @@ fun App(handleSource: () -> Source) {
                                         label = { Text("Draw") }
                                     )
 
+                                    // Training tab
+                                    NavigationBarItem(
+                                        selected = navigationState.currentScreen == Screen.TRAINING,
+                                        onClick = { navigationState.currentScreen = Screen.TRAINING },
+                                        icon = { /* No icon for now */ },
+                                        label = { Text("Train") }
+                                    )
+
                                     // Settings tab
                                     NavigationBarItem(
                                         selected = navigationState.currentScreen == Screen.SETTINGS,
@@ -127,14 +148,15 @@ fun App(handleSource: () -> Source) {
                             ) {
                                 NavigationHost(
                                     navigationState = navigationState,
-                                    homeScreen = { 
+                                    homeScreen = {
                                         HomeScreen(
-                                            onGetStarted = { 
-                                                navigationState.currentScreen = Screen.DRAWING 
+                                            onGetStarted = {
+                                                navigationState.currentScreen = Screen.DRAWING
                                             }
-                                        ) 
+                                        )
                                     },
                                     drawingScreen = { source -> DrawingScreen(source) },
+                                    trainingScreen = { TrainingScreen(trainingViewModel) },
                                     settingsScreen = { SettingsScreen() }
                                 )
                             }
