@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import sk.ainet.samples.kmp.sinus.approximator.ui.SKaiNETTheme
 
 @Composable
 fun App() {
@@ -13,7 +14,7 @@ fun App() {
     val sliderViewModel = remember { SinusSliderViewModel() }
     val trainingViewModel = remember { SinusTrainingViewModel() }
 
-    MaterialTheme {
+    SKaiNETTheme {
         Scaffold(
             bottomBar = {
                 NavigationBar {
