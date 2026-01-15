@@ -1,14 +1,14 @@
 {
   "id": "sinusapproximator",
   "name": "Sinus Approximator",
-  "description": "Sinus Approximator als web app",
+  "description": "Sinus Approximator as web app",
   "distDirs": [
     "composeApp/build/kotlin-webpack/wasmJs/productionExecutable",
     "composeApp/build/processedResources/wasmJs/main"
   ],
   "build": {
     "command": "./gradlew :composeApp:wasmJsBrowserProductionWebpack",
-    "description": "Builds the JS browser distribution for Foo from the repo root."
+    "description": "Builds the JS browser distribution"
   },
   "screenshot": "docs/screenshots/wasm.png"
 }

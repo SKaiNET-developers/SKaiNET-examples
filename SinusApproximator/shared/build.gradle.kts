@@ -45,7 +45,6 @@ kotlin {
             implementation(libs.skainet.lang.kan)
             implementation(libs.skainet.data.api)
             implementation(libs.skainet.data.simple)
-
         }
 
         commonTest.dependencies {
