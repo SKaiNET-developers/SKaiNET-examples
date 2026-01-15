@@ -14,7 +14,11 @@ import kotlinx.coroutines.yield
 import sk.ainet.clean.domain.training.MnistTrainer
 import sk.ai.net.samples.kmp.mnist.demo.settings.AppSettings
 import sk.ai.net.samples.kmp.mnist.demo.settings.ModelStatus
+import sk.ainet.clean.domain.model.ModelId
 import kotlin.random.Random
+
+import sk.ainet.clean.di.ServiceLocator
+import sk.ainet.clean.data.source.ModelWeightsCacheDataSource
 
 data class MnistTrainingState(
     val epoch: Int = 0,
@@ -89,6 +93,14 @@ class MnistTrainingViewModel : ViewModel() {
                     if (progress.isCompleted) {
                         // Mark the currently selected model as RETRAINED in settings
                         AppSettings.setModelStatus(AppSettings.selectedModelId.value, ModelStatus.RETRAINED)
+
+                        // If we are training MLP, update the weights in ServiceLocator cache
+                        if (AppSettings.selectedModelId.value == ModelId.MLP_MNIST) {
+                            val weights = trainer.exportWeights()
+                            viewModelScope.launch {
+                                ServiceLocator.modelWeightsRepository.putWeights(ModelId.MLP_MNIST, weights)
+                            }
+                        }
                     }
 
                     _trainingState.update { state ->

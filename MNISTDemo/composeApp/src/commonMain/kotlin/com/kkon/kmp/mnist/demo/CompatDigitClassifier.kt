@@ -1,10 +1,13 @@
 package com.kkon.kmp.mnist.demo
 
 import kotlinx.io.Source
+import kotlinx.io.readByteArray
 import sk.ainet.clean.data.image.GrayScale28To28Image as CleanGray
 import sk.ainet.clean.domain.model.ModelId
 import sk.ainet.clean.domain.port.InferenceModule
 import sk.ainet.clean.domain.port.ModelWeightsRepository
+import sk.ainet.clean.framework.inference.CnnInferenceModuleAdapter
+import sk.ainet.clean.framework.inference.MlpInferenceModuleAdapter
 
 /**
  * Backward-compatibility shim exposing the legacy DigitClassifier API used by the UI.
@@ -24,31 +27,13 @@ class ADigitClassifier(
     // Minimal repository that loads weights from the provided Source
     private val repository = object : ModelWeightsRepository {
         override suspend fun getWeights(modelId: ModelId): ByteArray {
-            // For now we don't depend on kotlinx-io buffer helpers here.
-            // Return empty weights; our DummyInferenceModule ignores them.
-            handleSource() // invoke to keep the contract (source provider may do side effects)
-            return ByteArray(0)
-        }
-    }
-
-    // Minimal inference that just stores weights and returns a deterministic value
-    private class DummyInferenceModule : InferenceModule {
-        private var loaded: Boolean = false
-        override fun load(weights: ByteArray) {
-            // Pretend to use weights
-            loaded = true
+            // Read all bytes from the source provided by the handleSource function.
+            val source = handleSource()
+            return source.readByteArray()
         }
 
-        override fun infer(image: CleanGray): Int {
-            // Very naive placeholder: compute a simple checksum to produce 0..9
-            var acc = 0.0
-            for (y in 0 until 28) {
-                for (x in 0 until 28) {
-                    acc += image.getPixel(x, y)
-                }
-            }
-            val digit = (acc.toInt() % 10 + 10) % 10
-            return if (loaded) digit else error("Model not loaded")
+        override suspend fun putWeights(modelId: ModelId, weights: ByteArray) {
+            // No-op for the compatibility shim
         }
     }
 
@@ -75,7 +60,10 @@ class ADigitClassifier(
         }
     }
 
-    private val impl: CleanDigitClassifier = SimpleDigitClassifier(DummyInferenceModule(), repository)
+    private val impl: CleanDigitClassifier = SimpleDigitClassifier(
+        if (useCnn) CnnInferenceModuleAdapter.create() else MlpInferenceModuleAdapter.create(),
+        repository
+    )
 
     suspend fun loadModel() {
         val id = if (useCnn) ModelId.CNN_MNIST else ModelId.MLP_MNIST

@@ -184,25 +184,12 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     }
 
     // Process an ImageBitmap into a GrayScale28To28Image
-    private fun processImageBitmap(bitmap: ImageBitmap, output: GrayScale28To28Image) {
-        // For now, we'll use a simplified approach
-        // In a real implementation, we would extract pixel data from the bitmap
-        // and convert it to grayscale
-
-        // Fill with a placeholder pattern for testing
+    fun processImageBitmap(bitmap: ImageBitmap, output: GrayScale28To28Image) {
+        val processed = createGrayScale28To28Image(bitmap)
         for (y in 0 until 28) {
             for (x in 0 until 28) {
-                // Create a simple pattern (a diagonal line)
-                val value = if (x == y || x == 27 - y) 1.0f else 0.0f
-                output.setPixel(x, y, value)
+                output.setPixel(x, y, processed.getPixel(x, y))
             }
         }
-
-        // In the future, implement proper image processing
-        // This would involve:
-        // 1. Getting pixel data from the bitmap
-        // 2. Converting to grayscale
-        // 3. Scaling to 28x28
-        // 4. Normalizing values between 0 and 1
     }
 }

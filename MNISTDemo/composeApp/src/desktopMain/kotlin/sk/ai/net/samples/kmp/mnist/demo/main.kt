@@ -10,53 +10,43 @@ import mnistdemo.composeapp.generated.resources.Res
 import sk.ainet.clean.data.io.ResourceReader
 import sk.ainet.clean.di.ServiceLocator
 import sk.ainet.clean.domain.factory.DigitClassifierFactory
-import sk.ainet.clean.domain.model.ModelId
-import sk.ainet.clean.domain.port.DigitClassifier
+import sk.ainet.clean.domain.factory.DigitClassifierFactoryImpl
+import sk.ainet.clean.framework.inference.CnnInferenceModuleAdapter
+import sk.ainet.clean.framework.inference.MlpInferenceModuleAdapter
 
-fun main() = application {
-
+fun main() {
     // Configure Clean Architecture ServiceLocator for Desktop platform (DI bootstrapping)
-    run {
-        // ResourceReader backed by Compose Multiplatform resources
-        val desktopResourceReader = object : ResourceReader {
-            override suspend fun read(path: String): ByteArray? = try {
-                Res.readBytes(path)
-            } catch (e: Exception) {
-                null
-            }
+    // ResourceReader backed by Compose Multiplatform resources
+    val desktopResourceReader = object : ResourceReader {
+        override suspend fun read(path: String): ByteArray? = try {
+            Res.readBytes(path)
+        } catch (e: Exception) {
+            null
         }
-
-        // Minimal factory that returns a simple classifier backed by a dummy inference module.
-        // This avoids platform-specific NN dependencies here; proper adapters can replace this later.
-        val factory: DigitClassifierFactory = object : DigitClassifierFactory {
-            override fun create(modelId: ModelId): DigitClassifier {
-                return object : DigitClassifier {
-                    private var loaded = false
-                    override suspend fun loadModel(modelId: ModelId) {
-                        // Touch the repository to honor contract; ignore bytes for dummy impl
-                        ServiceLocator.modelWeightsRepository.getWeights(modelId)
-                        loaded = true
-                    }
-
-                    override fun classify(image: sk.ainet.clean.data.image.GrayScale28To28Image): Int {
-                        check(loaded) { "Model weights not loaded; call loadModel() before classify()" }
-                        var acc = 0.0
-                        for (y in 0 until 28) for (x in 0 until 28) acc += image.getPixel(x, y)
-                        val digit = (acc.toInt() % 10 + 10) % 10
-                        return digit
-                    }
-                }
-            }
-        }
-
-        // Inject into ServiceLocator once at startup
-        ServiceLocator.configure(
-            resourceReader = desktopResourceReader,
-            digitClassifierFactory = factory,
-        )
     }
 
-    val resourcePath = "files/mnist_mlp.gguf"
+    // Initialize repository with temporary dummy to avoid circular dependency
+    // but in Desktop we actually don't have the circularity if we don't call it here.
+    // The issue is that FactoryImpl needs repository, and repository needs localDataSource,
+    // which needs resourceReader.
+
+    // Manual wiring to avoid using ServiceLocator.modelWeightsRepository before configuration
+    // OR we just provide a lazy provider to the factory.
+
+    val factory: DigitClassifierFactory = DigitClassifierFactoryImpl(
+        repositoryProvider = { ServiceLocator.modelWeightsRepository },
+        cnnModuleProvider = { CnnInferenceModuleAdapter.create() },
+        mlpModuleProvider = { MlpInferenceModuleAdapter.create() }
+    )
+
+    // Inject into ServiceLocator once at startup
+    ServiceLocator.configure(
+        resourceReader = desktopResourceReader,
+        digitClassifierFactory = factory,
+    )
+
+    application {
+        val resourcePath = "files/mnist_mlp.gguf"
 
     val loadingState by ResourceUtils.loadingState.collectAsState()
 
@@ -94,4 +84,5 @@ fun main() = application {
             androidx.compose.material.CircularProgressIndicator()
         }
     }
+}
 }

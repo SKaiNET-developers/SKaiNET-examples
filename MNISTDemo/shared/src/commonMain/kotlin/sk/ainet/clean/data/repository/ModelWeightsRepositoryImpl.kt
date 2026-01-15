@@ -33,4 +33,8 @@ class ModelWeightsRepositoryImpl(
         // If none provided or found
         throw RepositoryException(RepositoryError.NotFound(modelId.value))
     }
+
+    override suspend fun putWeights(modelId: ModelId, weights: ByteArray) {
+        cache?.put(modelId, weights)
+    }
 }

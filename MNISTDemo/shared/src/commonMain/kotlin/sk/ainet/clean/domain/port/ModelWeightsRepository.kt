@@ -6,4 +6,7 @@ import sk.ainet.clean.domain.model.ModelId
 interface ModelWeightsRepository {
     /** Obtain raw model weights for the given [modelId]. */
     suspend fun getWeights(modelId: ModelId): ByteArray
+
+    /** Store raw model weights for the given [modelId]. */
+    suspend fun putWeights(modelId: ModelId, weights: ByteArray)
 }
