@@ -18,7 +18,7 @@ enum class ModelStatus {
  * Minimal solution to support model selection from Settings.
  */
 object AppSettings {
-    private val _selectedModelId = MutableStateFlow(ModelId.CNN_MNIST)
+    private val _selectedModelId = MutableStateFlow(ModelId.MLP_MNIST)
     val selectedModelId: StateFlow<ModelId> = _selectedModelId.asStateFlow()
 
     // Status for each model

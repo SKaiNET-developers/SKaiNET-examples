@@ -3,9 +3,7 @@ package sk.ainet.clean.framework.inference
 import sk.ainet.clean.data.image.GrayScale28To28Image
 import sk.ainet.lang.model.createMNISTMLP
 import sk.ainet.lang.model.classifyImage
-import sk.ainet.lang.model.loader.loadModelWeights
-import kotlinx.io.Buffer
-import kotlinx.io.Source
+import sk.ainet.lang.model.loadWeightsFromBytes
 import sk.ainet.clean.domain.port.InferenceModule
 import sk.ainet.lang.nn.Module
 
@@ -29,8 +27,7 @@ class MlpInferenceModuleAdapter(
         fun fromModule(module: Module<FP32, Float>): MlpInferenceModuleAdapter {
             return MlpInferenceModuleAdapter(
                 loadFn = { bytes ->
-                    val src: Source = Buffer().apply { write(bytes) }
-                    loadModelWeights(module, src)
+                    loadWeightsFromBytes(module, bytes)
                 },
                 inferFn = { image -> classifyImage(module, image) }
             )

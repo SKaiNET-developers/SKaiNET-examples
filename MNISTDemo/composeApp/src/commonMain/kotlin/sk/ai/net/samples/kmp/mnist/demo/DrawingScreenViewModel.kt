@@ -25,8 +25,8 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     @Suppress("UnusedPrivateMember")
     private val handleSourceFn = handleSource
 
-    // Selected model (default to CNN). Exposed to UI for selection.
-    var selectedModelId by mutableStateOf(ModelId.CNN_MNIST)
+    // Selected model (default to MLP). Exposed to UI for selection.
+    var selectedModelId by mutableStateOf(ModelId.MLP_MNIST)
         private set
 
     // Current model status
