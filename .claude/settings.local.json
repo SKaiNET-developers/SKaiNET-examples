@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew :shared:compileKotlinJvm:*)",
+      "Bash(./gradlew :composeApp:compileKotlinDesktop:*)",
+      "Bash(find:*)",
+      "Bash(xxd:*)",
+      "Bash(./gradlew:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home ./gradlew:*)",
+      "Bash(wc:*)",
+      "Bash(python3:*)",
+      "Bash(open:*)",
+      "Bash(git remote:*)"
+    ]
+  }
+}
