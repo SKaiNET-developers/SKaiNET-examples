@@ -21,14 +21,83 @@ Environment variables:
 
 import json
 import os
+import re
 import shutil
 import html
 import argparse
+import subprocess
 from pathlib import Path
 from datetime import datetime
 
 
-def find_webapp_configs(root_dir: Path) -> list:
+def get_git_repo_url(root_dir: Path) -> str | None:
+    """Get the GitHub browsable URL from git remote."""
+    try:
+        result = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        remote_url = result.stdout.strip()
+
+        # Convert SSH URL to HTTPS URL
+        # git@github.com:user/repo.git -> https://github.com/user/repo
+        if remote_url.startswith("git@"):
+            match = re.match(r"git@([^:]+):(.+?)(?:\.git)?$", remote_url)
+            if match:
+                host, path = match.groups()
+                return f"https://{host}/{path.rstrip('.git')}"
+
+        # Already HTTPS URL
+        # https://github.com/user/repo.git -> https://github.com/user/repo
+        if remote_url.startswith("https://"):
+            return remote_url.rstrip(".git").rstrip("/")
+
+        return None
+    except subprocess.CalledProcessError:
+        return None
+
+
+def get_git_default_branch(root_dir: Path) -> str:
+    """Get the default branch name (main or master)."""
+    try:
+        # Try to get the default branch from remote
+        result = subprocess.run(
+            ["git", "remote", "show", "origin"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        for line in result.stdout.splitlines():
+            if "HEAD branch:" in line:
+                return line.split(":")[-1].strip()
+    except subprocess.CalledProcessError:
+        pass
+
+    # Fallback: check if main or master exists
+    try:
+        result = subprocess.run(
+            ["git", "branch", "-r"],
+            cwd=root_dir,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        branches = result.stdout
+        if "origin/main" in branches:
+            return "main"
+        if "origin/master" in branches:
+            return "master"
+    except subprocess.CalledProcessError:
+        pass
+
+    return "main"  # Default fallback
+
+
+def find_webapp_configs(root_dir: Path, repo_url: str | None = None, branch: str = "main") -> list:
     """Find all webapp.json files and parse them."""
     apps = []
 
@@ -46,16 +115,28 @@ def find_webapp_configs(root_dir: Path) -> list:
                 print(f"[WARN] {webapp_json} missing 'id', skipping.")
                 continue
 
+            project_root = webapp_json.parent
+
+            # Compute source URL from git repo URL + relative path
+            source_url = meta.get("sourceUrl")  # Allow override from webapp.json
+            if not source_url and repo_url:
+                try:
+                    rel_path = project_root.relative_to(root_dir)
+                    source_url = f"{repo_url}/tree/{branch}/{rel_path}"
+                    print(f"[OK] Source URL: {source_url}")
+                except ValueError:
+                    pass  # project_root is not relative to root_dir
+
             apps.append({
                 "id": app_id,
                 "name": meta.get("name", app_id),
                 "description": meta.get("description", ""),
                 "screenshot": meta.get("screenshot"),
                 "distDirs": meta.get("distDirs", []),
-                "sourceUrl": meta.get("sourceUrl"),
-                "project_root": webapp_json.parent
+                "sourceUrl": source_url,
+                "project_root": project_root
             })
-            print(f"[OK] Found app: {app_id} in {webapp_json.parent}")
+            print(f"[OK] Found app: {app_id} in {project_root}")
 
         except Exception as e:
             print(f"[WARN] Cannot parse {webapp_json}: {e}")
@@ -256,14 +337,15 @@ def generate_html(apps: list, release_tag: str = "", base_url: str = "https://ex
       background-color: hsl(var(--muted));
     }}
 
-    /* Buttons */
+    /* Buttons - Mobile-friendly touch targets */
     .btn {{
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
+      padding: 0.75rem 1.25rem;
+      min-height: 44px; /* iOS recommended touch target */
+      font-size: 0.9rem;
       font-weight: 500;
       border-radius: var(--radius);
       cursor: pointer;
@@ -311,20 +393,38 @@ def generate_html(apps: list, release_tag: str = "", base_url: str = "https://ex
       height: 1rem;
     }}
 
-    /* Content Section */
+    /* Content Section - Mobile optimized */
     .content {{
-      padding: 3rem 1rem;
+      padding: 2rem 1rem;
+    }}
+
+    @media (min-width: 640px) {{
+      .content {{
+        padding: 3rem 1.5rem;
+      }}
     }}
 
     .content-header {{
       text-align: center;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
+    }}
+
+    @media (min-width: 640px) {{
+      .content-header {{
+        margin-bottom: 3rem;
+      }}
     }}
 
     .content-title {{
-      font-size: 2.25rem;
+      font-size: 1.75rem;
       font-weight: 700;
       color: hsl(var(--foreground));
+    }}
+
+    @media (min-width: 640px) {{
+      .content-title {{
+        font-size: 2.25rem;
+      }}
     }}
 
     @media (min-width: 768px) {{
@@ -353,22 +453,36 @@ def generate_html(apps: list, release_tag: str = "", base_url: str = "https://ex
       border: 1px solid hsl(var(--primary) / 0.3);
     }}
 
-    /* Cards Grid */
+    /* Cards Grid - Mobile first, scalable layout */
     .cards-grid {{
       display: grid;
       gap: 1.5rem;
       grid-template-columns: 1fr;
+      max-width: 500px;
+      margin: 0 auto;
     }}
 
-    @media (min-width: 768px) {{
+    /* Tablet: 2 cards side by side, centered */
+    @media (min-width: 640px) {{
       .cards-grid {{
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+        max-width: 720px;
       }}
     }}
 
+    /* Desktop: allow up to 3 cards, centered */
     @media (min-width: 1024px) {{
       .cards-grid {{
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        max-width: 1100px;
+      }}
+    }}
+
+    /* Large desktop: cap at 3 columns for readability */
+    @media (min-width: 1200px) {{
+      .cards-grid {{
         grid-template-columns: repeat(3, 1fr);
+        max-width: 1200px;
       }}
     }}
 
@@ -502,16 +616,27 @@ def generate_html(apps: list, release_tag: str = "", base_url: str = "https://ex
       line-height: 1.5;
     }}
 
-    /* Card Footer */
+    /* Card Footer - Stack on mobile, side-by-side on larger */
     .card-footer {{
       position: relative;
       display: flex;
+      flex-direction: column;
       gap: 0.75rem;
       padding: 1rem 1.5rem 1.5rem;
     }}
 
     .card-footer .btn {{
       flex: 1;
+      width: 100%;
+    }}
+
+    @media (min-width: 400px) {{
+      .card-footer {{
+        flex-direction: row;
+      }}
+      .card-footer .btn {{
+        width: auto;
+      }}
     }}
 
     /* Footer */
@@ -727,14 +852,25 @@ def main():
     parser.add_argument("--build", action="store_true", help="Build mode: copy dist files and generate index")
     parser.add_argument("--output", "-o", type=str, default="site", help="Output directory (default: site)")
     parser.add_argument("--root", "-r", type=str, default=".", help="Root directory to scan for webapp.json")
+    parser.add_argument("--branch", "-b", type=str, default=None, help="Git branch for source links (auto-detected if not set)")
     args = parser.parse_args()
 
     root_dir = Path(args.root).resolve()
     output_dir = Path(args.output).resolve()
     release_tag = os.environ.get("GITHUB_REF_NAME", "")
 
+    # Get git repository info for source links
+    repo_url = get_git_repo_url(root_dir)
+    if repo_url:
+        print(f"[OK] Git repo URL: {repo_url}")
+    else:
+        print("[WARN] Could not detect git remote URL. Source links will be disabled.")
+
+    branch = args.branch or get_git_default_branch(root_dir)
+    print(f"[OK] Using branch: {branch}")
+
     print(f"[INFO] Scanning for webapp.json in: {root_dir}")
-    apps = find_webapp_configs(root_dir)
+    apps = find_webapp_configs(root_dir, repo_url, branch)
 
     if not apps:
         print("[WARN] No valid webapp.json files found.")
