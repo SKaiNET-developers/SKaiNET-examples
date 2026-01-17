@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew :cli:compileKotlin:*)",
+      "Bash(./gradlew :cli:test:*)",
+      "Bash(./gradlew :cli:run:*)",
+      "Bash(python3:*)",
+      "Bash(./gradlew :shared:jvmTest:*)",
+      "Bash(uv venv:*)",
+      "Bash(uv pip install:*)",
+      "Bash(source:*)",
+      "Bash(ls:*)",
+      "Bash(./gradlew:*)"
+    ]
+  }
+}

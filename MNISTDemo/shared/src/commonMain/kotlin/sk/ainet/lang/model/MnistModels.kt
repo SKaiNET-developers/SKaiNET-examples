@@ -24,11 +24,9 @@ private val evalCtx = DefaultGraphExecutionContext(
 
 fun createMNISTMLP(): Module<FP32, Float> = sequential(evalCtx) {
     input(784)
-    dense(128, "fc1") { weights { randn(std = 0.1f) } }
+    dense(500, "fc1") { weights { randn(std = 0.1f) } }
     activation { it.relu() }
-    dense(64, "fc2") { weights { randn(std = 0.1f) } }
-    activation { it.relu() }
-    dense(10, "fc3") { weights { randn(std = 0.1f) } }
+    dense(10, "fc2") { weights { randn(std = 0.1f) } }
 }
 
 fun createMNISTCNN(): Module<FP32, Float> = sequential(evalCtx) {
