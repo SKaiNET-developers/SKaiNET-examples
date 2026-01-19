@@ -37,12 +37,16 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
     val availableModelIds: List<ModelId> = listOf(ModelId.CNN_MNIST, ModelId.MLP_MNIST)
 
     // Clean-architecture DigitClassifier obtained via ServiceLocator (PRD §6)
-    private var classifier: DigitClassifier = ServiceLocator.provideDigitClassifier(selectedModelId)
+    // Initialize with a placeholder; will be properly set in init based on AppSettings
+    private var classifier: DigitClassifier = ServiceLocator.provideDigitClassifier(ModelId.MLP_MNIST)
 
     init {
         // Sync initial values from AppSettings
         selectedModelId = AppSettings.selectedModelId.value
         selectedModelStatus = AppSettings.getModelStatus(selectedModelId)
+
+        // IMPORTANT: Create the correct classifier for the initial model from AppSettings
+        classifier = ServiceLocator.provideDigitClassifier(selectedModelId)
 
         // Observe changes from settings and update classifier accordingly
         viewModelScope.launch {

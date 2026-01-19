@@ -2,7 +2,9 @@ package sk.ainet.cli
 
 import sk.ainet.clean.data.image.GrayScale28To28Image
 import sk.ainet.lang.model.classifyImage
+import sk.ainet.lang.model.classifyImageCNN
 import sk.ainet.lang.model.createMNISTMLP
+import sk.ainet.lang.model.createMNISTCNN
 import sk.ainet.lang.model.loadGgufWeights
 import java.io.DataInputStream
 import java.io.File
@@ -21,15 +23,24 @@ class MnistAccuracyTest {
     companion object {
         private const val MNIST_TEST_IMAGES_URL = "https://storage.googleapis.com/cvdf-datasets/mnist/t10k-images-idx3-ubyte.gz"
         private const val MNIST_TEST_LABELS_URL = "https://storage.googleapis.com/cvdf-datasets/mnist/t10k-labels-idx1-ubyte.gz"
-        private const val MODEL_FILENAME = "mnist-fc-f32.gguf"
+        private const val MLP_MODEL_FILENAME = "mnist-fc-f32.gguf"
+        private const val CNN_MODEL_FILENAME = "mnist_cnn.gguf"
         private val MNIST_CACHE_DIR = File(System.getProperty("java.io.tmpdir"), "mnist-test-cache")
 
-        private fun findModelFile(): File? {
-            // Try common locations where the model might be
+        private fun findMlpModelFile(): File? {
             val candidates = listOf(
-                File(MODEL_FILENAME),                    // Current directory
-                File("..", MODEL_FILENAME),              // Parent directory (project root)
-                File("../..", MODEL_FILENAME),           // Two levels up
+                File(MLP_MODEL_FILENAME),
+                File("..", MLP_MODEL_FILENAME),
+                File("../..", MLP_MODEL_FILENAME),
+            )
+            return candidates.firstOrNull { it.exists() }
+        }
+
+        private fun findCnnModelFile(): File? {
+            val candidates = listOf(
+                File(CNN_MODEL_FILENAME),
+                File("..", CNN_MODEL_FILENAME),
+                File("../composeApp/src/commonMain/composeResources/files", CNN_MODEL_FILENAME),
             )
             return candidates.firstOrNull { it.exists() }
         }
@@ -38,9 +49,9 @@ class MnistAccuracyTest {
     @Test
     fun `MLP model achieves over 90 percent accuracy on MNIST test set`() {
         // Find model file
-        val modelFile = findModelFile()
+        val modelFile = findMlpModelFile()
         if (modelFile == null) {
-            println("Skipping test: Model file '$MODEL_FILENAME' not found in expected locations")
+            println("Skipping test: Model file '$MLP_MODEL_FILENAME' not found in expected locations")
             println("Working directory: ${File(".").absolutePath}")
             return
         }
@@ -83,9 +94,9 @@ class MnistAccuracyTest {
     @Test
     fun `MLP model correctly classifies sample digits`() {
         // Find model file
-        val modelFile = findModelFile()
+        val modelFile = findMlpModelFile()
         if (modelFile == null) {
-            println("Skipping test: Model file '$MODEL_FILENAME' not found in expected locations")
+            println("Skipping test: Model file '$MLP_MODEL_FILENAME' not found in expected locations")
             return
         }
 
@@ -106,6 +117,85 @@ class MnistAccuracyTest {
         val accuracy = correct.toDouble() / images.size * 100
         println("Sample accuracy (100 images): ${"%.2f".format(accuracy)}%")
         assertTrue(accuracy >= 85.0, "Sample accuracy should be at least 85%")
+    }
+
+    @Test
+    fun `CNN model achieves over 90 percent accuracy on MNIST test set`() {
+        // Find CNN model file
+        val modelFile = findCnnModelFile()
+        if (modelFile == null) {
+            println("Skipping test: CNN model file '$CNN_MODEL_FILENAME' not found in expected locations")
+            println("Working directory: ${File(".").absolutePath}")
+            return
+        }
+
+        // Create CNN model and print parameter names for debugging
+        val model = createMNISTCNN()
+        println("CNN Model Parameters:")
+        model.trainableParameters().forEach { param ->
+            println("  ${param.name}: shape=${param.value.shape}")
+        }
+
+        // Download MNIST test data (limit to 500 to avoid OOM in tests)
+        val (images, labels) = loadMnistTestData(limit = 500)
+        println("Loaded ${images.size} test images for CNN")
+
+        // Load GGUF weights
+        val modelBytes = modelFile.readBytes()
+        loadGgufWeights(model, modelBytes)
+        println("CNN model loaded from ${modelFile.absolutePath}: ${modelBytes.size} bytes")
+
+        // Classify all test images using CNN
+        var correct = 0
+        val total = images.size
+
+        for (i in images.indices) {
+            val image = images[i]
+            val expectedLabel = labels[i]
+            val predictedLabel = classifyImageCNN(model, image)
+
+            if (predictedLabel == expectedLabel) {
+                correct++
+            }
+
+            // Periodically run GC to avoid OOM
+            if (i % 100 == 99) {
+                System.gc()
+            }
+        }
+
+        val accuracy = correct.toDouble() / total * 100
+        println("CNN Accuracy: $correct / $total = ${"%.2f".format(accuracy)}%")
+
+        assertTrue(accuracy >= 90.0, "Expected CNN accuracy >= 90%, but got ${"%.2f".format(accuracy)}%")
+    }
+
+    @Test
+    fun `CNN model correctly classifies sample digits`() {
+        // Find CNN model file
+        val modelFile = findCnnModelFile()
+        if (modelFile == null) {
+            println("Skipping test: CNN model file '$CNN_MODEL_FILENAME' not found in expected locations")
+            return
+        }
+
+        // Load a small sample for quick verification
+        val (images, labels) = loadMnistTestData(limit = 100)
+
+        // Create CNN model and load GGUF weights
+        val model = createMNISTCNN()
+        val modelBytes = modelFile.readBytes()
+        loadGgufWeights(model, modelBytes)
+
+        var correct = 0
+        for (i in images.indices) {
+            val predicted = classifyImageCNN(model, images[i])
+            if (predicted == labels[i]) correct++
+        }
+
+        val accuracy = correct.toDouble() / images.size * 100
+        println("CNN sample accuracy (100 images): ${"%.2f".format(accuracy)}%")
+        assertTrue(accuracy >= 85.0, "CNN sample accuracy should be at least 85%")
     }
 
     private fun loadMnistTestData(limit: Int = Int.MAX_VALUE): Pair<List<GrayScale28To28Image>, List<Int>> {

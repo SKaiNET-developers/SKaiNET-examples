@@ -2,7 +2,7 @@ package sk.ainet.clean.framework.inference
 
 import sk.ainet.clean.data.image.GrayScale28To28Image
 import sk.ainet.lang.model.createMNISTCNN
-import sk.ainet.lang.model.classifyImage
+import sk.ainet.lang.model.classifyImageCNN
 import sk.ainet.lang.model.loadWeightsFromBytes
 import sk.ainet.clean.domain.port.InferenceModule
 import sk.ainet.lang.nn.Module
@@ -27,10 +27,8 @@ class CnnInferenceModuleAdapter(
         /** Create an adapter from an existing Module instance. */
         fun fromModule(module: Module<FP32, Float>): CnnInferenceModuleAdapter {
             return CnnInferenceModuleAdapter(
-                loadFn = { bytes ->
-                    loadWeightsFromBytes(module, bytes)
-                },
-                inferFn = { image -> classifyImage(module, image) }
+                loadFn = { bytes -> loadWeightsFromBytes(module, bytes) },
+                inferFn = { image -> classifyImageCNN(module, image) }
             )
         }
 

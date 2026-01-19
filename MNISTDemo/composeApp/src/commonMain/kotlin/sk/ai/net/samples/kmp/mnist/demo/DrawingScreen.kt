@@ -322,8 +322,8 @@ fun DrawingScreen(handleSource: () -> Source) {
     // Create and remember the ViewModel with rememberSaveable to persist across recompositions
     val viewModel = remember(handleSource) { DrawingScreenViewModel(handleSource) }
 
-    // Load the model automatically when the screen is first displayed
-    LaunchedEffect(Unit) {
+    // Load the model automatically when the screen is first displayed or when model changes
+    LaunchedEffect(viewModel.selectedModelId) {
         viewModel.loadModel()
     }
 
