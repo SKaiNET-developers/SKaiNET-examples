@@ -61,7 +61,8 @@ fun SinusTrainingScreen(viewModel: SinusTrainingViewModel) {
                     Text("Loss History", style = MaterialTheme.typography.titleSmall)
                     LossVisualization(
                         lossHistory = trainingState.lossHistory,
-                        modifier = Modifier.fillMaxWidth().height(100.dp)
+                        totalEpochs = trainingState.totalEpochs,
+                        modifier = Modifier.fillMaxWidth().height(150.dp)
                     )
                 }
             }

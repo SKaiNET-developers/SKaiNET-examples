@@ -7,15 +7,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import sk.ainet.samples.kmp.sinus.approximator.ui.SKaiNETTheme
+import sk.ainet.samples.kmp.sinus.approximator.ui.ThemeController
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
     var selectedTab by remember { mutableStateOf(0) }
     val sliderViewModel = remember { SinusSliderViewModel() }
     val trainingViewModel = remember { SinusTrainingViewModel() }
 
-    SKaiNETTheme {
+    // Create theme controller only for WASM platform
+    val themeController = remember { if (isWasmPlatform) ThemeController() else null }
+
+    SKaiNETTheme(themeController = themeController) {
         Scaffold(
+            topBar = {
+                // Show theme toggle only on WASM
+                if (themeController != null) {
+                    TopAppBar(
+                        title = { Text("Sinus Approximator") },
+                        actions = {
+                            IconButton(onClick = { themeController.toggleTheme() }) {
+                                Text(if (themeController.isDarkTheme) "☀️" else "🌙")
+                            }
+                        }
+                    )
+                }
+            },
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
@@ -45,33 +63,63 @@ fun App() {
                     1 -> SinusTrainingScreen(trainingViewModel)
                     2 -> {
                         val modelLoadingState by sliderViewModel.modelLoadingState.collectAsState()
-                        if (modelLoadingState == ModelLoadingState.Success) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                Text(
-                                    text = "Model Visualization",
-                                    style = MaterialTheme.typography.headlineMedium
-                                )
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                ) {
-                                    NeuralNetworkVisualization(
-                                        model = sliderViewModel.neuralNetworkModel,
-                                        modifier = Modifier.padding(16.dp)
-                                    )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                text = "Model Visualization",
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+
+                            when (modelLoadingState) {
+                                ModelLoadingState.Initial -> {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Button(
+                                        onClick = { sliderViewModel.loadModel() }
+                                    ) {
+                                        Text("Load Model")
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
                                 }
-                            }
-                        } else {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("Please load the model in the Approximation tab first.")
+                                ModelLoadingState.Loading -> {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    CircularProgressIndicator()
+                                    Text(
+                                        text = "Loading model...",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                                ModelLoadingState.Success -> {
+                                    Card(
+                                        modifier = Modifier.fillMaxWidth(),
+                                    ) {
+                                        NeuralNetworkVisualization(
+                                            model = sliderViewModel.neuralNetworkModel,
+                                            modifier = Modifier.padding(16.dp)
+                                        )
+                                    }
+                                }
+                                is ModelLoadingState.Error -> {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Text(
+                                        text = "Error: ${(modelLoadingState as ModelLoadingState.Error).message}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                    Button(
+                                        onClick = { sliderViewModel.loadModel() },
+                                        modifier = Modifier.padding(top = 8.dp)
+                                    ) {
+                                        Text("Retry")
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
                         }
                     }

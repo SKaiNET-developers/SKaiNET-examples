@@ -5,6 +5,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
+/**
+ * Theme controller for manual dark/light mode switching.
+ * Used on WASM platform where system theme detection may not work reliably.
+ */
+class ThemeController {
+    var isDarkTheme by mutableStateOf(true) // Default to dark theme
+
+    fun toggleTheme() {
+        isDarkTheme = !isDarkTheme
+    }
+}
+
+/**
+ * CompositionLocal to access the theme controller from anywhere in the UI tree.
+ */
+val LocalThemeController = compositionLocalOf<ThemeController?> { null }
 
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
@@ -89,13 +111,18 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun SKaiNETTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    themeController: ThemeController? = null,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    // Use themeController if provided (WASM), otherwise use system theme
+    val isDark = themeController?.isDarkTheme ?: darkTheme
+    val colorScheme = if (isDark) DarkColorScheme else LightColorScheme
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = SKaiNETTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalThemeController provides themeController) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = SKaiNETTypography,
+            content = content
+        )
+    }
 }
