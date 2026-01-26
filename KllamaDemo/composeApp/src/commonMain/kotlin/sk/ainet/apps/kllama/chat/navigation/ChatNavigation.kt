@@ -1,0 +1,71 @@
+package sk.ainet.apps.kllama.chat.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import sk.ainet.apps.kllama.chat.di.ServiceLocator
+import sk.ainet.apps.kllama.chat.screens.ChatScreen
+import sk.ainet.apps.kllama.chat.screens.ModelSelectionScreen
+import sk.ainet.apps.kllama.chat.viewmodel.ChatViewModel
+
+/**
+ * Navigation destinations for the chat app.
+ */
+enum class ChatDestination {
+    CHAT,
+    MODEL_PICKER
+}
+
+/**
+ * Main navigation host for the chat app.
+ * Manages navigation between chat and model selection screens.
+ */
+@Composable
+fun ChatNavigationHost(
+    modifier: Modifier = Modifier
+) {
+    var currentDestination by remember { mutableStateOf(ChatDestination.CHAT) }
+
+    // Create view model with dependencies
+    val viewModel = remember {
+        ChatViewModel(
+            modelRepository = ServiceLocator.getModelRepository(),
+            inferenceEngineFactory = ServiceLocator.getInferenceEngineFactory()
+        )
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+
+    when (currentDestination) {
+        ChatDestination.CHAT -> {
+            ChatScreen(
+                viewModel = viewModel,
+                onNavigateToModelPicker = {
+                    currentDestination = ChatDestination.MODEL_PICKER
+                },
+                modifier = modifier
+            )
+        }
+
+        ChatDestination.MODEL_PICKER -> {
+            ModelSelectionScreen(
+                onModelSelected = { path ->
+                    viewModel.loadModel(path)
+                    // Navigate back to chat after starting model load
+                    currentDestination = ChatDestination.CHAT
+                },
+                onNavigateBack = {
+                    currentDestination = ChatDestination.CHAT
+                },
+                isLoading = uiState.isLoadingModel,
+                errorMessage = uiState.errorMessage,
+                modifier = modifier
+            )
+        }
+    }
+}

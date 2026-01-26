@@ -1,0 +1,98 @@
+package sk.ainet.apps.kllama.chat.data.repository
+
+import kotlinx.io.Source
+import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
+import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
+import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
+import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
+import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
+import sk.ainet.apps.kllama.chat.domain.port.ModelRepository
+
+/**
+ * Implementation of ModelRepository.
+ * Uses platform-specific loaders for different model formats.
+ */
+class ModelRepositoryImpl(
+    private val platformLoader: PlatformModelLoader
+) : ModelRepository {
+
+    private var currentModel: LoadedModel? = null
+
+    override suspend fun loadModel(
+        path: String,
+        format: ModelFormat
+    ): ModelLoadResult {
+        val detectedFormat = if (format == ModelFormat.UNKNOWN) {
+            ModelFormatDetector.detectFromPath(path)
+        } else {
+            format
+        }
+
+        if (detectedFormat == ModelFormat.UNKNOWN) {
+            return ModelLoadResult.Error("Unable to detect model format from path: $path")
+        }
+
+        return try {
+            val result = platformLoader.loadFromPath(path, detectedFormat)
+            if (result is ModelLoadResult.Success) {
+                currentModel = result.model
+            }
+            result
+        } catch (e: Exception) {
+            ModelLoadResult.Error("Failed to load model: ${e.message}", e)
+        }
+    }
+
+    override suspend fun loadModel(
+        source: Source,
+        name: String,
+        sizeBytes: Long,
+        format: ModelFormat
+    ): ModelLoadResult {
+        if (format == ModelFormat.UNKNOWN) {
+            return ModelLoadResult.Error("Model format must be specified when loading from Source")
+        }
+
+        return try {
+            val result = platformLoader.loadFromSource(source, name, sizeBytes, format)
+            if (result is ModelLoadResult.Success) {
+                currentModel = result.model
+            }
+            result
+        } catch (e: Exception) {
+            ModelLoadResult.Error("Failed to load model from source: ${e.message}", e)
+        }
+    }
+
+    override fun getLoadedModel(): LoadedModel? = currentModel
+
+    override fun unloadModel() {
+        currentModel = null
+        platformLoader.unload()
+    }
+
+    override suspend fun extractMetadata(path: String): ModelMetadata? {
+        val format = ModelFormatDetector.detectFromPath(path)
+        if (format == ModelFormat.UNKNOWN) return null
+
+        return try {
+            platformLoader.extractMetadata(path, format)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    override val isModelLoaded: Boolean
+        get() = currentModel != null
+}
+
+/**
+ * Platform-specific model loader interface.
+ * Implementations handle the actual loading of model weights.
+ */
+interface PlatformModelLoader {
+    suspend fun loadFromPath(path: String, format: ModelFormat): ModelLoadResult
+    suspend fun loadFromSource(source: Source, name: String, sizeBytes: Long, format: ModelFormat): ModelLoadResult
+    suspend fun extractMetadata(path: String, format: ModelFormat): ModelMetadata?
+    fun unload()
+}
