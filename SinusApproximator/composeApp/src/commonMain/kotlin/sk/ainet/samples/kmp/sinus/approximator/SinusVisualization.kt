@@ -4,14 +4,18 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlin.math.PI
 import kotlin.math.sin
 
@@ -31,6 +35,8 @@ fun SinusVisualization(
     val pretrainedColor = Color(0xFF673AB7) // Deep Purple for pretrained
     val trainedColor = Color(0xFF4CAF50) // Green for trained
     val axisColor = Color.Gray
+    val textMeasurer = rememberTextMeasurer()
+    val textStyle = remember { TextStyle(color = Color.Gray, fontSize = 11.sp) }
 
     // Padding for axis labels
     val leftPadding = 40f
@@ -118,25 +124,46 @@ fun SinusVisualization(
             }
         }
 
-        // Draw axis labels using native canvas
-        drawContext.canvas.nativeCanvas.apply {
-            val textPaint = org.jetbrains.skia.Paint().apply {
-                color = 0xFF808080.toInt() // Gray color
-            }
-            val font = org.jetbrains.skia.Font().apply {
-                size = 11f
-            }
+        // Draw axis labels using cross-platform TextMeasurer
+        // Y-axis labels
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "1.0",
+            topLeft = Offset(plotLeft - 32f, valueToY(1f) - 6f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "0.5",
+            topLeft = Offset(plotLeft - 32f, valueToY(0.5f) - 6f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "0",
+            topLeft = Offset(plotLeft - 15f, valueToY(0f) - 6f),
+            style = textStyle
+        )
 
-            // Y-axis labels
-            drawString("1.0", plotLeft - 32f, valueToY(1f) + 4f, font, textPaint)
-            drawString("0.5", plotLeft - 32f, valueToY(0.5f) + 4f, font, textPaint)
-            drawString("0", plotLeft - 15f, valueToY(0f) + 4f, font, textPaint)
-
-            // X-axis labels
-            drawString("0", xToPlot(0f) - 3f, plotBottom + 18f, font, textPaint)
-            drawString("π/4", xToPlot(0.5f) - 10f, plotBottom + 18f, font, textPaint)
-            drawString("π/2", xToPlot(1f) - 10f, plotBottom + 18f, font, textPaint)
-        }
+        // X-axis labels
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "0",
+            topLeft = Offset(xToPlot(0f) - 3f, plotBottom + 4f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "π/4",
+            topLeft = Offset(xToPlot(0.5f) - 10f, plotBottom + 4f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "π/2",
+            topLeft = Offset(xToPlot(1f) - 10f, plotBottom + 4f),
+            style = textStyle
+        )
 
         // Draw actual sinus curve (in plot coordinates)
         drawSinusCurveInPlot(Color.Gray.copy(alpha = 0.3f), plotLeft, plotWidth, plotBottom, plotHeight)

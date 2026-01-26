@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun LossVisualization(
@@ -21,6 +25,8 @@ fun LossVisualization(
 ) {
     val color = MaterialTheme.colorScheme.error
     val axisColor = Color.Gray
+    val textMeasurer = rememberTextMeasurer()
+    val textStyle = remember { TextStyle(color = Color.Gray, fontSize = 11.sp) }
 
     // Padding for axis labels
     val leftPadding = 50f
@@ -62,17 +68,18 @@ fun LossVisualization(
 
         if (lossHistory.size < 2) {
             // Draw axis labels even with no data
-            drawContext.canvas.nativeCanvas.apply {
-                val textPaint = org.jetbrains.skia.Paint().apply {
-                    this.color = 0xFF808080.toInt()
-                }
-                val font = org.jetbrains.skia.Font().apply {
-                    size = 11f
-                }
-                // X-axis label
-                drawString("0", plotLeft - 3f, plotBottom + 18f, font, textPaint)
-                drawString("$totalEpochs", plotRight - 15f, plotBottom + 18f, font, textPaint)
-            }
+            drawText(
+                textMeasurer = textMeasurer,
+                text = "0",
+                topLeft = Offset(plotLeft - 3f, plotBottom + 4f),
+                style = textStyle
+            )
+            drawText(
+                textMeasurer = textMeasurer,
+                text = "$totalEpochs",
+                topLeft = Offset(plotRight - 15f, plotBottom + 4f),
+                style = textStyle
+            )
             return@Canvas
         }
 
@@ -130,38 +137,58 @@ fun LossVisualization(
             }
         }
 
-        // Draw axis labels
-        drawContext.canvas.nativeCanvas.apply {
-            val textPaint = org.jetbrains.skia.Paint().apply {
-                this.color = 0xFF808080.toInt()
+        // Format loss values (cross-platform)
+        fun formatLoss(loss: Float): String {
+            val str = loss.toString()
+            val dotIndex = str.indexOf('.')
+            return if (dotIndex == -1) {
+                str
+            } else {
+                val decimals = if (loss < 0.01f) 4 else if (loss < 1f) 3 else 2
+                val endIndex = minOf(dotIndex + decimals + 1, str.length)
+                str.substring(0, endIndex)
             }
-            val font = org.jetbrains.skia.Font().apply {
-                size = 11f
-            }
-
-            // Format loss values (cross-platform)
-            fun formatLoss(loss: Float): String {
-                val str = loss.toString()
-                val dotIndex = str.indexOf('.')
-                return if (dotIndex == -1) {
-                    str
-                } else {
-                    val decimals = if (loss < 0.01f) 4 else if (loss < 1f) 3 else 2
-                    val endIndex = minOf(dotIndex + decimals + 1, str.length)
-                    str.substring(0, endIndex)
-                }
-            }
-
-            // Y-axis labels
-            drawString(formatLoss(maxLoss), 2f, valueToY(maxLoss) + 4f, font, textPaint)
-            drawString(formatLoss(midLoss), 2f, valueToY(midLoss) + 4f, font, textPaint)
-            drawString(formatLoss(minLoss), 2f, valueToY(minLoss) + 4f, font, textPaint)
-
-            // X-axis labels (epochs)
-            drawString("0", plotLeft - 3f, plotBottom + 18f, font, textPaint)
-            drawString("$midEpoch", plotLeft + (midEpoch.toFloat() / totalEpochs * plotWidth) - 10f, plotBottom + 18f, font, textPaint)
-            drawString("$totalEpochs", plotRight - 15f, plotBottom + 18f, font, textPaint)
         }
+
+        // Y-axis labels
+        drawText(
+            textMeasurer = textMeasurer,
+            text = formatLoss(maxLoss),
+            topLeft = Offset(2f, valueToY(maxLoss) - 6f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = formatLoss(midLoss),
+            topLeft = Offset(2f, valueToY(midLoss) - 6f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = formatLoss(minLoss),
+            topLeft = Offset(2f, valueToY(minLoss) - 6f),
+            style = textStyle
+        )
+
+        // X-axis labels (epochs)
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "0",
+            topLeft = Offset(plotLeft - 3f, plotBottom + 4f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "$midEpoch",
+            topLeft = Offset(plotLeft + (midEpoch.toFloat() / totalEpochs * plotWidth) - 10f, plotBottom + 4f),
+            style = textStyle
+        )
+        drawText(
+            textMeasurer = textMeasurer,
+            text = "$totalEpochs",
+            topLeft = Offset(plotRight - 15f, plotBottom + 4f),
+            style = textStyle
+        )
 
         // Draw loss curve
         val path = Path().apply {
