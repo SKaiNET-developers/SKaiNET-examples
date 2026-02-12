@@ -1,4 +1,4 @@
-rootProject.name = "Kllama-chat"
+rootProject.name = "KllamaDemo"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

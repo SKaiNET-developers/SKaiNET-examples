@@ -166,7 +166,7 @@ fun DiagnosticsScreen(
                 }
             }
 
-            items(logs.reversed(), key = { it.timestamp }) { entry ->
+            items(logs.reversed()) { entry ->
                 LogEntryRow(entry)
             }
 

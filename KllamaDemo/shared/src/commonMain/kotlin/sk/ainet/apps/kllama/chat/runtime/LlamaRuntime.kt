@@ -52,7 +52,7 @@ class LlamaRuntime(
     private val embedding = Embedding(
         numEmbeddings = vocabSize,
         embeddingDim = dim,
-        initWeight = weights.tokenEmbedding.t(),
+        initWeight = weights.tokenEmbedding,
         name = "token_embd"
     )
 

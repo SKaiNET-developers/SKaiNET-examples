@@ -12,12 +12,12 @@ plugins {
 }
 allprojects {
     tasks.withType<JavaExec>().configureEach {
-        jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+        jvmArgs("-Xmx32G", "--enable-preview", "--add-modules", "jdk.incubator.vector")
         systemProperty("skainet.cpu.vector.enabled", "true")
     }
 
     tasks.withType<Test>().configureEach {
-        jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+        jvmArgs("-Xmx32G", "--enable-preview", "--add-modules", "jdk.incubator.vector")
         systemProperty("skainet.cpu.vector.enabled", "true")
     }
 }
