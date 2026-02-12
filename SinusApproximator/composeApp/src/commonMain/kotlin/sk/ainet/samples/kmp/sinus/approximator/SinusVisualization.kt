@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
-import sk.ainet.plot.*
+import sk.ainet.ui.plot.*
 import kotlin.math.PI
 import kotlin.math.sin
 

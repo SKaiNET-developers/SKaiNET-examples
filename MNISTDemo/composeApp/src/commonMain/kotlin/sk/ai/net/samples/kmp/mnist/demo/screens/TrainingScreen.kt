@@ -1,6 +1,5 @@
 package sk.ai.net.samples.kmp.mnist.demo.screens
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,10 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import sk.ai.net.samples.kmp.mnist.demo.training.MnistTrainingState
 import sk.ai.net.samples.kmp.mnist.demo.training.MnistTrainingViewModel
@@ -24,6 +20,7 @@ import sk.ainet.clean.domain.model.ModelId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import sk.ainet.ui.plot.*
 
 @Composable
 fun ModelStatusBanner(modelId: ModelId, status: ModelStatus) {
@@ -278,12 +275,18 @@ private fun TrainingChartsCard(trainingState: MnistTrainingState) {
                     )
                     Text("Loss", style = MaterialTheme.typography.bodySmall)
                 }
-                LineChart(
-                    data = trainingState.lossHistory,
-                    color = Color(0xFFF44336),
+                val lossPoints = trainingState.lossHistory.mapIndexed { index, value ->
+                    DataPoint(index.toFloat(), value)
+                }
+                LinePlot(
+                    series = listOf(DataSeries(lossPoints, color = Color(0xFFF44336))),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp)
+                        .height(100.dp),
+                    padding = PlotPadding(left = 40f, right = 5f, top = 5f, bottom = 20f),
+                    xAxis = AxisConfig(showLabels = false, showTicks = false),
+                    yAxis = AxisConfig(tickCount = 3),
+                    grid = GridConfig()
                 )
             }
 
@@ -300,65 +303,27 @@ private fun TrainingChartsCard(trainingState: MnistTrainingState) {
                     )
                     Text("Accuracy", style = MaterialTheme.typography.bodySmall)
                 }
-                LineChart(
-                    data = trainingState.accuracyHistory,
-                    color = Color(0xFF4CAF50),
+                val accuracyPoints = trainingState.accuracyHistory.mapIndexed { index, value ->
+                    DataPoint(index.toFloat(), value)
+                }
+                LinePlot(
+                    series = listOf(DataSeries(accuracyPoints, color = Color(0xFF4CAF50))),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp),
-                    maxValue = 1f
+                    bounds = PlotBounds(
+                        0f,
+                        (trainingState.accuracyHistory.size - 1).toFloat().coerceAtLeast(1f),
+                        0f,
+                        1f
+                    ),
+                    padding = PlotPadding(left = 40f, right = 5f, top = 5f, bottom = 20f),
+                    xAxis = AxisConfig(showLabels = false, showTicks = false),
+                    yAxis = AxisConfig(tickCount = 3),
+                    grid = GridConfig()
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun LineChart(
-    data: List<Float>,
-    color: Color,
-    modifier: Modifier = Modifier,
-    maxValue: Float? = null
-) {
-    if (data.isEmpty()) return
-
-    val actualMax = maxValue ?: data.maxOrNull() ?: 1f
-    val actualMin = if (maxValue != null) 0f else (data.minOrNull() ?: 0f)
-    val range = (actualMax - actualMin).coerceAtLeast(0.001f)
-
-    Canvas(modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)) {
-        val width = size.width
-        val height = size.height
-        val padding = 4.dp.toPx()
-
-        if (data.size < 2) {
-            // Just draw a point if only one data point
-            val x = width / 2
-            val y = height - padding - ((data[0] - actualMin) / range) * (height - 2 * padding)
-            drawCircle(color, radius = 4.dp.toPx(), center = Offset(x, y))
-            return@Canvas
-        }
-
-        val path = Path()
-        val stepX = (width - 2 * padding) / (data.size - 1)
-
-        data.forEachIndexed { index, value ->
-            val x = padding + index * stepX
-            val normalizedValue = ((value - actualMin) / range).coerceIn(0f, 1f)
-            val y = height - padding - normalizedValue * (height - 2 * padding)
-
-            if (index == 0) {
-                path.moveTo(x, y)
-            } else {
-                path.lineTo(x, y)
-            }
-        }
-
-        drawPath(
-            path = path,
-            color = color,
-            style = Stroke(width = 2.dp.toPx())
-        )
     }
 }
 

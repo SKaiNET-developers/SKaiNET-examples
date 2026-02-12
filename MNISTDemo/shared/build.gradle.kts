@@ -47,6 +47,7 @@ kotlin {
             // SKaiNET I/O
             implementation(libs.skainet.io.core)
             implementation(libs.skainet.io.gguf)
+            implementation(libs.skainet.io.safetensors)
         }
 
         commonTest.dependencies {

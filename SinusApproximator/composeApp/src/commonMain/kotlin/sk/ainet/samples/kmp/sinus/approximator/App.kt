@@ -6,8 +6,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import sk.ainet.samples.kmp.sinus.approximator.ui.SKaiNETTheme
-import sk.ainet.samples.kmp.sinus.approximator.ui.ThemeController
+import sk.ainet.ui.theme.SKaiNETTheme
+import sk.ainet.ui.theme.ThemeController
+import sk.ainet.ui.components.SKaiNETProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +88,7 @@ fun App() {
                                 }
                                 ModelLoadingState.Loading -> {
                                     Spacer(modifier = Modifier.weight(1f))
-                                    CircularProgressIndicator()
+                                    SKaiNETProgressIndicator()
                                     Text(
                                         text = "Loading model...",
                                         style = MaterialTheme.typography.bodyMedium,

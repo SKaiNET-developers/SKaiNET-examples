@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                 else -> {
                     println("LoadingState: $loadingState, showing loading indicator")
                     // Show loading indicator
-                    androidx.compose.material.CircularProgressIndicator()
+                    sk.ainet.ui.components.SKaiNETProgressIndicator()
                 }
             }
         }

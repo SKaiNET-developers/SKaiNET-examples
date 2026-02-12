@@ -5,6 +5,7 @@ import kotlinx.io.Source
 import sk.ainet.clean.data.image.GrayScale28To28Image
 import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.context.Phase
+import sk.ainet.context.observers.LatencyExecutionObserver
 import sk.ainet.lang.graph.DefaultGraphExecutionContext
 import sk.ainet.lang.nn.Module
 import sk.ainet.lang.nn.dsl.sequential
@@ -17,6 +18,10 @@ import sk.ainet.lang.types.FP32
  */
 
 private val baseCtx = DirectCpuExecutionContext()
+val latencyObserver = LatencyExecutionObserver().also {
+    baseCtx.registerObserver(it)
+}
+
 private val evalCtx = DefaultGraphExecutionContext(
     baseOps = baseCtx.ops,
     phase = Phase.EVAL

@@ -15,8 +15,7 @@ import sk.ai.net.samples.kmp.mnist.demo.screens.HomeScreen
 import sk.ai.net.samples.kmp.mnist.demo.screens.SettingsScreen
 import sk.ai.net.samples.kmp.mnist.demo.screens.TrainingScreen
 import sk.ai.net.samples.kmp.mnist.demo.training.MnistTrainingViewModel
-import sk.ai.net.samples.kmp.mnist.demo.theme.AppTheme
-import sk.ai.net.samples.kmp.mnist.demo.theme.AppSurface
+import sk.ainet.ui.theme.SKaiNETTheme
 import sk.ai.net.samples.kmp.mnist.demo.ui.LocalHandleSource
 import sk.ai.net.samples.kmp.mnist.demo.ui.Orientation
 import sk.ai.net.samples.kmp.mnist.demo.ui.ResponsiveLayout
@@ -25,8 +24,8 @@ import sk.ai.net.samples.kmp.mnist.demo.ui.isLandscape
 
 @Composable
 fun App(handleSource: () -> Source) {
-    AppTheme {
-        AppSurface {
+    SKaiNETTheme {
+        Surface(color = MaterialTheme.colorScheme.background) {
             // Provide the handleSource function to all composables in the app
             CompositionLocalProvider(LocalHandleSource provides handleSource) {
                 // Create navigation state
