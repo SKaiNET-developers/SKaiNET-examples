@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew build:*)",
+      "Bash(./gradlew :shared:compileKotlinWasmJs:*)",
+      "Bash(./gradlew :shared:compileKotlinIosSimulatorArm64:*)",
+      "WebSearch",
+      "Bash(./gradlew :shared:compileKotlinJvm:*)",
+      "Bash(./gradlew:*)"
+    ]
+  }
+}

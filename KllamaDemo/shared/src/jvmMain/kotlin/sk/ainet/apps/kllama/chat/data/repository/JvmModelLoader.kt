@@ -1,24 +1,37 @@
 package sk.ainet.apps.kllama.chat.data.repository
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.io.Source
 import kotlinx.io.asSource
 import kotlinx.io.buffered
+import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
 import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
+import sk.ainet.apps.kllama.chat.di.ServiceLocator
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
-import sk.ainet.io.gguf.GGUFReader
+import sk.ainet.io.gguf.llama.LlamaRuntimeWeights
+import sk.ainet.io.gguf.llama.LlamaWeightLoader
+import sk.ainet.io.gguf.llama.LlamaWeightMapper
+import sk.ainet.context.DirectCpuExecutionContext
+import sk.ainet.lang.types.FP32
 import java.io.File
 import java.io.FileInputStream
 
 /**
- * JVM-specific model loader using SKaiNET's GGUF reader.
+ * JVM-specific model loader using SKaiNET's LlamaRuntime.
+ *
+ * This loader uses SKaiNET's built-in GGUF loading and Llama inference runtime
+ * for full local inference support.
  */
 class JvmModelLoader : PlatformModelLoader {
 
-    private var currentReader: GGUFReader? = null
+    private var currentRuntime: LlamaRuntime? = null
+    private var currentWeights: LlamaRuntimeWeights? = null
     private var currentPath: String? = null
+    private val ctx = DirectCpuExecutionContext()
 
     override suspend fun loadFromPath(path: String, format: ModelFormat): ModelLoadResult {
         return when (format) {
@@ -35,7 +48,7 @@ class JvmModelLoader : PlatformModelLoader {
         format: ModelFormat
     ): ModelLoadResult {
         return when (format) {
-            ModelFormat.GGUF -> loadGgufFromSource(source, name, sizeBytes)
+            ModelFormat.GGUF -> loadGgufFromSource({ source }, name, sizeBytes)
             ModelFormat.SAFETENSORS -> ModelLoadResult.Error("SafeTensors loading not yet implemented")
             ModelFormat.UNKNOWN -> ModelLoadResult.Error("Unknown model format")
         }
@@ -44,30 +57,78 @@ class JvmModelLoader : PlatformModelLoader {
     override suspend fun extractMetadata(path: String, format: ModelFormat): ModelMetadata? {
         return when (format) {
             ModelFormat.GGUF -> extractGgufMetadata(path)
-            ModelFormat.SAFETENSORS -> null // Not yet implemented
+            ModelFormat.SAFETENSORS -> null
             ModelFormat.UNKNOWN -> null
         }
     }
 
     override fun unload() {
-        currentReader = null
+        currentRuntime?.reset()
+        currentRuntime = null
+        currentWeights = null
         currentPath = null
+        ServiceLocator.setRuntime(null)
     }
 
-    private fun loadGgufFromPath(path: String): ModelLoadResult {
-        return try {
+    private suspend fun loadGgufFromPath(path: String): ModelLoadResult = withContext(Dispatchers.IO) {
+        try {
             val file = File(path)
             if (!file.exists()) {
-                return ModelLoadResult.Error("File not found: $path")
+                return@withContext ModelLoadResult.Error("File not found: $path")
             }
 
-            val source = FileInputStream(file).asSource().buffered()
-            val reader = GGUFReader(source)
+            val fileSizeMb = file.length() / 1024 / 1024
+            val estimatedMemoryMb = fileSizeMb * 4  // FP32 expansion factor
+            val availableMemoryMb = Runtime.getRuntime().maxMemory() / 1024 / 1024
 
-            currentReader = reader
+            println("Loading GGUF model from: $path")
+            println("File size: $fileSizeMb MB")
+            println("Estimated memory (FP32 dequantized): ~${estimatedMemoryMb} MB")
+            println("Available heap: $availableMemoryMb MB")
+
+            if (estimatedMemoryMb > availableMemoryMb * 0.8) {
+                println("WARNING: Model may exceed available memory! Consider using a smaller model or increasing heap size.")
+            }
+
+            // Use SKaiNET's LlamaWeightLoader with dequantization
+            val loader = LlamaWeightLoader(
+                sourceProvider = { FileInputStream(file).asSource().buffered() },
+                quantPolicy = LlamaWeightLoader.QuantPolicy.DEQUANTIZE_TO_FP32
+            )
+
+            println("Loading weights (this may take a while for large models)...")
+            val weights = loader.loadToMap<FP32, Float>(ctx)
+            println("Mapping weights to runtime structure...")
+            val runtimeWeights = LlamaWeightMapper.map(weights)
+
+            println("Creating LlamaRuntime...")
+            val runtime = LlamaRuntime(ctx, runtimeWeights)
+
+            currentRuntime = runtime
+            currentWeights = runtimeWeights
             currentPath = path
 
-            val metadata = extractMetadataFromReader(reader, file.name, file.length())
+            // Register runtime with ServiceLocator for inference engine
+            ServiceLocator.setRuntime(runtime)
+
+            val llamaMeta = runtimeWeights.metadata
+            val metadata = ModelMetadata(
+                name = file.nameWithoutExtension,
+                parameterCount = estimateParamCount(llamaMeta),
+                sizeBytes = file.length(),
+                quantization = ModelFormatDetector.detectQuantization(file.name),
+                contextLength = llamaMeta.contextLength,
+                vocabSize = llamaMeta.vocabSize,
+                hiddenSize = llamaMeta.embeddingLength,
+                numLayers = llamaMeta.blockCount,
+                numHeads = llamaMeta.headCount
+            )
+
+            println("Model loaded successfully!")
+            println("  Architecture: ${llamaMeta.architecture}")
+            println("  Layers: ${llamaMeta.blockCount}")
+            println("  Context: ${llamaMeta.contextLength}")
+            println("  Vocab: ${llamaMeta.vocabSize}")
 
             ModelLoadResult.Success(
                 LoadedModel(
@@ -77,18 +138,45 @@ class JvmModelLoader : PlatformModelLoader {
                 )
             )
         } catch (e: Exception) {
+            e.printStackTrace()
             ModelLoadResult.Error("Failed to load GGUF file: ${e.message}", e)
         }
     }
 
-    private fun loadGgufFromSource(source: Source, name: String, sizeBytes: Long): ModelLoadResult {
-        return try {
-            val reader = GGUFReader(source)
+    private suspend fun loadGgufFromSource(
+        sourceProvider: () -> Source,
+        name: String,
+        sizeBytes: Long
+    ): ModelLoadResult = withContext(Dispatchers.IO) {
+        try {
+            val loader = LlamaWeightLoader(
+                sourceProvider = sourceProvider,
+                quantPolicy = LlamaWeightLoader.QuantPolicy.DEQUANTIZE_TO_FP32
+            )
 
-            currentReader = reader
+            val weights = loader.loadToMap<FP32, Float>(ctx)
+            val runtimeWeights = LlamaWeightMapper.map(weights)
+            val runtime = LlamaRuntime(ctx, runtimeWeights)
+
+            currentRuntime = runtime
+            currentWeights = runtimeWeights
             currentPath = name
 
-            val metadata = extractMetadataFromReader(reader, name, sizeBytes)
+            // Register runtime with ServiceLocator for inference engine
+            ServiceLocator.setRuntime(runtime)
+
+            val llamaMeta = runtimeWeights.metadata
+            val metadata = ModelMetadata(
+                name = name.substringBeforeLast("."),
+                parameterCount = estimateParamCount(llamaMeta),
+                sizeBytes = sizeBytes,
+                quantization = ModelFormatDetector.detectQuantization(name),
+                contextLength = llamaMeta.contextLength,
+                vocabSize = llamaMeta.vocabSize,
+                hiddenSize = llamaMeta.embeddingLength,
+                numLayers = llamaMeta.blockCount,
+                numHeads = llamaMeta.headCount
+            )
 
             ModelLoadResult.Success(
                 LoadedModel(
@@ -102,93 +190,58 @@ class JvmModelLoader : PlatformModelLoader {
         }
     }
 
-    private fun extractGgufMetadata(path: String): ModelMetadata? {
+    private suspend fun extractGgufMetadata(path: String): ModelMetadata? {
         return try {
             val file = File(path)
             if (!file.exists()) return null
 
-            val source = FileInputStream(file).asSource().buffered()
-            val reader = GGUFReader(source)
+            // Quick metadata extraction using LlamaWeightLoader
+            val loader = LlamaWeightLoader(
+                sourceProvider = { FileInputStream(file).asSource().buffered() },
+                loadTensorData = false // Only load metadata
+            )
 
-            extractMetadataFromReader(reader, file.name, file.length())
+            val weights = loader.loadToMap<FP32, Float>(ctx)
+            val llamaMeta = weights.metadata
+
+            ModelMetadata(
+                name = file.nameWithoutExtension,
+                parameterCount = estimateParamCount(llamaMeta),
+                sizeBytes = file.length(),
+                quantization = ModelFormatDetector.detectQuantization(file.name),
+                contextLength = llamaMeta.contextLength,
+                vocabSize = llamaMeta.vocabSize,
+                hiddenSize = llamaMeta.embeddingLength,
+                numLayers = llamaMeta.blockCount,
+                numHeads = llamaMeta.headCount
+            )
         } catch (e: Exception) {
             null
         }
     }
 
-    private fun extractMetadataFromReader(reader: GGUFReader, name: String, sizeBytes: Long): ModelMetadata {
-        // Calculate parameter count from tensor data
-        var paramCount = 0L
-        val tensorNames = mutableListOf<String>()
-
-        reader.tensors.forEach { tensor ->
-            tensorNames.add(tensor.name)
-            // Count elements in tensor data
-            var count = 0L
-            tensor.data.forEach { _ -> count++ }
-            paramCount += count
-        }
-
-        // Try to infer model info from tensor names
-        val modelName = inferModelName(tensorNames, name)
-        val numLayers = inferNumLayers(tensorNames)
-
-        return ModelMetadata(
-            name = modelName,
-            parameterCount = paramCount,
-            sizeBytes = sizeBytes,
-            quantization = ModelFormatDetector.detectQuantization(name),
-            contextLength = 2048, // Default, can be overridden by config
-            vocabSize = 32000,    // Default for Llama-style models
-            hiddenSize = 0,       // Not easily extractable without metadata
-            numLayers = numLayers,
-            numHeads = 0          // Not easily extractable without metadata
+    private fun estimateParamCount(meta: sk.ainet.io.gguf.llama.LlamaModelMetadata): Long {
+        // Estimate based on architecture: embedding + layers + output
+        val embedding = meta.embeddingLength.toLong() * meta.vocabSize
+        val perLayer = (
+            // attention: q, k, v, o projections
+            4L * meta.embeddingLength * meta.embeddingLength +
+            // ffn: gate, up, down
+            3L * meta.embeddingLength * meta.feedForwardLength +
+            // norms
+            2L * meta.embeddingLength
         )
+        val output = meta.embeddingLength.toLong() * meta.vocabSize
+        return embedding + (perLayer * meta.blockCount) + output
     }
 
     /**
-     * Infer model name from tensor names or filename.
+     * Get the LlamaRuntime for inference.
      */
-    private fun inferModelName(tensorNames: List<String>, filename: String): String {
-        // Try to detect architecture from tensor names
-        val architecture = when {
-            tensorNames.any { it.contains("model.layers") } -> "Llama"
-            tensorNames.any { it.contains("transformer.h") } -> "GPT"
-            tensorNames.any { it.contains("encoder.layer") } -> "BERT"
-            else -> "GGUF Model"
-        }
-
-        // Use filename without extension
-        val baseName = filename.substringBeforeLast(".")
-            .replace("_", " ")
-            .replace("-", " ")
-
-        return if (baseName.isNotBlank() && baseName.length > 3) {
-            baseName
-        } else {
-            architecture
-        }
-    }
+    fun getRuntime(): LlamaRuntime? = currentRuntime
 
     /**
-     * Infer number of layers from tensor names.
+     * Get the execution context.
      */
-    private fun inferNumLayers(tensorNames: List<String>): Int {
-        // Look for layer indices in tensor names
-        val layerPattern = Regex("\\.(\\d+)\\.")
-        val layerIndices = tensorNames.mapNotNull { name ->
-            layerPattern.find(name)?.groupValues?.getOrNull(1)?.toIntOrNull()
-        }
-
-        return if (layerIndices.isNotEmpty()) {
-            layerIndices.maxOrNull()?.plus(1) ?: 0
-        } else {
-            0
-        }
-    }
-
-    /**
-     * Get the current GGUF reader for inference.
-     */
-    fun getReader(): GGUFReader? = currentReader
+    fun getContext(): DirectCpuExecutionContext = ctx
 }

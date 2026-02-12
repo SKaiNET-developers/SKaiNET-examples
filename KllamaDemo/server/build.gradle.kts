@@ -10,7 +10,22 @@ application {
     mainClass.set("sk.ainet.apps.kllama.chat.ApplicationKt")
     
     val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+    applicationDefaultJvmArgs = listOf(
+        "-Dio.ktor.development=$isDevelopment",
+        "--add-modules", "jdk.incubator.vector",
+        "--enable-preview",
+        "-Dskainet.cpu.vector.enabled=true"
+    )
+}
+
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+    systemProperty("skainet.cpu.vector.enabled", "true")
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+    systemProperty("skainet.cpu.vector.enabled", "true")
 }
 
 dependencies {

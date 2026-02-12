@@ -5,24 +5,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.yield
+import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
 import sk.ainet.apps.kllama.chat.domain.model.ChatSession
 import sk.ainet.apps.kllama.chat.domain.model.InferenceConfig
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.port.GeneratedToken
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
+import sk.ainet.lang.tensor.*
+import sk.ainet.lang.types.DType
 import kotlin.concurrent.Volatile
 import kotlin.random.Random
 
 /**
- * Inference engine for LLM text generation.
+ * Inference engine for LLM text generation using SKaiNET's LlamaRuntime.
  *
- * This implementation provides the framework for streaming token generation.
- * The actual neural network forward pass is delegated to platform-specific backends.
+ * When a LlamaRuntime is provided, this engine performs actual neural network inference.
+ * Otherwise, it falls back to demo mode for testing the UI.
  */
 class LlamaInferenceEngine(
     private val model: LoadedModel?,
     private val tokenizer: Tokenizer = SimpleByteTokenizer(),
-    private val backend: InferenceBackend? = null
+    private val runtime: LlamaRuntime? = null
 ) : InferenceEngine {
 
     @Volatile
@@ -31,7 +34,7 @@ class LlamaInferenceEngine(
     private val statisticsCollector = TokenStatisticsCollector()
 
     override val isReady: Boolean
-        get() = model != null && backend != null
+        get() = model != null && runtime != null
 
     override fun generate(
         session: ChatSession,
@@ -39,35 +42,51 @@ class LlamaInferenceEngine(
     ): Flow<GeneratedToken> = flow {
         shouldStop = false
 
-        // Format the conversation into a prompt
-        val prompt = ChatFormatter.formatChatML(session)
-        val promptTokens = tokenizer.encode(prompt)
-
-        statisticsCollector.start(promptTokens.size)
-
-        // If no backend is available, use demo mode
-        if (backend == null) {
+        // If no runtime is available, use demo mode
+        if (runtime == null) {
+            println("No LlamaRuntime available, using demo mode")
             generateDemoTokens(config).collect { emit(it) }
             return@flow
         }
 
-        // Initialize generation state
-        var currentTokens = promptTokens.toMutableList()
+        // Format the conversation into a prompt
+        val prompt = ChatFormatter.formatChatML(session)
+
+        // Tokenize the prompt (simple byte-level for now)
+        // TODO: Use proper BPE tokenizer from model vocabulary
+        val promptTokens = tokenizer.encode(prompt).toIntArray()
+
+        // Use forward()-based generation for proper streaming
+        generateWithRuntime(promptTokens, config).collect { emit(it) }
+    }
+
+    /**
+     * Generate tokens using LlamaRuntime's forward() method for streaming.
+     */
+    private fun generateWithRuntime(
+        promptTokens: IntArray,
+        config: InferenceConfig
+    ): Flow<GeneratedToken> = flow {
+        if (runtime == null) return@flow
+
+        runtime.reset()
+        statisticsCollector.start(promptTokens.size)
+
+        // Process prompt tokens (prefill)
+        var lastLogits: Any? = null
+        for (tokenId in promptTokens) {
+            if (shouldStop || !currentCoroutineContext().isActive) return@flow
+            lastLogits = runtime.forward(tokenId)
+        }
+
+        // Generate new tokens
         var generatedCount = 0
+        var nextToken = sampleFromLogits(lastLogits, config)
 
         while (generatedCount < config.maxNewTokens && !shouldStop && currentCoroutineContext().isActive) {
-            // Forward pass through the model
-            val logits = backend.forward(currentTokens)
+            // Check for EOS token (commonly 2 for Llama)
+            if (nextToken == 2) break
 
-            // Sample next token
-            val nextToken = sampleToken(logits, config)
-
-            // Check for EOS
-            if (nextToken == tokenizer.eosToken) {
-                break
-            }
-
-            // Decode and emit the token
             val tokenText = tokenizer.decodeToken(nextToken)
             statisticsCollector.recordToken()
 
@@ -77,13 +96,37 @@ class LlamaInferenceEngine(
                 statistics = statisticsCollector.buildStatistics()
             ))
 
-            // Update state for next iteration
-            currentTokens.add(nextToken)
+            // Forward pass for next token
+            lastLogits = runtime.forward(nextToken)
+            nextToken = sampleFromLogits(lastLogits, config)
             generatedCount++
-
-            // Yield to allow cancellation
-            yield()
         }
+    }
+
+    /**
+     * Sample a token from the logits tensor.
+     */
+    @Suppress("UNCHECKED_CAST")
+    private fun sampleFromLogits(logits: Any?, config: InferenceConfig): Int {
+        if (logits == null) return 0
+
+        // Extract float array from tensor
+        val logitsArray = try {
+            val tensor = logits as? sk.ainet.lang.tensor.Tensor<out sk.ainet.lang.types.DType, *>
+            if (tensor != null) {
+                val data = tensor.data
+                FloatArray(tensor.volume) { idx ->
+                    (data[idx] as Number).toFloat()
+                }
+            } else {
+                return 0
+            }
+        } catch (e: Exception) {
+            println("Error extracting logits: ${e.message}")
+            return 0
+        }
+
+        return sampleToken(logitsArray, config)
     }
 
     /**
@@ -91,6 +134,8 @@ class LlamaInferenceEngine(
      */
     private fun generateDemoTokens(config: InferenceConfig): Flow<GeneratedToken> = flow {
         val demoResponse = buildDemoResponse()
+
+        statisticsCollector.start(0)
 
         for ((index, char) in demoResponse.withIndex()) {
             if (shouldStop || !currentCoroutineContext().isActive) break
@@ -130,22 +175,25 @@ class LlamaInferenceEngine(
      * Sample a token from logits using temperature and top-p/top-k sampling.
      */
     private fun sampleToken(logits: FloatArray, config: InferenceConfig): Int {
+        if (logits.isEmpty()) return 0
+
         // Apply temperature
-        val scaled = if (config.temperature != 1f) {
+        val scaled = if (config.temperature != 1f && config.temperature > 0f) {
             logits.map { it / config.temperature }.toFloatArray()
         } else {
             logits
         }
 
         // Convert to probabilities using softmax
-        val maxLogit = scaled.max()
+        val maxLogit = scaled.maxOrNull() ?: 0f
         val exps = scaled.map { kotlin.math.exp((it - maxLogit).toDouble()).toFloat() }
         val sumExps = exps.sum()
+        if (sumExps == 0f) return 0
         val probs = exps.map { it / sumExps }
 
         // Top-k filtering
         val sortedIndices = probs.indices.sortedByDescending { probs[it] }
-        val topK = sortedIndices.take(config.topK)
+        val topK = sortedIndices.take(minOf(config.topK, probs.size))
 
         // Top-p (nucleus) filtering
         var cumSum = 0f
@@ -156,9 +204,12 @@ class LlamaInferenceEngine(
             if (cumSum >= config.topP) break
         }
 
+        if (nucleus.isEmpty()) return sortedIndices.firstOrNull() ?: 0
+
         // Sample from nucleus
         val nucleusProbs = nucleus.map { probs[it] }
         val nucleusSum = nucleusProbs.sum()
+        if (nucleusSum == 0f) return nucleus.first()
         val normalizedProbs = nucleusProbs.map { it / nucleusSum }
 
         var r = Random.nextFloat()
@@ -177,22 +228,4 @@ class LlamaInferenceEngine(
     override fun tokenize(text: String): List<Int> = tokenizer.encode(text)
 
     override fun decode(tokenIds: List<Int>): String = tokenizer.decode(tokenIds)
-}
-
-/**
- * Backend interface for platform-specific neural network execution.
- */
-interface InferenceBackend {
-    /**
-     * Perform a forward pass through the model.
-     *
-     * @param tokens Input token IDs
-     * @return Logits for the next token prediction
-     */
-    fun forward(tokens: List<Int>): FloatArray
-
-    /**
-     * Reset the KV cache for a new generation.
-     */
-    fun resetCache()
 }

@@ -17,10 +17,12 @@ actual class FilePicker {
             val file = input.files?.get(0)
             if (file != null) {
                 // For Wasm, similar to JS - we get the file name but path is sandboxed
+                // file.size is a JsNumber in WasmJs, convert via toInt() for typical file sizes
+                val sizeBytes = file.size.toInt().toLong()
                 cont.resume(FilePickerResult(
                     path = file.name,
                     name = file.name,
-                    sizeBytes = file.size.toLong()
+                    sizeBytes = sizeBytes
                 ))
             } else {
                 cont.resume(null)

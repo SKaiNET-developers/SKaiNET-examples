@@ -1,5 +1,8 @@
 package sk.ainet.apps.kllama.chat.screens
 
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.round
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -262,13 +265,25 @@ private fun SupportedFormatsInfo(modifier: Modifier = Modifier) {
 }
 
 /**
+ * Formats a decimal number with the specified number of decimal places.
+ * Multiplatform-compatible replacement for String.format("%.Xf", value).
+ */
+private fun formatDecimal(value: Double, decimals: Int = 2): String {
+    val factor = 10.0.pow(decimals)
+    val rounded = round(value * factor) / factor
+    val intPart = rounded.toLong()
+    val fracPart = abs(((rounded - intPart) * factor).toLong())
+    return "$intPart.${fracPart.toString().padStart(decimals, '0')}"
+}
+
+/**
  * Format file size to human-readable string.
  */
 private fun formatFileSize(bytes: Long): String {
     return when {
-        bytes >= 1_000_000_000 -> "%.2f GB".format(bytes / 1_000_000_000.0)
-        bytes >= 1_000_000 -> "%.2f MB".format(bytes / 1_000_000.0)
-        bytes >= 1_000 -> "%.2f KB".format(bytes / 1_000.0)
+        bytes >= 1_000_000_000 -> "${formatDecimal(bytes / 1_000_000_000.0)} GB"
+        bytes >= 1_000_000 -> "${formatDecimal(bytes / 1_000_000.0)} MB"
+        bytes >= 1_000 -> "${formatDecimal(bytes / 1_000.0)} KB"
         else -> "$bytes B"
     }
 }

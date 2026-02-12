@@ -10,3 +10,14 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.ktor) apply false
 }
+allprojects {
+    tasks.withType<JavaExec>().configureEach {
+        jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+        systemProperty("skainet.cpu.vector.enabled", "true")
+    }
+
+    tasks.withType<Test>().configureEach {
+        jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+        systemProperty("skainet.cpu.vector.enabled", "true")
+    }
+}

@@ -28,6 +28,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines)
             implementation(libs.kotlinx.io.core)
+            implementation(libs.kotlinx.datetime)
 
             // SKaiNET core
             implementation(libs.skainet.lang.core)
@@ -45,6 +46,9 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        wasmJsMain.dependencies {
+            implementation(libs.kotlinx.browser)
         }
     }
 }

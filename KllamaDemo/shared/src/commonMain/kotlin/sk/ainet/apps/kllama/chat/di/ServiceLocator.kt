@@ -1,5 +1,6 @@
 package sk.ainet.apps.kllama.chat.di
 
+import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
 import sk.ainet.apps.kllama.chat.data.repository.ModelRepositoryImpl
 import sk.ainet.apps.kllama.chat.data.repository.PlatformModelLoader
 import sk.ainet.apps.kllama.chat.data.repository.StubModelLoader
@@ -16,6 +17,7 @@ object ServiceLocator {
 
     private var platformLoader: PlatformModelLoader? = null
     private var modelRepository: ModelRepository? = null
+    private var currentRuntime: LlamaRuntime? = null
 
     /**
      * Initialize the service locator with platform-specific implementations.
@@ -44,10 +46,27 @@ object ServiceLocator {
     }
 
     /**
+     * Get the platform loader (for accessing platform-specific features).
+     */
+    fun getPlatformLoader(): PlatformModelLoader? = platformLoader
+
+    /**
+     * Set the current LlamaRuntime (called by JvmModelLoader after loading).
+     */
+    fun setRuntime(runtime: LlamaRuntime?) {
+        currentRuntime = runtime
+    }
+
+    /**
+     * Get the current LlamaRuntime if available.
+     */
+    fun getRuntime(): LlamaRuntime? = currentRuntime
+
+    /**
      * Create an inference engine for the given model.
      */
     fun createInferenceEngine(model: LoadedModel?): InferenceEngine {
-        return LlamaInferenceEngine(model)
+        return LlamaInferenceEngine(model, runtime = currentRuntime)
     }
 
     /**
@@ -69,5 +88,6 @@ object ServiceLocator {
     fun reset() {
         platformLoader = null
         modelRepository = null
+        currentRuntime = null
     }
 }

@@ -2,11 +2,13 @@ package sk.ainet.apps.kllama.chat.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import sk.ainet.apps.kllama.chat.domain.model.ChatMessage
@@ -158,7 +160,9 @@ class ChatViewModel(
                 engine.generate(
                     session = _uiState.value.session,
                     config = InferenceConfig()
-                ).conflate().collect { token ->
+                ).flowOn(Dispatchers.Default)
+                    .conflate()
+                    .collect { token ->
                     responseBuilder.append(token.token)
 
                     _uiState.update { state ->

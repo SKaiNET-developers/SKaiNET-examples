@@ -1,5 +1,8 @@
 package sk.ainet.apps.kllama.chat.ui
 
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.round
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -133,12 +136,24 @@ private fun StatItem(
 }
 
 /**
+ * Formats a decimal number with the specified number of decimal places.
+ * Multiplatform-compatible replacement for String.format("%.Xf", value).
+ */
+private fun formatDecimal(value: Double, decimals: Int = 1): String {
+    val factor = 10.0.pow(decimals)
+    val rounded = round(value * factor) / factor
+    val intPart = rounded.toLong()
+    val fracPart = abs(((rounded - intPart) * factor).toLong())
+    return "$intPart.${fracPart.toString().padStart(decimals, '0')}"
+}
+
+/**
  * Format milliseconds as human-readable duration.
  */
 private fun formatDuration(ms: Long): String {
     return when {
         ms < 1000 -> "${ms}ms"
-        ms < 60000 -> "%.1fs".format(ms / 1000.0)
+        ms < 60000 -> "${formatDecimal(ms / 1000.0)}s"
         else -> {
             val minutes = ms / 60000
             val seconds = (ms % 60000) / 1000

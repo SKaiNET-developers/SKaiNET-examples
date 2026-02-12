@@ -1,5 +1,21 @@
 package sk.ainet.apps.kllama.chat.domain.model
 
+import kotlin.math.pow
+import kotlin.math.round
+import kotlin.math.abs
+
+/**
+ * Formats a decimal number with the specified number of decimal places.
+ * Multiplatform-compatible replacement for String.format("%.Xf", value).
+ */
+private fun formatDecimal(value: Double, decimals: Int = 2): String {
+    val factor = 10.0.pow(decimals)
+    val rounded = round(value * factor) / factor
+    val intPart = rounded.toLong()
+    val fracPart = abs(((rounded - intPart) * factor).toLong())
+    return "$intPart.${fracPart.toString().padStart(decimals, '0')}"
+}
+
 /**
  * Supported model file formats.
  */
@@ -40,17 +56,17 @@ data class ModelMetadata(
 ) {
     val formattedSize: String
         get() = when {
-            sizeBytes >= 1_000_000_000 -> "%.2f GB".format(sizeBytes / 1_000_000_000.0)
-            sizeBytes >= 1_000_000 -> "%.2f MB".format(sizeBytes / 1_000_000.0)
-            sizeBytes >= 1_000 -> "%.2f KB".format(sizeBytes / 1_000.0)
+            sizeBytes >= 1_000_000_000 -> "${formatDecimal(sizeBytes / 1_000_000_000.0)} GB"
+            sizeBytes >= 1_000_000 -> "${formatDecimal(sizeBytes / 1_000_000.0)} MB"
+            sizeBytes >= 1_000 -> "${formatDecimal(sizeBytes / 1_000.0)} KB"
             else -> "$sizeBytes B"
         }
 
     val formattedParamCount: String
         get() = when {
-            parameterCount >= 1_000_000_000 -> "%.2fB".format(parameterCount / 1_000_000_000.0)
-            parameterCount >= 1_000_000 -> "%.2fM".format(parameterCount / 1_000_000.0)
-            parameterCount >= 1_000 -> "%.2fK".format(parameterCount / 1_000.0)
+            parameterCount >= 1_000_000_000 -> "${formatDecimal(parameterCount / 1_000_000_000.0)}B"
+            parameterCount >= 1_000_000 -> "${formatDecimal(parameterCount / 1_000_000.0)}M"
+            parameterCount >= 1_000 -> "${formatDecimal(parameterCount / 1_000.0)}K"
             else -> "$parameterCount"
         }
 }
@@ -69,7 +85,7 @@ data class LoadedModel(
  */
 data class InferenceConfig(
     val maxContextLength: Int = 2048,
-    val maxNewTokens: Int = 512,
+    val maxNewTokens: Int = 64,
     val temperature: Float = 0.7f,
     val topP: Float = 0.9f,
     val topK: Int = 40,
@@ -86,5 +102,5 @@ data class InferenceStatistics(
     val promptTokens: Int = 0
 ) {
     val formattedTps: String
-        get() = "%.2f tok/s".format(tokensPerSecond)
+        get() = "${formatDecimal(tokensPerSecond.toDouble())} tok/s"
 }

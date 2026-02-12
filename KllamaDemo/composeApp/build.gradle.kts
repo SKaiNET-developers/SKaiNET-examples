@@ -99,11 +99,26 @@ dependencies {
     debugImplementation(libs.compose.uiTooling)
 }
 
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+}
+
+tasks.withType<Test>().configureEach {
+    jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+}
+
 compose.desktop {
     application {
         mainClass = "sk.ainet.apps.kllama.chat.MainKt"
 
-        jvmArgs += listOf("-Xmx4G")
+        jvmArgs += listOf(
+            "-Xmx32G",                              // Increased heap for large models
+            "-XX:+UseG1GC",                         // Better GC for large heaps
+            "-XX:MaxGCPauseMillis=100",             // Reduce GC pauses
+            "--add-modules", "jdk.incubator.vector",
+            "--enable-preview",
+            "-Dskainet.cpu.vector.enabled=true"
+        )
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
