@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.yield
 import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
+import sk.ainet.context.observers.LatencyExecutionObserver
 import sk.ainet.apps.kllama.chat.domain.model.ChatSession
 import sk.ainet.apps.kllama.chat.domain.model.InferenceConfig
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.port.GeneratedToken
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
+import sk.ainet.apps.kllama.chat.logging.AppLogger
 import sk.ainet.lang.tensor.*
 import sk.ainet.lang.types.DType
 import kotlin.concurrent.Volatile
@@ -32,6 +34,9 @@ class LlamaInferenceEngine(
     private var shouldStop = false
 
     private val statisticsCollector = TokenStatisticsCollector()
+    private val latencyObserver = LatencyExecutionObserver()
+
+    fun getLatencyResults() = latencyObserver.results()
 
     override val isReady: Boolean
         get() = model != null && runtime != null
@@ -44,7 +49,7 @@ class LlamaInferenceEngine(
 
         // If no runtime is available, use demo mode
         if (runtime == null) {
-            println("No LlamaRuntime available, using demo mode")
+            AppLogger.warn("Inference", "No LlamaRuntime available, using demo mode")
             generateDemoTokens(config).collect { emit(it) }
             return@flow
         }
@@ -55,6 +60,14 @@ class LlamaInferenceEngine(
         // Tokenize the prompt (simple byte-level for now)
         // TODO: Use proper BPE tokenizer from model vocabulary
         val promptTokens = tokenizer.encode(prompt).toIntArray()
+
+        AppLogger.info("Inference", "Generation started", mapOf(
+            "promptTokens" to "${promptTokens.size}",
+            "maxNewTokens" to "${config.maxNewTokens}",
+            "temperature" to "${config.temperature}",
+            "topP" to "${config.topP}",
+            "topK" to "${config.topK}"
+        ))
 
         // Use forward()-based generation for proper streaming
         generateWithRuntime(promptTokens, config).collect { emit(it) }
@@ -70,6 +83,7 @@ class LlamaInferenceEngine(
         if (runtime == null) return@flow
 
         runtime.reset()
+        latencyObserver.reset()
         statisticsCollector.start(promptTokens.size)
 
         // Process prompt tokens (prefill)
@@ -78,6 +92,11 @@ class LlamaInferenceEngine(
             if (shouldStop || !currentCoroutineContext().isActive) return@flow
             lastLogits = runtime.forward(tokenId)
         }
+
+        statisticsCollector.recordPrefillDone()
+        AppLogger.debug("Inference", "Prefill complete", mapOf(
+            "prefillTimeMs" to "${statisticsCollector.getPrefillTimeMs()}"
+        ))
 
         // Generate new tokens
         var generatedCount = 0
@@ -101,6 +120,14 @@ class LlamaInferenceEngine(
             nextToken = sampleFromLogits(lastLogits, config)
             generatedCount++
         }
+
+        val finalStats = statisticsCollector.buildStatistics()
+        AppLogger.info("Inference", "Generation complete", mapOf(
+            "tokensGenerated" to "${finalStats.tokensGenerated}",
+            "totalTimeMs" to "${finalStats.totalTimeMs}",
+            "averageTps" to "${statisticsCollector.getAverageTps()}",
+            "peakTps" to "${finalStats.peakTps}"
+        ))
     }
 
     /**
@@ -122,7 +149,9 @@ class LlamaInferenceEngine(
                 return 0
             }
         } catch (e: Exception) {
-            println("Error extracting logits: ${e.message}")
+            AppLogger.error("Inference", "Error extracting logits", mapOf(
+                "error" to (e.message ?: "unknown")
+            ))
             return 0
         }
 
@@ -223,6 +252,7 @@ class LlamaInferenceEngine(
 
     override fun stopGeneration() {
         shouldStop = true
+        AppLogger.info("Inference", "Generation stopped by user")
     }
 
     override fun tokenize(text: String): List<Int> = tokenizer.encode(text)

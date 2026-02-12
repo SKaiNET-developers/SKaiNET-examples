@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import sk.ainet.ui.components.SKaiNETProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,7 +55,7 @@ import sk.ainet.apps.kllama.chat.domain.model.QuantizationType
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModelSelectionScreen(
-    onModelSelected: (String) -> Unit,
+    onModelSelected: (FilePickerResult) -> Unit,
     onNavigateBack: () -> Unit,
     isLoading: Boolean,
     errorMessage: String?,
@@ -133,17 +133,16 @@ fun ModelSelectionScreen(
             Button(
                 onClick = {
                     selectedFile?.let { file ->
-                        onModelSelected(file.path)
+                        onModelSelected(file)
                     }
                 },
                 enabled = selectedFile != null && !isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
+                    SKaiNETProgressIndicator(
+                        size = 24.dp,
+                        strokeWidth = 2.dp
                     )
                     Text(
                         text = "Loading...",

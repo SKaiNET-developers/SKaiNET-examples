@@ -44,6 +44,11 @@ kotlin {
             implementation(libs.skainet.io.core)
             implementation(libs.skainet.io.gguf)
         }
+        jvmMain.dependencies {
+            // SKaiNET KLlama (GGUFTokenizer) - JVM only (no iOS/wasm artifacts)
+            implementation(libs.skainet.kllama)
+            implementation(libs.skainet.llm)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }

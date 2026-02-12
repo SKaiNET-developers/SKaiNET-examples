@@ -7,6 +7,7 @@ import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
 import sk.ainet.apps.kllama.chat.domain.port.ModelRepository
+import sk.ainet.apps.kllama.chat.logging.AppLogger
 
 /**
  * Implementation of ModelRepository.
@@ -28,17 +29,35 @@ class ModelRepositoryImpl(
             format
         }
 
+        AppLogger.info("ModelRepository", "Format detected", mapOf(
+            "path" to path,
+            "format" to detectedFormat.name
+        ))
+
         if (detectedFormat == ModelFormat.UNKNOWN) {
+            AppLogger.warn("ModelRepository", "Unknown format", mapOf("path" to path))
             return ModelLoadResult.Error("Unable to detect model format from path: $path")
         }
+
+        AppLogger.info("ModelRepository", "Delegating load to platform loader")
 
         return try {
             val result = platformLoader.loadFromPath(path, detectedFormat)
             if (result is ModelLoadResult.Success) {
                 currentModel = result.model
+                AppLogger.info("ModelRepository", "Model load succeeded", mapOf(
+                    "name" to result.model.metadata.name
+                ))
+            } else if (result is ModelLoadResult.Error) {
+                AppLogger.error("ModelRepository", "Model load failed", mapOf(
+                    "error" to result.message
+                ))
             }
             result
         } catch (e: Exception) {
+            AppLogger.error("ModelRepository", "Model load exception", mapOf(
+                "error" to (e.message ?: "unknown")
+            ))
             ModelLoadResult.Error("Failed to load model: ${e.message}", e)
         }
     }
@@ -67,6 +86,9 @@ class ModelRepositoryImpl(
     override fun getLoadedModel(): LoadedModel? = currentModel
 
     override fun unloadModel() {
+        AppLogger.info("ModelRepository", "Unloading model", mapOf(
+            "name" to (currentModel?.metadata?.name ?: "none")
+        ))
         currentModel = null
         platformLoader.unload()
     }

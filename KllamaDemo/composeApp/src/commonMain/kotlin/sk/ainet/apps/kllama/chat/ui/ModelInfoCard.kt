@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import sk.ainet.ui.components.SKaiNETProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,8 +44,8 @@ fun ModelInfoCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
+                SKaiNETProgressIndicator(
+                    size = 24.dp,
                     strokeWidth = 2.dp
                 )
                 Text(

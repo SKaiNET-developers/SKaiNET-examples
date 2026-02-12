@@ -12,7 +12,7 @@ androidx-testExt = "1.3.0"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.0"
 junit = "4.13.2"
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 kotlinx-browser = "0.3"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
@@ -20,7 +20,7 @@ kotlinxIo = "0.8.2"
 ktor = "3.3.3"
 logback = "1.5.24"
 material3 = "1.10.0-alpha05"
-skainet = "0.9.1"
+skainet = "0.13.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -63,6 +63,8 @@ skainet-compile-core = { module = "sk.ainet.core:skainet-compile-core", version.
 skainet-backend-cpu = { module = "sk.ainet.core:skainet-backend-cpu", version.ref = "skainet" }
 skainet-io-core = { module = "sk.ainet.core:skainet-io-core", version.ref = "skainet" }
 skainet-io-gguf = { module = "sk.ainet.core:skainet-io-gguf", version.ref = "skainet" }
+skainet-kllama = { module = "sk.ainet.core:skainet-apps-kllama", version.ref = "skainet" }
+skainet-llm = { module = "sk.ainet.core:skainet-llm", version.ref = "skainet" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

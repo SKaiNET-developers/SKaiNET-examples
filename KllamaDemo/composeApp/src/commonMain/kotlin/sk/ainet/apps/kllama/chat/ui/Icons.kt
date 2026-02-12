@@ -300,6 +300,112 @@ val BackIcon: ImageVector
         }
     }.build()
 
+val DiagnosticsIcon: ImageVector
+    get() = ImageVector.Builder(
+        name = "Diagnostics",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f
+    ).apply {
+        // Terminal/console rectangle
+        path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1.0f,
+            stroke = null,
+            strokeAlpha = 1.0f,
+            strokeLineWidth = 1.0f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Miter,
+            strokeLineMiter = 1.0f,
+            pathFillType = PathFillType.NonZero
+        ) {
+            // Outer rectangle
+            moveTo(4f, 4f)
+            curveTo(2.9f, 4f, 2f, 4.9f, 2f, 6f)
+            verticalLineTo(18f)
+            curveTo(2f, 19.1f, 2.9f, 20f, 4f, 20f)
+            horizontalLineTo(20f)
+            curveTo(21.1f, 20f, 22f, 19.1f, 22f, 18f)
+            verticalLineTo(6f)
+            curveTo(22f, 4.9f, 21.1f, 4f, 20f, 4f)
+            horizontalLineTo(4f)
+            close()
+            // Inner rectangle (cutout)
+            moveTo(4f, 6f)
+            horizontalLineTo(20f)
+            verticalLineTo(18f)
+            horizontalLineTo(4f)
+            verticalLineTo(6f)
+            close()
+            // ">" prompt
+            moveTo(6f, 9f)
+            lineTo(10f, 12f)
+            lineTo(6f, 15f)
+            verticalLineTo(13.5f)
+            lineTo(8.5f, 12f)
+            lineTo(6f, 10.5f)
+            verticalLineTo(9f)
+            close()
+            // "_" cursor
+            moveTo(11f, 14f)
+            horizontalLineTo(16f)
+            verticalLineTo(16f)
+            horizontalLineTo(11f)
+            verticalLineTo(14f)
+            close()
+        }
+    }.build()
+
+val CopyIcon: ImageVector
+    get() = ImageVector.Builder(
+        name = "Copy",
+        defaultWidth = 24.dp,
+        defaultHeight = 24.dp,
+        viewportWidth = 24f,
+        viewportHeight = 24f
+    ).apply {
+        path(
+            fill = SolidColor(Color.Black),
+            fillAlpha = 1.0f,
+            stroke = null,
+            strokeAlpha = 1.0f,
+            strokeLineWidth = 1.0f,
+            strokeLineCap = StrokeCap.Butt,
+            strokeLineJoin = StrokeJoin.Miter,
+            strokeLineMiter = 1.0f,
+            pathFillType = PathFillType.NonZero
+        ) {
+            // Back rectangle
+            moveTo(16f, 1f)
+            horizontalLineTo(4f)
+            curveTo(2.9f, 1f, 2f, 1.9f, 2f, 3f)
+            verticalLineTo(17f)
+            horizontalLineTo(4f)
+            verticalLineTo(3f)
+            horizontalLineTo(16f)
+            verticalLineTo(1f)
+            close()
+            // Front rectangle
+            moveTo(20f, 5f)
+            horizontalLineTo(8f)
+            curveTo(6.9f, 5f, 6f, 5.9f, 6f, 7f)
+            verticalLineTo(21f)
+            curveTo(6f, 22.1f, 6.9f, 23f, 8f, 23f)
+            horizontalLineTo(20f)
+            curveTo(21.1f, 23f, 22f, 22.1f, 22f, 21f)
+            verticalLineTo(7f)
+            curveTo(22f, 5.9f, 21.1f, 5f, 20f, 5f)
+            close()
+            moveTo(20f, 21f)
+            horizontalLineTo(8f)
+            verticalLineTo(7f)
+            horizontalLineTo(20f)
+            verticalLineTo(21f)
+            close()
+        }
+    }.build()
+
 val CloseIcon: ImageVector
     get() = ImageVector.Builder(
         name = "Close",

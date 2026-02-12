@@ -24,7 +24,7 @@ import sk.ainet.lang.types.FP32
  */
 class LlamaRuntime(
     private val ctx: ExecutionContext,
-    val weights: LlamaRuntimeWeights,
+    val weights: LlamaRuntimeWeights<FP32>,
     private val kvCache: KvCache? = null,
     private val ropeFreqBase: Float = 10000f,
     private val eps: Float = 1e-5f,
@@ -93,7 +93,7 @@ class LlamaRuntime(
         }
     }
 
-    private fun runLayer(layerIdx: Int, layer: LlamaLayerWeights, input: Tensor<FP32, Float>): Tensor<FP32, Float> {
+    private fun runLayer(layerIdx: Int, layer: LlamaLayerWeights<FP32>, input: Tensor<FP32, Float>): Tensor<FP32, Float> {
         var x = input
 
         val attnNorm = rmsNorm(x, layer.attnNorm)

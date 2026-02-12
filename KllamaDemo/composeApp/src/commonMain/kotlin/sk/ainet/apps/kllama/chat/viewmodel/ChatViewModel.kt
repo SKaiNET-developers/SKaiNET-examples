@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import sk.ainet.apps.kllama.chat.data.file.FilePickerResult
+import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
 import sk.ainet.apps.kllama.chat.domain.model.ChatMessage
 import sk.ainet.apps.kllama.chat.domain.model.ChatSession
 import sk.ainet.apps.kllama.chat.domain.model.InferenceConfig
@@ -18,9 +20,12 @@ import sk.ainet.apps.kllama.chat.domain.model.InferenceStatistics
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.MessageRole
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
+import sk.ainet.apps.kllama.chat.domain.model.currentTimeMillis
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
 import sk.ainet.apps.kllama.chat.domain.port.ModelRepository
+import sk.ainet.apps.kllama.chat.logging.AppLogger
+import sk.ainet.apps.kllama.chat.logging.LogEntry
 
 /**
  * UI state for the chat screen.
@@ -34,7 +39,8 @@ data class ChatUiState(
     val statistics: InferenceStatistics = InferenceStatistics(),
     val modelMetadata: ModelMetadata? = null,
     val errorMessage: String? = null,
-    val showModelPicker: Boolean = false
+    val showModelPicker: Boolean = false,
+    val loadingTimeMs: Long = 0
 )
 
 /**
@@ -49,6 +55,8 @@ class ChatViewModel(
     private val _uiState = MutableStateFlow(ChatUiState())
     val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
+    val logs: StateFlow<List<LogEntry>> = AppLogger.logs
+
     private var currentInferenceEngine: InferenceEngine? = null
     private var generationJob: Job? = null
 
@@ -58,16 +66,19 @@ class ChatViewModel(
     fun loadModel(path: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingModel = true, errorMessage = null) }
+            val loadStart = currentTimeMillis()
 
             when (val result = modelRepository.loadModel(path)) {
                 is ModelLoadResult.Success -> {
+                    val loadTime = currentTimeMillis() - loadStart
                     currentInferenceEngine = inferenceEngineFactory(result.model)
                     _uiState.update {
                         it.copy(
                             isModelLoaded = true,
                             isLoadingModel = false,
                             modelMetadata = result.model.metadata,
-                            showModelPicker = false
+                            showModelPicker = false,
+                            loadingTimeMs = loadTime
                         )
                     }
                 }
@@ -80,6 +91,49 @@ class ChatViewModel(
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Load a model from a [FilePickerResult].
+     * Uses source-based loading when a sourceProvider is available (Web, Android, iOS),
+     * falls back to path-based loading otherwise (JVM Desktop).
+     */
+    fun loadModel(fileResult: FilePickerResult) {
+        val sourceProvider = fileResult.sourceProvider
+        if (sourceProvider != null) {
+            val format = ModelFormatDetector.detectFromPath(fileResult.name)
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoadingModel = true, errorMessage = null) }
+                val loadStart = currentTimeMillis()
+
+                val source = sourceProvider()
+                when (val result = modelRepository.loadModel(source, fileResult.name, fileResult.sizeBytes, format)) {
+                    is ModelLoadResult.Success -> {
+                        val loadTime = currentTimeMillis() - loadStart
+                        currentInferenceEngine = inferenceEngineFactory(result.model)
+                        _uiState.update {
+                            it.copy(
+                                isModelLoaded = true,
+                                isLoadingModel = false,
+                                modelMetadata = result.model.metadata,
+                                showModelPicker = false,
+                                loadingTimeMs = loadTime
+                            )
+                        }
+                    }
+                    is ModelLoadResult.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoadingModel = false,
+                                errorMessage = result.message
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            loadModel(fileResult.path)
         }
     }
 

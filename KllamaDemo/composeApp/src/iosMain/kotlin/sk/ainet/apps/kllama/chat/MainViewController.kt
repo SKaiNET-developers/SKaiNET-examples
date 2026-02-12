@@ -1,13 +1,13 @@
 package sk.ainet.apps.kllama.chat
 
 import androidx.compose.ui.window.ComposeUIViewController
+import sk.ainet.apps.kllama.chat.data.repository.CommonModelLoader
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 
 fun MainViewController() = ComposeUIViewController {
-    // Initialize ServiceLocator with stub loader for iOS
-    // (Local inference not fully supported on iOS yet)
+    // Initialize ServiceLocator with common model loader
     if (!ServiceLocator.isInitialized) {
-        ServiceLocator.initializeWithStub("iOS")
+        ServiceLocator.initialize(CommonModelLoader())
     }
 
     App()

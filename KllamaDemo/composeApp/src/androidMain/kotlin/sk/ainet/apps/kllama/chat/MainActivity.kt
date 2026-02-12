@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import sk.ainet.apps.kllama.chat.data.repository.CommonModelLoader
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 
 class MainActivity : ComponentActivity() {
@@ -13,13 +14,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        // Initialize ServiceLocator with stub loader for Android
-        // (Local inference not fully supported on Android yet)
+        // Initialize ServiceLocator with common model loader
         if (!ServiceLocator.isInitialized) {
-            ServiceLocator.initializeWithStub("Android")
+            ServiceLocator.initialize(CommonModelLoader())
         }
 
         setContent {
+            SetupAndroidFilePicker()
             App()
         }
     }

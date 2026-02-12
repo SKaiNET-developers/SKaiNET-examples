@@ -1,12 +1,15 @@
 package sk.ainet.apps.kllama.chat.data.file
 
+import kotlinx.io.Source
+
 /**
  * Result of a file picker operation.
  */
 data class FilePickerResult(
     val path: String,
     val name: String,
-    val sizeBytes: Long
+    val sizeBytes: Long,
+    val sourceProvider: (() -> Source)? = null
 )
 
 /**

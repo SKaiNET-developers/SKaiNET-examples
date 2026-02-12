@@ -5,13 +5,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import sk.ainet.apps.kllama.chat.data.repository.JvmModelLoader
+import sk.ainet.apps.kllama.chat.data.repository.CommonModelLoader
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 
 fun main() = application {
-    // Initialize ServiceLocator with JVM-specific model loader
+    // Initialize ServiceLocator with common model loader
     if (!ServiceLocator.isInitialized) {
-        ServiceLocator.initialize(JvmModelLoader())
+        ServiceLocator.initialize(CommonModelLoader())
     }
 
     Window(

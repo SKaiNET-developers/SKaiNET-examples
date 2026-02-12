@@ -3,33 +3,35 @@ package sk.ainet.apps.kllama.chat.data.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.Source
-import kotlinx.io.asSource
 import kotlinx.io.buffered
+import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
 import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
 import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
+import sk.ainet.apps.kllama.chat.domain.model.currentTimeMillis
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
+import sk.ainet.apps.kllama.chat.logging.AppLogger
+import sk.ainet.io.gguf.llama.LlamaModelMetadata
 import sk.ainet.io.gguf.llama.LlamaRuntimeWeights
 import sk.ainet.io.gguf.llama.LlamaWeightLoader
 import sk.ainet.io.gguf.llama.LlamaWeightMapper
 import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.lang.types.FP32
-import java.io.File
-import java.io.FileInputStream
 
 /**
- * JVM-specific model loader using SKaiNET's LlamaRuntime.
+ * Multiplatform model loader using SKaiNET's LlamaRuntime.
  *
- * This loader uses SKaiNET's built-in GGUF loading and Llama inference runtime
- * for full local inference support.
+ * Uses [SystemFileSystem] for path-based loading (JVM, Android, iOS/Native)
+ * and accepts a [Source] directly for platforms without filesystem paths (Web).
  */
-class JvmModelLoader : PlatformModelLoader {
+class CommonModelLoader : PlatformModelLoader {
 
     private var currentRuntime: LlamaRuntime? = null
-    private var currentWeights: LlamaRuntimeWeights? = null
+    private var currentWeights: LlamaRuntimeWeights<FP32>? = null
     private var currentPath: String? = null
     private val ctx = DirectCpuExecutionContext()
 
@@ -70,53 +72,62 @@ class JvmModelLoader : PlatformModelLoader {
         ServiceLocator.setRuntime(null)
     }
 
-    private suspend fun loadGgufFromPath(path: String): ModelLoadResult = withContext(Dispatchers.IO) {
+    private suspend fun loadGgufFromPath(path: String): ModelLoadResult = withContext(Dispatchers.Default) {
         try {
-            val file = File(path)
-            if (!file.exists()) {
+            val ioPath = Path(path)
+            if (!SystemFileSystem.exists(ioPath)) {
                 return@withContext ModelLoadResult.Error("File not found: $path")
             }
 
-            val fileSizeMb = file.length() / 1024 / 1024
-            val estimatedMemoryMb = fileSizeMb * 4  // FP32 expansion factor
-            val availableMemoryMb = Runtime.getRuntime().maxMemory() / 1024 / 1024
+            val loadStartTime = currentTimeMillis()
+            val sizeBytes = SystemFileSystem.metadataOrNull(ioPath)?.size ?: 0L
+            val fileSizeMb = sizeBytes / 1024 / 1024
 
-            println("Loading GGUF model from: $path")
-            println("File size: $fileSizeMb MB")
-            println("Estimated memory (FP32 dequantized): ~${estimatedMemoryMb} MB")
-            println("Available heap: $availableMemoryMb MB")
+            AppLogger.info("ModelLoader", "Starting GGUF load", mapOf(
+                "path" to path,
+                "fileSizeMB" to "$fileSizeMb",
+                "format" to "GGUF"
+            ))
 
-            if (estimatedMemoryMb > availableMemoryMb * 0.8) {
-                println("WARNING: Model may exceed available memory! Consider using a smaller model or increasing heap size.")
-            }
-
-            // Use SKaiNET's LlamaWeightLoader with dequantization
             val loader = LlamaWeightLoader(
-                sourceProvider = { FileInputStream(file).asSource().buffered() },
+                sourceProvider = { SystemFileSystem.source(ioPath).buffered() },
                 quantPolicy = LlamaWeightLoader.QuantPolicy.DEQUANTIZE_TO_FP32
             )
 
-            println("Loading weights (this may take a while for large models)...")
+            val weightStart = currentTimeMillis()
+            AppLogger.debug("ModelLoader", "Loading weights...")
             val weights = loader.loadToMap<FP32, Float>(ctx)
-            println("Mapping weights to runtime structure...")
-            val runtimeWeights = LlamaWeightMapper.map(weights)
+            AppLogger.info("ModelLoader", "Weights loaded", mapOf(
+                "elapsedMs" to "${currentTimeMillis() - weightStart}"
+            ))
 
-            println("Creating LlamaRuntime...")
+            val mapStart = currentTimeMillis()
+            AppLogger.debug("ModelLoader", "Mapping weights to runtime structure...")
+            val runtimeWeights = LlamaWeightMapper.map(weights)
+            AppLogger.info("ModelLoader", "Weights mapped", mapOf(
+                "elapsedMs" to "${currentTimeMillis() - mapStart}"
+            ))
+
+            val runtimeStart = currentTimeMillis()
+            AppLogger.debug("ModelLoader", "Creating LlamaRuntime...")
             val runtime = LlamaRuntime(ctx, runtimeWeights)
+            AppLogger.info("ModelLoader", "Runtime created", mapOf(
+                "elapsedMs" to "${currentTimeMillis() - runtimeStart}"
+            ))
 
             currentRuntime = runtime
             currentWeights = runtimeWeights
             currentPath = path
 
-            // Register runtime with ServiceLocator for inference engine
             ServiceLocator.setRuntime(runtime)
 
             val llamaMeta = runtimeWeights.metadata
+            val name = path.substringAfterLast('/').substringAfterLast('\\').substringBeforeLast('.')
             val metadata = ModelMetadata(
-                name = file.nameWithoutExtension,
+                name = name,
                 parameterCount = estimateParamCount(llamaMeta),
-                sizeBytes = file.length(),
-                quantization = ModelFormatDetector.detectQuantization(file.name),
+                sizeBytes = sizeBytes,
+                quantization = ModelFormatDetector.detectQuantization(path),
                 contextLength = llamaMeta.contextLength,
                 vocabSize = llamaMeta.vocabSize,
                 hiddenSize = llamaMeta.embeddingLength,
@@ -124,11 +135,18 @@ class JvmModelLoader : PlatformModelLoader {
                 numHeads = llamaMeta.headCount
             )
 
-            println("Model loaded successfully!")
-            println("  Architecture: ${llamaMeta.architecture}")
-            println("  Layers: ${llamaMeta.blockCount}")
-            println("  Context: ${llamaMeta.contextLength}")
-            println("  Vocab: ${llamaMeta.vocabSize}")
+            val totalLoadTime = currentTimeMillis() - loadStartTime
+            AppLogger.info("ModelLoader", "Model loaded successfully", mapOf(
+                "name" to name,
+                "architecture" to llamaMeta.architecture,
+                "layers" to "${llamaMeta.blockCount}",
+                "contextLength" to "${llamaMeta.contextLength}",
+                "vocabSize" to "${llamaMeta.vocabSize}",
+                "hiddenSize" to "${llamaMeta.embeddingLength}",
+                "heads" to "${llamaMeta.headCount}",
+                "quantization" to metadata.quantization.name,
+                "totalLoadTimeMs" to "$totalLoadTime"
+            ))
 
             ModelLoadResult.Success(
                 LoadedModel(
@@ -138,6 +156,11 @@ class JvmModelLoader : PlatformModelLoader {
                 )
             )
         } catch (e: Exception) {
+            AppLogger.error("ModelLoader", "Load failed", mapOf(
+                "path" to path,
+                "error" to (e.message ?: "unknown"),
+                "errorType" to (e::class.simpleName ?: "Unknown")
+            ))
             e.printStackTrace()
             ModelLoadResult.Error("Failed to load GGUF file: ${e.message}", e)
         }
@@ -147,13 +170,22 @@ class JvmModelLoader : PlatformModelLoader {
         sourceProvider: () -> Source,
         name: String,
         sizeBytes: Long
-    ): ModelLoadResult = withContext(Dispatchers.IO) {
+    ): ModelLoadResult = withContext(Dispatchers.Default) {
         try {
+            val loadStartTime = currentTimeMillis()
+            val fileSizeMb = sizeBytes / 1024 / 1024
+            AppLogger.info("ModelLoader", "Starting GGUF load from source", mapOf(
+                "name" to name,
+                "fileSizeMB" to "$fileSizeMb",
+                "format" to "GGUF"
+            ))
+
             val loader = LlamaWeightLoader(
                 sourceProvider = sourceProvider,
                 quantPolicy = LlamaWeightLoader.QuantPolicy.DEQUANTIZE_TO_FP32
             )
 
+            AppLogger.debug("ModelLoader", "Loading weights from source...")
             val weights = loader.loadToMap<FP32, Float>(ctx)
             val runtimeWeights = LlamaWeightMapper.map(weights)
             val runtime = LlamaRuntime(ctx, runtimeWeights)
@@ -162,7 +194,6 @@ class JvmModelLoader : PlatformModelLoader {
             currentWeights = runtimeWeights
             currentPath = name
 
-            // Register runtime with ServiceLocator for inference engine
             ServiceLocator.setRuntime(runtime)
 
             val llamaMeta = runtimeWeights.metadata
@@ -178,6 +209,12 @@ class JvmModelLoader : PlatformModelLoader {
                 numHeads = llamaMeta.headCount
             )
 
+            val totalLoadTime = currentTimeMillis() - loadStartTime
+            AppLogger.info("ModelLoader", "Model loaded from source", mapOf(
+                "name" to name.substringBeforeLast("."),
+                "totalLoadTimeMs" to "$totalLoadTime"
+            ))
+
             ModelLoadResult.Success(
                 LoadedModel(
                     metadata = metadata,
@@ -186,29 +223,35 @@ class JvmModelLoader : PlatformModelLoader {
                 )
             )
         } catch (e: Exception) {
+            AppLogger.error("ModelLoader", "Load from source failed", mapOf(
+                "name" to name,
+                "error" to (e.message ?: "unknown"),
+                "errorType" to (e::class.simpleName ?: "Unknown")
+            ))
             ModelLoadResult.Error("Failed to load GGUF from source: ${e.message}", e)
         }
     }
 
     private suspend fun extractGgufMetadata(path: String): ModelMetadata? {
         return try {
-            val file = File(path)
-            if (!file.exists()) return null
+            val ioPath = Path(path)
+            if (!SystemFileSystem.exists(ioPath)) return null
 
-            // Quick metadata extraction using LlamaWeightLoader
             val loader = LlamaWeightLoader(
-                sourceProvider = { FileInputStream(file).asSource().buffered() },
-                loadTensorData = false // Only load metadata
+                sourceProvider = { SystemFileSystem.source(ioPath).buffered() },
+                loadTensorData = false
             )
 
             val weights = loader.loadToMap<FP32, Float>(ctx)
             val llamaMeta = weights.metadata
+            val sizeBytes = SystemFileSystem.metadataOrNull(ioPath)?.size ?: 0L
+            val name = path.substringAfterLast('/').substringAfterLast('\\').substringBeforeLast('.')
 
             ModelMetadata(
-                name = file.nameWithoutExtension,
+                name = name,
                 parameterCount = estimateParamCount(llamaMeta),
-                sizeBytes = file.length(),
-                quantization = ModelFormatDetector.detectQuantization(file.name),
+                sizeBytes = sizeBytes,
+                quantization = ModelFormatDetector.detectQuantization(path),
                 contextLength = llamaMeta.contextLength,
                 vocabSize = llamaMeta.vocabSize,
                 hiddenSize = llamaMeta.embeddingLength,
@@ -220,28 +263,14 @@ class JvmModelLoader : PlatformModelLoader {
         }
     }
 
-    private fun estimateParamCount(meta: sk.ainet.io.gguf.llama.LlamaModelMetadata): Long {
-        // Estimate based on architecture: embedding + layers + output
+    private fun estimateParamCount(meta: LlamaModelMetadata): Long {
         val embedding = meta.embeddingLength.toLong() * meta.vocabSize
         val perLayer = (
-            // attention: q, k, v, o projections
             4L * meta.embeddingLength * meta.embeddingLength +
-            // ffn: gate, up, down
             3L * meta.embeddingLength * meta.feedForwardLength +
-            // norms
             2L * meta.embeddingLength
         )
         val output = meta.embeddingLength.toLong() * meta.vocabSize
         return embedding + (perLayer * meta.blockCount) + output
     }
-
-    /**
-     * Get the LlamaRuntime for inference.
-     */
-    fun getRuntime(): LlamaRuntime? = currentRuntime
-
-    /**
-     * Get the execution context.
-     */
-    fun getContext(): DirectCpuExecutionContext = ctx
 }

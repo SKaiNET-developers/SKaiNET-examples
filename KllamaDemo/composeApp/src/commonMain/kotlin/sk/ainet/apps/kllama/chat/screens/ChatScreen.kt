@@ -54,6 +54,7 @@ import sk.ainet.apps.kllama.chat.viewmodel.ChatViewModel
 fun ChatScreen(
     viewModel: ChatViewModel,
     onNavigateToModelPicker: () -> Unit,
+    onNavigateToDiagnostics: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -85,6 +86,10 @@ fun ChatScreen(
                     onClearChat = {
                         viewModel.clearChat()
                         scope.launch { drawerState.close() }
+                    },
+                    onNavigateToDiagnostics = {
+                        scope.launch { drawerState.close() }
+                        onNavigateToDiagnostics()
                     }
                 )
             }
@@ -190,7 +195,8 @@ private fun ChatDrawerContent(
     uiState: ChatUiState,
     onLoadModel: () -> Unit,
     onUnloadModel: () -> Unit,
-    onClearChat: () -> Unit
+    onClearChat: () -> Unit,
+    onNavigateToDiagnostics: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier.padding(16.dp)
@@ -225,6 +231,11 @@ private fun ChatDrawerContent(
         DrawerMenuItem(
             text = "Load Model",
             onClick = onLoadModel
+        )
+
+        DrawerMenuItem(
+            text = "Diagnostics",
+            onClick = onNavigateToDiagnostics
         )
     }
 }

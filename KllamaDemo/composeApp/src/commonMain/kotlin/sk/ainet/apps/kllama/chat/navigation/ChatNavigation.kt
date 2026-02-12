@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 import sk.ainet.apps.kllama.chat.screens.ChatScreen
+import sk.ainet.apps.kllama.chat.screens.DiagnosticsScreen
 import sk.ainet.apps.kllama.chat.screens.ModelSelectionScreen
 import sk.ainet.apps.kllama.chat.viewmodel.ChatViewModel
 
@@ -18,7 +19,8 @@ import sk.ainet.apps.kllama.chat.viewmodel.ChatViewModel
  */
 enum class ChatDestination {
     CHAT,
-    MODEL_PICKER
+    MODEL_PICKER,
+    DIAGNOSTICS
 }
 
 /**
@@ -48,14 +50,27 @@ fun ChatNavigationHost(
                 onNavigateToModelPicker = {
                     currentDestination = ChatDestination.MODEL_PICKER
                 },
+                onNavigateToDiagnostics = {
+                    currentDestination = ChatDestination.DIAGNOSTICS
+                },
+                modifier = modifier
+            )
+        }
+
+        ChatDestination.DIAGNOSTICS -> {
+            DiagnosticsScreen(
+                viewModel = viewModel,
+                onNavigateBack = {
+                    currentDestination = ChatDestination.CHAT
+                },
                 modifier = modifier
             )
         }
 
         ChatDestination.MODEL_PICKER -> {
             ModelSelectionScreen(
-                onModelSelected = { path ->
-                    viewModel.loadModel(path)
+                onModelSelected = { fileResult ->
+                    viewModel.loadModel(fileResult)
                     // Navigate back to chat after starting model load
                     currentDestination = ChatDestination.CHAT
                 },

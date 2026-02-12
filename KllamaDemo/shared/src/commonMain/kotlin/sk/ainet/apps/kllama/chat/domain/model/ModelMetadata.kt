@@ -99,7 +99,10 @@ data class InferenceStatistics(
     val tokensGenerated: Int = 0,
     val tokensPerSecond: Float = 0f,
     val totalTimeMs: Long = 0,
-    val promptTokens: Int = 0
+    val promptTokens: Int = 0,
+    val peakTps: Float = 0f,
+    val prefillTimeMs: Long = 0,
+    val timeToFirstTokenMs: Long = 0
 ) {
     val formattedTps: String
         get() = "${formatDecimal(tokensPerSecond.toDouble())} tok/s"

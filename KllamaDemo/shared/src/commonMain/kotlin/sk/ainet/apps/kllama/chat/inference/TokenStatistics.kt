@@ -13,6 +13,10 @@ class TokenStatisticsCollector(
     private var tokenCount = 0
     private var startTimeMs: Long = 0
     private var promptTokenCount = 0
+    private var peakTps: Float = 0f
+    private var prefillTimeMs: Long = 0
+    private var timeToFirstTokenMs: Long = 0
+    private var firstTokenRecorded = false
 
     /**
      * Start tracking a new generation session.
@@ -22,7 +26,23 @@ class TokenStatisticsCollector(
         tokenCount = 0
         promptTokenCount = promptTokens
         startTimeMs = currentTimeMillis()
+        peakTps = 0f
+        prefillTimeMs = 0
+        timeToFirstTokenMs = 0
+        firstTokenRecorded = false
     }
+
+    /**
+     * Record that the prefill phase has completed.
+     */
+    fun recordPrefillDone() {
+        prefillTimeMs = currentTimeMillis() - startTimeMs
+    }
+
+    /**
+     * Get the recorded prefill time in milliseconds.
+     */
+    fun getPrefillTimeMs(): Long = prefillTimeMs
 
     /**
      * Record a newly generated token.
@@ -30,8 +50,19 @@ class TokenStatisticsCollector(
     fun recordToken() {
         tokenCount++
         timestamps.add(currentTimeMillis())
+
+        if (!firstTokenRecorded) {
+            timeToFirstTokenMs = currentTimeMillis() - startTimeMs
+            firstTokenRecorded = true
+        }
+
         if (timestamps.size > windowSize) {
             timestamps.removeAt(0)
+        }
+
+        val currentTps = getCurrentTps()
+        if (currentTps > peakTps) {
+            peakTps = currentTps
         }
     }
 
@@ -72,7 +103,10 @@ class TokenStatisticsCollector(
             tokensGenerated = tokenCount,
             tokensPerSecond = getCurrentTps(),
             totalTimeMs = getElapsedMs(),
-            promptTokens = promptTokenCount
+            promptTokens = promptTokenCount,
+            peakTps = peakTps,
+            prefillTimeMs = prefillTimeMs,
+            timeToFirstTokenMs = timeToFirstTokenMs
         )
     }
 
@@ -84,5 +118,9 @@ class TokenStatisticsCollector(
         tokenCount = 0
         startTimeMs = 0
         promptTokenCount = 0
+        peakTps = 0f
+        prefillTimeMs = 0
+        timeToFirstTokenMs = 0
+        firstTokenRecorded = false
     }
 }

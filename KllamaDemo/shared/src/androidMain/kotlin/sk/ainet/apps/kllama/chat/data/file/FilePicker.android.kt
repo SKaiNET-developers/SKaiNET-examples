@@ -1,19 +1,38 @@
 package sk.ainet.apps.kllama.chat.data.file
 
+import kotlinx.coroutines.CompletableDeferred
+
 /**
- * Android file picker - requires Activity context for SAF integration.
+ * Android file picker using a static callback bridge.
+ *
  * The actual file picking is handled in the UI layer via ActivityResultContracts.
- * This class provides a placeholder that will be wired up with actual Activity integration.
+ * [SetupAndroidFilePicker] composable wires the launcher to this bridge.
  */
 actual class FilePicker {
 
-    /**
-     * On Android, file picking must be triggered from the UI layer using ActivityResultContracts.
-     * This method returns null - actual picking is handled via FilePickerLauncher in the UI.
-     */
     actual suspend fun pickFile(extensions: List<String>): FilePickerResult? {
-        // Android requires Activity-based document picker.
-        // Return null here; actual implementation uses DocumentProvider via UI layer.
-        return null
+        val deferred = CompletableDeferred<FilePickerResult?>()
+        pendingResult = deferred
+
+        val mimeTypes = extensions.map { ext ->
+            when (ext) {
+                "gguf" -> "application/octet-stream"
+                "safetensors" -> "application/octet-stream"
+                else -> "application/octet-stream"
+            }
+        }.distinct()
+
+        launcher?.invoke(mimeTypes)
+            ?: return null // No launcher wired up
+
+        return deferred.await()
+    }
+
+    companion object {
+        /** Pending result deferred, set when pickFile is called. */
+        var pendingResult: CompletableDeferred<FilePickerResult?>? = null
+
+        /** Launcher function, wired by SetupAndroidFilePicker composable. */
+        var launcher: ((List<String>) -> Unit)? = null
     }
 }
