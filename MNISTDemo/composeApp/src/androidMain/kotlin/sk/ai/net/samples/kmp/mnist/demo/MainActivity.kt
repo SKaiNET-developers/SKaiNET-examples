@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                 else -> {
                     println("LoadingState: $loadingState, showing loading indicator")
                     // Show loading indicator
-                    sk.ainet.ui.components.SKaiNETProgressIndicator()
+                    sk.ainet.ui.components.LoadingIndicator()
                 }
             }
         }
