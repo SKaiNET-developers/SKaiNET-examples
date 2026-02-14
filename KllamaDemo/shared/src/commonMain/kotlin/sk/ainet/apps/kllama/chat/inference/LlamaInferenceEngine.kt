@@ -5,41 +5,43 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.yield
-import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
-import sk.ainet.context.observers.LatencyExecutionObserver
 import sk.ainet.apps.kllama.chat.domain.model.ChatSession
 import sk.ainet.apps.kllama.chat.domain.model.InferenceConfig
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.port.GeneratedToken
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
 import sk.ainet.apps.kllama.chat.logging.AppLogger
-import sk.ainet.lang.tensor.*
-import sk.ainet.lang.types.DType
 import kotlin.concurrent.Volatile
 import kotlin.random.Random
 
 /**
- * Inference engine for LLM text generation using SKaiNET's LlamaRuntime.
+ * Inference engine for LLM text generation using SKaiNET's published APIs.
  *
- * When a LlamaRuntime is provided, this engine performs actual neural network inference.
- * Otherwise, it falls back to demo mode for testing the UI.
+ * On JVM, uses:
+ * - SKaiNET's [sk.ainet.apps.kllama.LlamaRuntime] with [sk.ainet.apps.kllama.CpuAttentionBackend]
+ * - [sk.ainet.apps.kllama.chat.ChatMLTemplate] for prompt formatting
+ * - [sk.ainet.apps.kllama.GGUFTokenizer] for proper BPE/SentencePiece tokenization
+ * - [sk.ainet.apps.kllama.agent.sampleFromLogits] for sampling
+ *
+ * Falls back to demo mode when no runtime or tokenizer is available.
+ *
+ * @param model The loaded model metadata (or null for demo mode)
+ * @param runtime SKaiNET InferenceRuntime (stored as Any for commonMain compatibility)
+ * @param tokenizer SKaiNET GGUFTokenizer (stored as Any for commonMain compatibility)
  */
 class LlamaInferenceEngine(
     private val model: LoadedModel?,
-    private val tokenizer: Tokenizer = SimpleByteTokenizer(),
-    private val runtime: LlamaRuntime? = null
+    private val runtime: Any? = null,
+    private val tokenizer: Any? = null
 ) : InferenceEngine {
 
     @Volatile
     private var shouldStop = false
 
     private val statisticsCollector = TokenStatisticsCollector()
-    private val latencyObserver = LatencyExecutionObserver()
-
-    fun getLatencyResults() = latencyObserver.results()
 
     override val isReady: Boolean
-        get() = model != null && runtime != null
+        get() = model != null && runtime != null && tokenizer != null
 
     override fun generate(
         session: ChatSession,
@@ -47,50 +49,55 @@ class LlamaInferenceEngine(
     ): Flow<GeneratedToken> = flow {
         shouldStop = false
 
-        // If no runtime is available, use demo mode
-        if (runtime == null) {
-            AppLogger.warn("Inference", "No LlamaRuntime available, using demo mode")
+        if (runtime == null || tokenizer == null) {
+            AppLogger.warn("Inference", "No runtime/tokenizer available, using demo mode")
             generateDemoTokens(config).collect { emit(it) }
             return@flow
         }
 
-        // Format the conversation into a prompt
-        val prompt = ChatFormatter.formatChatML(session)
+        // Encode prompt using ChatMLTemplate + GGUFTokenizer
+        val promptTokens = platformEncodePrompt(tokenizer, session)
+        if (promptTokens == null) {
+            AppLogger.warn("Inference", "Platform encoding not supported, using demo mode")
+            generateDemoTokens(config).collect { emit(it) }
+            return@flow
+        }
 
-        // Tokenize the prompt (simple byte-level for now)
-        // TODO: Use proper BPE tokenizer from model vocabulary
-        val promptTokens = tokenizer.encode(prompt).toIntArray()
+        val eosTokenId = platformEosTokenId(tokenizer)
 
         AppLogger.info("Inference", "Generation started", mapOf(
             "promptTokens" to "${promptTokens.size}",
             "maxNewTokens" to "${config.maxNewTokens}",
             "temperature" to "${config.temperature}",
-            "topP" to "${config.topP}",
-            "topK" to "${config.topK}"
+            "eosTokenId" to "$eosTokenId"
         ))
 
-        // Use forward()-based generation for proper streaming
-        generateWithRuntime(promptTokens, config).collect { emit(it) }
+        // Stream tokens using forward + sample loop
+        generateWithRuntime(promptTokens, config, eosTokenId).collect { emit(it) }
     }
 
     /**
-     * Generate tokens using LlamaRuntime's forward() method for streaming.
+     * Generate tokens using SKaiNET's runtime with streaming via forward+sample loop.
+     *
+     * Prefill: forward each prompt token, keeping only the sample from the last one.
+     * Decode: forward+sample in a loop, emitting each token for streaming.
      */
     private fun generateWithRuntime(
         promptTokens: IntArray,
-        config: InferenceConfig
+        config: InferenceConfig,
+        eosTokenId: Int
     ): Flow<GeneratedToken> = flow {
-        if (runtime == null) return@flow
+        val rt = runtime ?: return@flow
+        val tok = tokenizer ?: return@flow
 
-        runtime.reset()
-        latencyObserver.reset()
+        platformResetRuntime(rt)
         statisticsCollector.start(promptTokens.size)
 
-        // Process prompt tokens (prefill)
-        var lastLogits: Any? = null
+        // Prefill: forward all prompt tokens, keep the sampled next token from the last one
+        var nextToken = 0
         for (tokenId in promptTokens) {
             if (shouldStop || !currentCoroutineContext().isActive) return@flow
-            lastLogits = runtime.forward(tokenId)
+            nextToken = platformForwardAndSample(rt, tokenId, config.temperature)
         }
 
         statisticsCollector.recordPrefillDone()
@@ -98,15 +105,12 @@ class LlamaInferenceEngine(
             "prefillTimeMs" to "${statisticsCollector.getPrefillTimeMs()}"
         ))
 
-        // Generate new tokens
+        // Decode: generate new tokens with streaming
         var generatedCount = 0
-        var nextToken = sampleFromLogits(lastLogits, config)
-
         while (generatedCount < config.maxNewTokens && !shouldStop && currentCoroutineContext().isActive) {
-            // Check for EOS token (commonly 2 for Llama)
-            if (nextToken == 2) break
+            if (nextToken == eosTokenId) break
 
-            val tokenText = tokenizer.decodeToken(nextToken)
+            val tokenText = platformDecodeToken(tok, nextToken) ?: ""
             statisticsCollector.recordToken()
 
             emit(GeneratedToken(
@@ -115,9 +119,9 @@ class LlamaInferenceEngine(
                 statistics = statisticsCollector.buildStatistics()
             ))
 
-            // Forward pass for next token
-            lastLogits = runtime.forward(nextToken)
-            nextToken = sampleFromLogits(lastLogits, config)
+            yield() // Allow cancellation between tokens
+
+            nextToken = platformForwardAndSample(rt, nextToken, config.temperature)
             generatedCount++
         }
 
@@ -128,34 +132,6 @@ class LlamaInferenceEngine(
             "averageTps" to "${statisticsCollector.getAverageTps()}",
             "peakTps" to "${finalStats.peakTps}"
         ))
-    }
-
-    /**
-     * Sample a token from the logits tensor.
-     */
-    @Suppress("UNCHECKED_CAST")
-    private fun sampleFromLogits(logits: Any?, config: InferenceConfig): Int {
-        if (logits == null) return 0
-
-        // Extract float array from tensor
-        val logitsArray = try {
-            val tensor = logits as? sk.ainet.lang.tensor.Tensor<out sk.ainet.lang.types.DType, *>
-            if (tensor != null) {
-                val data = tensor.data
-                FloatArray(tensor.volume) { idx ->
-                    (data[idx] as Number).toFloat()
-                }
-            } else {
-                return 0
-            }
-        } catch (e: Exception) {
-            AppLogger.error("Inference", "Error extracting logits", mapOf(
-                "error" to (e.message ?: "unknown")
-            ))
-            return 0
-        }
-
-        return sampleToken(logitsArray, config)
     }
 
     /**
@@ -178,7 +154,6 @@ class LlamaInferenceEngine(
                 statistics = statisticsCollector.buildStatistics()
             ))
 
-            // Simulate generation delay
             kotlinx.coroutines.delay(20 + Random.nextLong(30))
         }
     }
@@ -200,62 +175,8 @@ class LlamaInferenceEngine(
         return responses.random()
     }
 
-    /**
-     * Sample a token from logits using temperature and top-p/top-k sampling.
-     */
-    private fun sampleToken(logits: FloatArray, config: InferenceConfig): Int {
-        if (logits.isEmpty()) return 0
-
-        // Apply temperature
-        val scaled = if (config.temperature != 1f && config.temperature > 0f) {
-            logits.map { it / config.temperature }.toFloatArray()
-        } else {
-            logits
-        }
-
-        // Convert to probabilities using softmax
-        val maxLogit = scaled.maxOrNull() ?: 0f
-        val exps = scaled.map { kotlin.math.exp((it - maxLogit).toDouble()).toFloat() }
-        val sumExps = exps.sum()
-        if (sumExps == 0f) return 0
-        val probs = exps.map { it / sumExps }
-
-        // Top-k filtering
-        val sortedIndices = probs.indices.sortedByDescending { probs[it] }
-        val topK = sortedIndices.take(minOf(config.topK, probs.size))
-
-        // Top-p (nucleus) filtering
-        var cumSum = 0f
-        val nucleus = mutableListOf<Int>()
-        for (idx in topK) {
-            nucleus.add(idx)
-            cumSum += probs[idx]
-            if (cumSum >= config.topP) break
-        }
-
-        if (nucleus.isEmpty()) return sortedIndices.firstOrNull() ?: 0
-
-        // Sample from nucleus
-        val nucleusProbs = nucleus.map { probs[it] }
-        val nucleusSum = nucleusProbs.sum()
-        if (nucleusSum == 0f) return nucleus.first()
-        val normalizedProbs = nucleusProbs.map { it / nucleusSum }
-
-        var r = Random.nextFloat()
-        for ((i, idx) in nucleus.withIndex()) {
-            r -= normalizedProbs[i]
-            if (r <= 0) return idx
-        }
-
-        return nucleus.last()
-    }
-
     override fun stopGeneration() {
         shouldStop = true
         AppLogger.info("Inference", "Generation stopped by user")
     }
-
-    override fun tokenize(text: String): List<Int> = tokenizer.encode(text)
-
-    override fun decode(tokenIds: List<Int>): String = tokenizer.decode(tokenIds)
 }

@@ -64,6 +64,7 @@ skainet-backend-cpu = { module = "sk.ainet.core:skainet-backend-cpu", version.re
 skainet-io-core = { module = "sk.ainet.core:skainet-io-core", version.ref = "skainet" }
 skainet-io-gguf = { module = "sk.ainet.core:skainet-io-gguf", version.ref = "skainet" }
 skainet-kllama = { module = "sk.ainet.core:skainet-apps-kllama", version.ref = "skainet" }
+skainet-kllama-agents = { module = "sk.ainet.core:skainet-kllama-agents", version.ref = "skainet" }
 skainet-llm = { module = "sk.ainet.core:skainet-llm", version.ref = "skainet" }
 
 [plugins]

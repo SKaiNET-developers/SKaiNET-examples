@@ -1,6 +1,5 @@
 package sk.ainet.apps.kllama.chat.di
 
-import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
 import sk.ainet.apps.kllama.chat.data.repository.ModelRepositoryImpl
 import sk.ainet.apps.kllama.chat.data.repository.PlatformModelLoader
 import sk.ainet.apps.kllama.chat.data.source.ModelDataSource
@@ -15,6 +14,9 @@ import sk.ainet.apps.kllama.chat.logging.AppLogger
 /**
  * Simple service locator for dependency injection.
  * Provides singleton instances of services.
+ *
+ * Runtime and tokenizer are stored as [Any] because their concrete types
+ * (from skainet-kllama / skainet-llm) are only available on JVM.
  */
 object ServiceLocator {
 
@@ -27,7 +29,11 @@ object ServiceLocator {
         ModelRepositoryImpl(platformLoader, modelDataSource, metadataCache)
     }
 
-    private var currentRuntime: LlamaRuntime? = null
+    /** SKaiNET InferenceRuntime<FP32> — stored as Any for commonMain compatibility. */
+    private var currentRuntime: Any? = null
+
+    /** SKaiNET Tokenizer (GGUFTokenizer) — stored as Any for commonMain compatibility. */
+    private var currentTokenizer: Any? = null
 
     /**
      * Configure the service locator with platform-specific implementations.
@@ -53,22 +59,38 @@ object ServiceLocator {
     fun getPlatformLoader(): PlatformModelLoader = platformLoader
 
     /**
-     * Set the current LlamaRuntime (called by CommonModelLoader after loading).
+     * Set the current InferenceRuntime (called by CommonModelLoader after loading).
      */
-    fun setRuntime(runtime: LlamaRuntime?) {
+    fun setRuntime(runtime: Any?) {
         currentRuntime = runtime
     }
 
     /**
-     * Get the current LlamaRuntime if available.
+     * Get the current InferenceRuntime if available.
      */
-    fun getRuntime(): LlamaRuntime? = currentRuntime
+    fun getRuntime(): Any? = currentRuntime
+
+    /**
+     * Set the current Tokenizer (called by CommonModelLoader after loading).
+     */
+    fun setTokenizer(tokenizer: Any?) {
+        currentTokenizer = tokenizer
+    }
+
+    /**
+     * Get the current Tokenizer if available.
+     */
+    fun getTokenizer(): Any? = currentTokenizer
 
     /**
      * Create an inference engine for the given model.
      */
     fun createInferenceEngine(model: LoadedModel?): InferenceEngine {
-        return LlamaInferenceEngine(model, runtime = currentRuntime)
+        return LlamaInferenceEngine(
+            model = model,
+            runtime = currentRuntime,
+            tokenizer = currentTokenizer
+        )
     }
 
     /**
@@ -94,5 +116,6 @@ object ServiceLocator {
      */
     fun reset() {
         currentRuntime = null
+        currentTokenizer = null
     }
 }

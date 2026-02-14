@@ -38,22 +38,6 @@ interface InferenceEngine {
     fun stopGeneration()
 
     /**
-     * Tokenize input text into token IDs.
-     *
-     * @param text Text to tokenize
-     * @return List of token IDs
-     */
-    fun tokenize(text: String): List<Int>
-
-    /**
-     * Decode token IDs back to text.
-     *
-     * @param tokenIds Token IDs to decode
-     * @return Decoded text
-     */
-    fun decode(tokenIds: List<Int>): String
-
-    /**
      * Check if the engine is ready for inference.
      */
     val isReady: Boolean

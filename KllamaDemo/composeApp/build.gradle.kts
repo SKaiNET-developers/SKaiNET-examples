@@ -103,6 +103,7 @@ dependencies {
 
 tasks.withType<JavaExec>().configureEach {
     jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+    maxHeapSize = "16g"
 }
 
 tasks.withType<Test>().configureEach {

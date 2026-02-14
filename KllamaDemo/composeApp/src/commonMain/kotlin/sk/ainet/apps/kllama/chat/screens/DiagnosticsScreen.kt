@@ -49,6 +49,7 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.round
 import sk.ainet.apps.kllama.chat.logging.AppLogger
+import androidx.compose.foundation.text.selection.SelectionContainer
 import sk.ainet.apps.kllama.chat.logging.LogEntry
 import sk.ainet.apps.kllama.chat.logging.LogLevel
 import sk.ainet.apps.kllama.chat.domain.model.GenerationState
@@ -85,6 +86,7 @@ fun DiagnosticsScreen(
             )
         }
     ) { paddingValues ->
+        SelectionContainer {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -185,6 +187,7 @@ fun DiagnosticsScreen(
                 Box(modifier = Modifier.height(8.dp))
             }
         }
+        } // SelectionContainer
     }
 }
 

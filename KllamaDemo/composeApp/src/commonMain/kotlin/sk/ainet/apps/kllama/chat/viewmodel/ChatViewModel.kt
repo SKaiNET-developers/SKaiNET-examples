@@ -386,6 +386,15 @@ class ChatViewModel(
     }
 
     /**
+     * Update the system prompt for the current session.
+     */
+    fun updateSystemPrompt(prompt: String) {
+        _uiState.update {
+            it.copy(session = it.session.copy(systemPrompt = prompt))
+        }
+    }
+
+    /**
      * Clear the chat history.
      */
     fun clearChat() {
