@@ -58,6 +58,10 @@ kotlin {
     }
 }
 
+tasks.withType<Test>().configureEach {
+    jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+}
+
 android {
     namespace = "sk.ainet.apps.kllama.chat.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()

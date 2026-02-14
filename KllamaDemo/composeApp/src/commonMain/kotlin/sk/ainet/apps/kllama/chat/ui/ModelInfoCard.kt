@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import sk.ainet.ui.components.SKaiNETProgressIndicator
+import sk.ainet.ui.components.LoadingIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,15 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import sk.ainet.apps.kllama.chat.domain.model.ModelLoadingState
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
 
 /**
- * Compact card showing model information.
+ * Compact card showing model information based on [ModelLoadingState].
  */
 @Composable
 fun ModelInfoCard(
-    metadata: ModelMetadata?,
-    isLoading: Boolean,
+    modelState: ModelLoadingState,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
@@ -43,47 +42,85 @@ fun ModelInfoCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (isLoading) {
-                SKaiNETProgressIndicator(
-                    size = 24.dp,
-                    strokeWidth = 2.dp
-                )
-                Text(
-                    text = "Loading model...",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            } else if (metadata != null) {
-                Icon(
-                    imageVector = ModelIcon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Column(modifier = Modifier.weight(1f)) {
+            when (modelState) {
+                is ModelLoadingState.ParsingMetadata -> {
+                    LoadingIndicator(size = 24.dp)
                     Text(
-                        text = metadata.name,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = "${metadata.formattedSize} | ${metadata.formattedParamCount} params",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        text = "Parsing metadata: ${modelState.fileName}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
-            } else {
-                Icon(
-                    imageVector = AddIcon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Text(
-                    text = "Tap to load a model",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                is ModelLoadingState.LoadingWeights -> {
+                    LoadingIndicator(size = 24.dp)
+                    Text(
+                        text = "${modelState.phase}: ${modelState.fileName}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                is ModelLoadingState.InitializingRuntime -> {
+                    LoadingIndicator(size = 24.dp)
+                    Text(
+                        text = "Initializing runtime: ${modelState.fileName}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                is ModelLoadingState.Scanning -> {
+                    LoadingIndicator(size = 24.dp)
+                    Text(
+                        text = "Scanning for models...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                is ModelLoadingState.Loaded -> {
+                    val metadata = modelState.model.metadata
+                    Icon(
+                        imageVector = ModelIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = metadata.name,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = "${metadata.formattedSize} | ${metadata.formattedParamCount} params",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+                is ModelLoadingState.Error -> {
+                    Icon(
+                        imageVector = AddIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Text(
+                        text = "Load failed - tap to retry",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                is ModelLoadingState.Idle -> {
+                    Icon(
+                        imageVector = AddIcon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Text(
+                        text = "Tap to load a model",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
             }
         }
     }

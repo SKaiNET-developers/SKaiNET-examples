@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import sk.ainet.ui.components.SKaiNETProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -24,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import sk.ainet.apps.kllama.chat.domain.model.GenerationState
 
 /**
  * Input bar for composing and sending messages.
@@ -32,10 +32,11 @@ import androidx.compose.ui.unit.dp
 fun ChatInputBar(
     onSendMessage: (String) -> Unit,
     onStopGeneration: () -> Unit,
-    isGenerating: Boolean,
+    generationState: GenerationState,
     enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val isGenerating = generationState is GenerationState.Generating
     var inputText by remember { mutableStateOf("") }
 
     Surface(

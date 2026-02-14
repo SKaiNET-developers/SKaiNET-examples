@@ -2,6 +2,10 @@ package sk.ainet.apps.kllama.chat.data.repository
 
 import kotlinx.io.Source
 import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
+import sk.ainet.apps.kllama.chat.data.source.ModelDataSource
+import sk.ainet.apps.kllama.chat.data.source.ModelMetadataCacheDataSource
+import sk.ainet.apps.kllama.chat.data.source.NoOpModelDataSource
+import sk.ainet.apps.kllama.chat.domain.model.DiscoveredModel
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
@@ -14,7 +18,9 @@ import sk.ainet.apps.kllama.chat.logging.AppLogger
  * Uses platform-specific loaders for different model formats.
  */
 class ModelRepositoryImpl(
-    private val platformLoader: PlatformModelLoader
+    private val platformLoader: PlatformModelLoader,
+    private val discoverySource: ModelDataSource = NoOpModelDataSource(),
+    private val metadataCache: ModelMetadataCacheDataSource = ModelMetadataCacheDataSource()
 ) : ModelRepository {
 
     private var currentModel: LoadedModel? = null
@@ -94,11 +100,17 @@ class ModelRepositoryImpl(
     }
 
     override suspend fun extractMetadata(path: String): ModelMetadata? {
+        metadataCache.get(path)?.let { return it }
+
         val format = ModelFormatDetector.detectFromPath(path)
         if (format == ModelFormat.UNKNOWN) return null
 
         return try {
-            platformLoader.extractMetadata(path, format)
+            val metadata = platformLoader.extractMetadata(path, format)
+            if (metadata != null) {
+                metadataCache.put(path, metadata)
+            }
+            metadata
         } catch (e: Exception) {
             null
         }
@@ -106,6 +118,17 @@ class ModelRepositoryImpl(
 
     override val isModelLoaded: Boolean
         get() = currentModel != null
+
+    override suspend fun discoverModels(): List<DiscoveredModel> {
+        return try {
+            discoverySource.discoverModels()
+        } catch (e: Exception) {
+            AppLogger.error("ModelRepository", "Model discovery failed", mapOf(
+                "error" to (e.message ?: "unknown")
+            ))
+            emptyList()
+        }
+    }
 }
 
 /**

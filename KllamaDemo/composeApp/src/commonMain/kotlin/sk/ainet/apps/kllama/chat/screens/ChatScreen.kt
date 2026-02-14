@@ -37,6 +37,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import sk.ainet.apps.kllama.chat.domain.model.GenerationState
+import sk.ainet.apps.kllama.chat.domain.model.InferenceStatistics
+import sk.ainet.apps.kllama.chat.domain.model.ModelLoadingState
 import sk.ainet.apps.kllama.chat.ui.ChatInputBar
 import sk.ainet.apps.kllama.chat.ui.ClearIcon
 import sk.ainet.apps.kllama.chat.ui.MenuIcon
@@ -61,6 +64,21 @@ fun ChatScreen(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val isGenerating = uiState.generationState is GenerationState.Generating
+    val isModelLoaded = uiState.modelState is ModelLoadingState.Loaded
+    val isLoadingModel = uiState.modelState is ModelLoadingState.ParsingMetadata
+            || uiState.modelState is ModelLoadingState.LoadingWeights
+            || uiState.modelState is ModelLoadingState.InitializingRuntime
+            || uiState.modelState is ModelLoadingState.Scanning
+
+    val statistics = when (val gs = uiState.generationState) {
+        is GenerationState.Generating -> gs.statistics
+        is GenerationState.Complete -> gs.statistics
+        else -> InferenceStatistics()
+    }
+
+    val modelMetadata = (uiState.modelState as? ModelLoadingState.Loaded)?.model?.metadata
 
     // Show error messages
     LaunchedEffect(uiState.errorMessage) {
@@ -121,7 +139,7 @@ fun ChatScreen(
                 ChatInputBar(
                     onSendMessage = { viewModel.sendMessage(it) },
                     onStopGeneration = { viewModel.stopGeneration() },
-                    isGenerating = uiState.isGenerating,
+                    generationState = uiState.generationState,
                     enabled = true // Allow demo mode even without model
                 )
             },
@@ -148,11 +166,10 @@ fun ChatScreen(
                 ) {
                     // Model info card
                     AnimatedVisibility(
-                        visible = uiState.isModelLoaded || uiState.isLoadingModel
+                        visible = isModelLoaded || isLoadingModel
                     ) {
                         ModelInfoCard(
-                            metadata = uiState.modelMetadata,
-                            isLoading = uiState.isLoadingModel,
+                            modelState = uiState.modelState,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             onClick = onNavigateToModelPicker
                         )
@@ -168,14 +185,14 @@ fun ChatScreen(
 
                 // Side statistics panel (visible on wider screens when generating)
                 AnimatedVisibility(
-                    visible = uiState.isGenerating || uiState.statistics.tokensGenerated > 0,
+                    visible = isGenerating || statistics.tokensGenerated > 0,
                     enter = slideInVertically(),
                     exit = slideOutVertically()
                 ) {
                     StatisticsPanel(
-                        statistics = uiState.statistics,
-                        modelMetadata = uiState.modelMetadata,
-                        isGenerating = uiState.isGenerating,
+                        statistics = statistics,
+                        modelMetadata = modelMetadata,
+                        isGenerating = isGenerating,
                         modifier = Modifier
                             .width(200.dp)
                             .fillMaxHeight()
@@ -198,6 +215,8 @@ private fun ChatDrawerContent(
     onClearChat: () -> Unit,
     onNavigateToDiagnostics: () -> Unit = {}
 ) {
+    val isModelLoaded = uiState.modelState is ModelLoadingState.Loaded
+
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -208,13 +227,12 @@ private fun ChatDrawerContent(
         )
 
         ModelInfoCard(
-            metadata = uiState.modelMetadata,
-            isLoading = uiState.isLoadingModel,
+            modelState = uiState.modelState,
             onClick = onLoadModel,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        if (uiState.isModelLoaded) {
+        if (isModelLoaded) {
             DrawerMenuItem(
                 text = "Unload Model",
                 onClick = onUnloadModel

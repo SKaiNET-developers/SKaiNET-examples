@@ -51,6 +51,9 @@ import kotlin.math.round
 import sk.ainet.apps.kllama.chat.logging.AppLogger
 import sk.ainet.apps.kllama.chat.logging.LogEntry
 import sk.ainet.apps.kllama.chat.logging.LogLevel
+import sk.ainet.apps.kllama.chat.domain.model.GenerationState
+import sk.ainet.apps.kllama.chat.domain.model.InferenceStatistics
+import sk.ainet.apps.kllama.chat.domain.model.ModelLoadingState
 import sk.ainet.apps.kllama.chat.ui.BackIcon
 import sk.ainet.apps.kllama.chat.ui.ClearIcon
 import sk.ainet.apps.kllama.chat.ui.ModelDetailsCard
@@ -93,9 +96,10 @@ fun DiagnosticsScreen(
             // Section 1: Model Metadata Card
             item {
                 SectionHeader("Model")
-                if (uiState.modelMetadata != null) {
+                val modelMetadata = (uiState.modelState as? ModelLoadingState.Loaded)?.model?.metadata
+                if (modelMetadata != null) {
                     ModelDetailsCard(
-                        metadata = uiState.modelMetadata!!,
+                        metadata = modelMetadata,
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
@@ -118,14 +122,20 @@ fun DiagnosticsScreen(
             // Section 2: Performance Metrics Card
             item {
                 SectionHeader("Performance")
+                val loadingTimeMs = (uiState.modelState as? ModelLoadingState.Loaded)?.loadTimeMs ?: 0L
+                val statistics = when (val gs = uiState.generationState) {
+                    is GenerationState.Generating -> gs.statistics
+                    is GenerationState.Complete -> gs.statistics
+                    else -> InferenceStatistics()
+                }
                 PerformanceMetricsCard(
-                    loadingTimeMs = uiState.loadingTimeMs,
-                    prefillTimeMs = uiState.statistics.prefillTimeMs,
-                    timeToFirstTokenMs = uiState.statistics.timeToFirstTokenMs,
-                    currentTps = uiState.statistics.tokensPerSecond,
-                    peakTps = uiState.statistics.peakTps,
-                    tokensGenerated = uiState.statistics.tokensGenerated,
-                    totalTimeMs = uiState.statistics.totalTimeMs
+                    loadingTimeMs = loadingTimeMs,
+                    prefillTimeMs = statistics.prefillTimeMs,
+                    timeToFirstTokenMs = statistics.timeToFirstTokenMs,
+                    currentTps = statistics.tokensPerSecond,
+                    peakTps = statistics.peakTps,
+                    tokensGenerated = statistics.tokensGenerated,
+                    totalTimeMs = statistics.totalTimeMs
                 )
             }
 

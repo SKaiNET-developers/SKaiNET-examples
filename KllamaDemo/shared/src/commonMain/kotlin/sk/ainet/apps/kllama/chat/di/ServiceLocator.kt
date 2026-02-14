@@ -3,6 +3,9 @@ package sk.ainet.apps.kllama.chat.di
 import sk.ainet.apps.kllama.chat.runtime.LlamaRuntime
 import sk.ainet.apps.kllama.chat.data.repository.ModelRepositoryImpl
 import sk.ainet.apps.kllama.chat.data.repository.PlatformModelLoader
+import sk.ainet.apps.kllama.chat.data.source.ModelDataSource
+import sk.ainet.apps.kllama.chat.data.source.ModelMetadataCacheDataSource
+import sk.ainet.apps.kllama.chat.data.source.NoOpModelDataSource
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
 import sk.ainet.apps.kllama.chat.domain.port.ModelRepository
@@ -15,31 +18,39 @@ import sk.ainet.apps.kllama.chat.logging.AppLogger
  */
 object ServiceLocator {
 
-    private var platformLoader: PlatformModelLoader? = null
-    private var modelRepository: ModelRepository? = null
+    private lateinit var platformLoader: PlatformModelLoader
+    private lateinit var modelDataSource: ModelDataSource
+
+    private val metadataCache by lazy { ModelMetadataCacheDataSource() }
+
+    private val _modelRepository: ModelRepository by lazy {
+        ModelRepositoryImpl(platformLoader, modelDataSource, metadataCache)
+    }
+
     private var currentRuntime: LlamaRuntime? = null
 
     /**
-     * Initialize the service locator with platform-specific implementations.
+     * Configure the service locator with platform-specific implementations.
      */
-    fun initialize(loader: PlatformModelLoader) {
+    fun configure(
+        loader: PlatformModelLoader,
+        dataSource: ModelDataSource = NoOpModelDataSource()
+    ) {
         platformLoader = loader
-        modelRepository = ModelRepositoryImpl(loader)
+        modelDataSource = dataSource
     }
 
     /**
      * Get the model repository instance.
      */
     fun getModelRepository(): ModelRepository {
-        return modelRepository ?: throw IllegalStateException(
-            "ServiceLocator not initialized. Call initialize() first."
-        )
+        return _modelRepository
     }
 
     /**
      * Get the platform loader (for accessing platform-specific features).
      */
-    fun getPlatformLoader(): PlatformModelLoader? = platformLoader
+    fun getPlatformLoader(): PlatformModelLoader = platformLoader
 
     /**
      * Set the current LlamaRuntime (called by CommonModelLoader after loading).
@@ -73,17 +84,15 @@ object ServiceLocator {
     fun getAppLogger(): AppLogger = AppLogger
 
     /**
-     * Check if the service locator has been initialized.
+     * Check if the service locator has been configured.
      */
     val isInitialized: Boolean
-        get() = platformLoader != null
+        get() = ::platformLoader.isInitialized
 
     /**
      * Reset the service locator (for testing).
      */
     fun reset() {
-        platformLoader = null
-        modelRepository = null
         currentRuntime = null
     }
 }

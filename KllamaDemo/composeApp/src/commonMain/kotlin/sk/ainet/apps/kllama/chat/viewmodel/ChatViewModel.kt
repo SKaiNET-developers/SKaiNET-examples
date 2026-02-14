@@ -13,14 +13,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import sk.ainet.apps.kllama.chat.data.file.FilePickerResult
 import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
+import sk.ainet.apps.kllama.chat.data.repository.CommonModelLoader
 import sk.ainet.apps.kllama.chat.domain.model.ChatMessage
 import sk.ainet.apps.kllama.chat.domain.model.ChatSession
+import sk.ainet.apps.kllama.chat.domain.model.DiscoveredModel
+import sk.ainet.apps.kllama.chat.domain.model.GenerationState
 import sk.ainet.apps.kllama.chat.domain.model.InferenceConfig
 import sk.ainet.apps.kllama.chat.domain.model.InferenceStatistics
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.MessageRole
-import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
-import sk.ainet.apps.kllama.chat.domain.model.currentTimeMillis
+import sk.ainet.apps.kllama.chat.domain.model.ModelDiscoveryState
+import sk.ainet.apps.kllama.chat.domain.model.ModelLoadingState
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
 import sk.ainet.apps.kllama.chat.domain.port.ModelRepository
@@ -28,19 +31,15 @@ import sk.ainet.apps.kllama.chat.logging.AppLogger
 import sk.ainet.apps.kllama.chat.logging.LogEntry
 
 /**
- * UI state for the chat screen.
+ * UI state for the chat screen using sealed state hierarchies.
  */
 data class ChatUiState(
     val session: ChatSession = ChatSession(),
-    val isModelLoaded: Boolean = false,
-    val isLoadingModel: Boolean = false,
-    val isGenerating: Boolean = false,
-    val currentResponse: String = "",
-    val statistics: InferenceStatistics = InferenceStatistics(),
-    val modelMetadata: ModelMetadata? = null,
-    val errorMessage: String? = null,
+    val modelState: ModelLoadingState = ModelLoadingState.Idle,
+    val generationState: GenerationState = GenerationState.Idle,
+    val discoveryState: ModelDiscoveryState = ModelDiscoveryState.Idle,
     val showModelPicker: Boolean = false,
-    val loadingTimeMs: Long = 0
+    val errorMessage: String? = null
 )
 
 /**
@@ -60,34 +59,138 @@ class ChatViewModel(
     private var currentInferenceEngine: InferenceEngine? = null
     private var generationJob: Job? = null
 
+    init {
+        discoverModels()
+    }
+
+    /**
+     * Auto-discover GGUF models in the working directory.
+     */
+    private fun discoverModels() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(discoveryState = ModelDiscoveryState.Scanning) }
+            try {
+                val models = modelRepository.discoverModels()
+                _uiState.update {
+                    it.copy(discoveryState = ModelDiscoveryState.Found(models))
+                }
+                // Lazily enrich models with metadata
+                enrichDiscoveredModelsMetadata(models)
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(discoveryState = ModelDiscoveryState.Error(
+                        e.message ?: "Discovery failed"
+                    ))
+                }
+            }
+        }
+    }
+
+    /**
+     * Progressively enrich discovered models with parsed metadata.
+     */
+    private suspend fun enrichDiscoveredModelsMetadata(models: List<DiscoveredModel>) {
+        for (model in models) {
+            try {
+                val metadata = modelRepository.extractMetadata(model.path) ?: continue
+                _uiState.update { state ->
+                    val discovery = state.discoveryState
+                    if (discovery is ModelDiscoveryState.Found) {
+                        val updated = discovery.models.map { m ->
+                            if (m.path == model.path) m.copy(metadata = metadata) else m
+                        }
+                        state.copy(discoveryState = ModelDiscoveryState.Found(updated))
+                    } else {
+                        state
+                    }
+                }
+            } catch (_: Exception) {
+                // Skip metadata enrichment for this model
+            }
+        }
+    }
+
+    /**
+     * Load a discovered model by path with phased progress.
+     */
+    fun loadDiscoveredModel(model: DiscoveredModel) {
+        val loader = modelRepository as? sk.ainet.apps.kllama.chat.data.repository.ModelRepositoryImpl
+        val platformLoader = loader?.let {
+            try {
+                // Access the platform loader to get CommonModelLoader for progress flow
+                sk.ainet.apps.kllama.chat.di.ServiceLocator.getPlatformLoader()
+            } catch (_: Exception) { null }
+        }
+
+        if (platformLoader is CommonModelLoader) {
+            viewModelScope.launch {
+                _uiState.update { it.copy(errorMessage = null) }
+                platformLoader.loadModelWithProgress(model.path).collect { state ->
+                    _uiState.update { it.copy(modelState = state) }
+                    if (state is ModelLoadingState.Loaded) {
+                        currentInferenceEngine = inferenceEngineFactory(state.model)
+                        _uiState.update { it.copy(showModelPicker = false) }
+                    } else if (state is ModelLoadingState.Error) {
+                        _uiState.update { it.copy(errorMessage = state.message) }
+                    }
+                }
+            }
+        } else {
+            // Fallback to standard loading
+            loadModel(model.path)
+        }
+    }
+
     /**
      * Load a model from the given path.
      */
     fun loadModel(path: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoadingModel = true, errorMessage = null) }
-            val loadStart = currentTimeMillis()
+        val platformLoader = try {
+            sk.ainet.apps.kllama.chat.di.ServiceLocator.getPlatformLoader()
+        } catch (_: Exception) { null }
 
-            when (val result = modelRepository.loadModel(path)) {
-                is ModelLoadResult.Success -> {
-                    val loadTime = currentTimeMillis() - loadStart
-                    currentInferenceEngine = inferenceEngineFactory(result.model)
-                    _uiState.update {
-                        it.copy(
-                            isModelLoaded = true,
-                            isLoadingModel = false,
-                            modelMetadata = result.model.metadata,
-                            showModelPicker = false,
-                            loadingTimeMs = loadTime
-                        )
+        if (platformLoader is CommonModelLoader) {
+            viewModelScope.launch {
+                _uiState.update { it.copy(errorMessage = null) }
+                platformLoader.loadModelWithProgress(path).collect { state ->
+                    _uiState.update { it.copy(modelState = state) }
+                    if (state is ModelLoadingState.Loaded) {
+                        currentInferenceEngine = inferenceEngineFactory(state.model)
+                        _uiState.update { it.copy(showModelPicker = false) }
+                    } else if (state is ModelLoadingState.Error) {
+                        _uiState.update { it.copy(errorMessage = state.message) }
                     }
                 }
-                is ModelLoadResult.Error -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoadingModel = false,
-                            errorMessage = result.message
-                        )
+            }
+        } else {
+            // Fallback to non-progress loading
+            viewModelScope.launch {
+                _uiState.update {
+                    it.copy(
+                        modelState = ModelLoadingState.LoadingWeights(
+                            path.substringAfterLast('/').substringAfterLast('\\')
+                        ),
+                        errorMessage = null
+                    )
+                }
+
+                when (val result = modelRepository.loadModel(path)) {
+                    is ModelLoadResult.Success -> {
+                        currentInferenceEngine = inferenceEngineFactory(result.model)
+                        _uiState.update {
+                            it.copy(
+                                modelState = ModelLoadingState.Loaded(result.model, 0),
+                                showModelPicker = false
+                            )
+                        }
+                    }
+                    is ModelLoadResult.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                modelState = ModelLoadingState.Error(result.message),
+                                errorMessage = result.message
+                            )
+                        }
                     }
                 }
             }
@@ -104,28 +207,29 @@ class ChatViewModel(
         if (sourceProvider != null) {
             val format = ModelFormatDetector.detectFromPath(fileResult.name)
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoadingModel = true, errorMessage = null) }
-                val loadStart = currentTimeMillis()
+                val fileName = fileResult.name
+                _uiState.update {
+                    it.copy(
+                        modelState = ModelLoadingState.LoadingWeights(fileName),
+                        errorMessage = null
+                    )
+                }
 
                 val source = sourceProvider()
                 when (val result = modelRepository.loadModel(source, fileResult.name, fileResult.sizeBytes, format)) {
                     is ModelLoadResult.Success -> {
-                        val loadTime = currentTimeMillis() - loadStart
                         currentInferenceEngine = inferenceEngineFactory(result.model)
                         _uiState.update {
                             it.copy(
-                                isModelLoaded = true,
-                                isLoadingModel = false,
-                                modelMetadata = result.model.metadata,
-                                showModelPicker = false,
-                                loadingTimeMs = loadTime
+                                modelState = ModelLoadingState.Loaded(result.model, 0),
+                                showModelPicker = false
                             )
                         }
                     }
                     is ModelLoadResult.Error -> {
                         _uiState.update {
                             it.copy(
-                                isLoadingModel = false,
+                                modelState = ModelLoadingState.Error(result.message),
                                 errorMessage = result.message
                             )
                         }
@@ -146,8 +250,7 @@ class ChatViewModel(
         currentInferenceEngine = null
         _uiState.update {
             it.copy(
-                isModelLoaded = false,
-                modelMetadata = null,
+                modelState = ModelLoadingState.Idle,
                 session = ChatSession()
             )
         }
@@ -201,9 +304,7 @@ class ChatViewModel(
         _uiState.update {
             it.copy(
                 session = it.session.addMessage(assistantMessage),
-                isGenerating = true,
-                currentResponse = "",
-                statistics = InferenceStatistics()
+                generationState = GenerationState.Generating("", InferenceStatistics())
             )
         }
 
@@ -218,35 +319,38 @@ class ChatViewModel(
                     .conflate()
                     .collect { token ->
                     responseBuilder.append(token.token)
+                    val response = responseBuilder.toString()
 
                     _uiState.update { state ->
                         state.copy(
                             session = state.session.updateLastMessage(
-                                content = responseBuilder.toString(),
+                                content = response,
                                 isStreaming = true,
                                 tokenCount = token.statistics.tokensGenerated
                             ),
-                            currentResponse = responseBuilder.toString(),
-                            statistics = token.statistics
+                            generationState = GenerationState.Generating(response, token.statistics)
                         )
                     }
                 }
 
                 // Finalize the message
+                val finalResponse = responseBuilder.toString()
                 _uiState.update { state ->
+                    val stats = (state.generationState as? GenerationState.Generating)?.statistics
+                        ?: InferenceStatistics()
                     state.copy(
                         session = state.session.updateLastMessage(
-                            content = responseBuilder.toString(),
+                            content = finalResponse,
                             isStreaming = false,
-                            tokenCount = state.statistics.tokensGenerated
+                            tokenCount = stats.tokensGenerated
                         ),
-                        isGenerating = false
+                        generationState = GenerationState.Complete(finalResponse, stats)
                     )
                 }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        isGenerating = false,
+                        generationState = GenerationState.Error("Generation error: ${e.message}"),
                         errorMessage = "Generation error: ${e.message}"
                     )
                 }
@@ -263,13 +367,17 @@ class ChatViewModel(
         generationJob = null
 
         _uiState.update { state ->
-            if (state.isGenerating) {
+            val genState = state.generationState
+            if (genState is GenerationState.Generating) {
                 state.copy(
                     session = state.session.updateLastMessage(
-                        content = state.currentResponse,
+                        content = genState.currentResponse,
                         isStreaming = false
                     ),
-                    isGenerating = false
+                    generationState = GenerationState.Complete(
+                        genState.currentResponse,
+                        genState.statistics
+                    )
                 )
             } else {
                 state
@@ -285,8 +393,7 @@ class ChatViewModel(
         _uiState.update {
             it.copy(
                 session = it.session.clearMessages(),
-                currentResponse = "",
-                statistics = InferenceStatistics()
+                generationState = GenerationState.Idle
             )
         }
     }

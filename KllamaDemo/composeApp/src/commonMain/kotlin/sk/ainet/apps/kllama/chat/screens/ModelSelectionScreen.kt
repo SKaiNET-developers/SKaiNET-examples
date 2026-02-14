@@ -13,12 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import sk.ainet.ui.components.SKaiNETProgressIndicator
+import sk.ainet.ui.components.LoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,13 +42,14 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import sk.ainet.apps.kllama.chat.data.file.FilePicker
 import sk.ainet.apps.kllama.chat.data.file.FilePickerResult
+import sk.ainet.apps.kllama.chat.domain.model.DiscoveredModel
+import sk.ainet.apps.kllama.chat.domain.model.ModelDiscoveryState
+import sk.ainet.apps.kllama.chat.domain.model.ModelLoadingState
 import sk.ainet.apps.kllama.chat.ui.BackIcon
 import sk.ainet.apps.kllama.chat.ui.CloseIcon
+import sk.ainet.apps.kllama.chat.ui.DiscoveredModelCard
 import sk.ainet.apps.kllama.chat.ui.FolderIcon
-import sk.ainet.apps.kllama.chat.ui.ModelDetailsCard
 import sk.ainet.apps.kllama.chat.ui.ModelIcon
-import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
-import sk.ainet.apps.kllama.chat.domain.model.QuantizationType
 
 /**
  * Screen for selecting and loading a model.
@@ -56,14 +58,20 @@ import sk.ainet.apps.kllama.chat.domain.model.QuantizationType
 @Composable
 fun ModelSelectionScreen(
     onModelSelected: (FilePickerResult) -> Unit,
+    onDiscoveredModelSelected: (DiscoveredModel) -> Unit,
     onNavigateBack: () -> Unit,
-    isLoading: Boolean,
+    modelState: ModelLoadingState,
+    discoveryState: ModelDiscoveryState,
     errorMessage: String?,
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
     var selectedFile by remember { mutableStateOf<FilePickerResult?>(null) }
     val filePicker = remember { FilePicker() }
+
+    val isLoading = modelState is ModelLoadingState.ParsingMetadata
+            || modelState is ModelLoadingState.LoadingWeights
+            || modelState is ModelLoadingState.InitializingRuntime
 
     Scaffold(
         modifier = modifier.windowInsetsPadding(WindowInsets.safeDrawing),
@@ -92,15 +100,83 @@ fun ModelSelectionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Instructions
-            Text(
-                text = "Select a GGUF model file to load for local inference.",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            // Phased loading progress
+            when (modelState) {
+                is ModelLoadingState.ParsingMetadata -> {
+                    LoadingProgressCard("Parsing metadata: ${modelState.fileName}")
+                }
+                is ModelLoadingState.LoadingWeights -> {
+                    LoadingProgressCard("${modelState.phase}: ${modelState.fileName}")
+                }
+                is ModelLoadingState.InitializingRuntime -> {
+                    LoadingProgressCard("Initializing runtime: ${modelState.fileName}")
+                }
+                else -> {}
+            }
 
-            // File picker button
+            // Discovered models section
+            when (discoveryState) {
+                is ModelDiscoveryState.Scanning -> {
+                    LoadingIndicator(size = 32.dp)
+                    Text(
+                        text = "Scanning for GGUF models...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                is ModelDiscoveryState.Found -> {
+                    if (discoveryState.models.isNotEmpty()) {
+                        Text(
+                            text = "Discovered Models",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(discoveryState.models, key = { it.path }) { model ->
+                                DiscoveredModelCard(
+                                    model = model,
+                                    onClick = { onDiscoveredModelSelected(model) }
+                                )
+                            }
+                        }
+                    } else {
+                        // No models found — show instructions
+                        Text(
+                            text = "No GGUF models found in the working directory.\nSelect a model file manually or place .gguf files in the app directory.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+                is ModelDiscoveryState.Error -> {
+                    Text(
+                        text = "Discovery error: ${discoveryState.message}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+                is ModelDiscoveryState.Idle -> {
+                    Text(
+                        text = "Select a GGUF model file to load for local inference.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+
+            // File picker button (always available as fallback)
             OutlinedButton(
                 onClick = {
                     scope.launch {
@@ -127,34 +203,31 @@ fun ModelSelectionScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Load button
-            Button(
-                onClick = {
-                    selectedFile?.let { file ->
-                        onModelSelected(file)
+            // Load button for manually selected file
+            if (selectedFile != null) {
+                Button(
+                    onClick = {
+                        selectedFile?.let { file ->
+                            onModelSelected(file)
+                        }
+                    },
+                    enabled = !isLoading,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (isLoading) {
+                        LoadingIndicator(size = 24.dp)
+                        Text(
+                            text = "Loading...",
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = ModelIcon,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        Text("Load Model")
                     }
-                },
-                enabled = selectedFile != null && !isLoading,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isLoading) {
-                    SKaiNETProgressIndicator(
-                        size = 24.dp,
-                        strokeWidth = 2.dp
-                    )
-                    Text(
-                        text = "Loading...",
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                } else {
-                    Icon(
-                        imageVector = ModelIcon,
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text("Load Model")
                 }
             }
 
@@ -175,10 +248,39 @@ fun ModelSelectionScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-
             // Supported formats info
             SupportedFormatsInfo()
+        }
+    }
+}
+
+/**
+ * Card showing phased loading progress.
+ */
+@Composable
+private fun LoadingProgressCard(
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            LoadingIndicator(size = 24.dp)
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }
@@ -263,10 +365,6 @@ private fun SupportedFormatsInfo(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Formats a decimal number with the specified number of decimal places.
- * Multiplatform-compatible replacement for String.format("%.Xf", value).
- */
 private fun formatDecimal(value: Double, decimals: Int = 2): String {
     val factor = 10.0.pow(decimals)
     val rounded = round(value * factor) / factor
@@ -275,9 +373,6 @@ private fun formatDecimal(value: Double, decimals: Int = 2): String {
     return "$intPart.${fracPart.toString().padStart(decimals, '0')}"
 }
 
-/**
- * Format file size to human-readable string.
- */
 private fun formatFileSize(bytes: Long): String {
     return when {
         bytes >= 1_000_000_000 -> "${formatDecimal(bytes / 1_000_000_000.0)} GB"

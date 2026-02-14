@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 import sk.ainet.apps.kllama.chat.screens.ChatScreen
 import sk.ainet.apps.kllama.chat.screens.DiagnosticsScreen
@@ -71,13 +70,17 @@ fun ChatNavigationHost(
             ModelSelectionScreen(
                 onModelSelected = { fileResult ->
                     viewModel.loadModel(fileResult)
-                    // Navigate back to chat after starting model load
+                    currentDestination = ChatDestination.CHAT
+                },
+                onDiscoveredModelSelected = { model ->
+                    viewModel.loadDiscoveredModel(model)
                     currentDestination = ChatDestination.CHAT
                 },
                 onNavigateBack = {
                     currentDestination = ChatDestination.CHAT
                 },
-                isLoading = uiState.isLoadingModel,
+                modelState = uiState.modelState,
+                discoveryState = uiState.discoveryState,
                 errorMessage = uiState.errorMessage,
                 modifier = modifier
             )

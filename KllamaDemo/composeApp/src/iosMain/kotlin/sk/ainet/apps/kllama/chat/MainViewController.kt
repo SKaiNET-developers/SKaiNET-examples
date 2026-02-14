@@ -7,7 +7,7 @@ import sk.ainet.apps.kllama.chat.di.ServiceLocator
 fun MainViewController() = ComposeUIViewController {
     // Initialize ServiceLocator with common model loader
     if (!ServiceLocator.isInitialized) {
-        ServiceLocator.initialize(CommonModelLoader())
+        ServiceLocator.configure(loader = CommonModelLoader())
     }
 
     App()

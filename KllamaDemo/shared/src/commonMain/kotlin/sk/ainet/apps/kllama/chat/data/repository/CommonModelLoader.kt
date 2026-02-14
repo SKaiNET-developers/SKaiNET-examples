@@ -1,6 +1,9 @@
 package sk.ainet.apps.kllama.chat.data.repository
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.io.Source
 import kotlinx.io.buffered
@@ -11,6 +14,7 @@ import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
+import sk.ainet.apps.kllama.chat.domain.model.ModelLoadingState
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
 import sk.ainet.apps.kllama.chat.domain.model.currentTimeMillis
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
@@ -71,6 +75,81 @@ class CommonModelLoader : PlatformModelLoader {
         currentPath = null
         ServiceLocator.setRuntime(null)
     }
+
+    /**
+     * Loads a GGUF model from the given path, emitting phased [ModelLoadingState] progress.
+     */
+    fun loadModelWithProgress(path: String): Flow<ModelLoadingState> = flow {
+        val fileName = path.substringAfterLast('/').substringAfterLast('\\')
+        try {
+            val ioPath = Path(path)
+            if (!SystemFileSystem.exists(ioPath)) {
+                emit(ModelLoadingState.Error("File not found: $path"))
+                return@flow
+            }
+
+            val loadStartTime = currentTimeMillis()
+            val sizeBytes = SystemFileSystem.metadataOrNull(ioPath)?.size ?: 0L
+
+            emit(ModelLoadingState.ParsingMetadata(fileName))
+
+            val loader = LlamaWeightLoader(
+                sourceProvider = { SystemFileSystem.source(ioPath).buffered() },
+                quantPolicy = LlamaWeightLoader.QuantPolicy.DEQUANTIZE_TO_FP32
+            )
+
+            emit(ModelLoadingState.LoadingWeights(fileName))
+
+            val weights = loader.loadToMap<FP32, Float>(ctx)
+
+            emit(ModelLoadingState.LoadingWeights(fileName, phase = "Mapping weights"))
+
+            val runtimeWeights = LlamaWeightMapper.map(weights)
+
+            emit(ModelLoadingState.InitializingRuntime(fileName))
+
+            val runtime = LlamaRuntime(ctx, runtimeWeights)
+
+            currentRuntime = runtime
+            currentWeights = runtimeWeights
+            currentPath = path
+            ServiceLocator.setRuntime(runtime)
+
+            val llamaMeta = runtimeWeights.metadata
+            val name = fileName.substringBeforeLast('.')
+            val metadata = ModelMetadata(
+                name = name,
+                parameterCount = estimateParamCount(llamaMeta),
+                sizeBytes = sizeBytes,
+                quantization = ModelFormatDetector.detectQuantization(path),
+                contextLength = llamaMeta.contextLength,
+                vocabSize = llamaMeta.vocabSize,
+                hiddenSize = llamaMeta.embeddingLength,
+                numLayers = llamaMeta.blockCount,
+                numHeads = llamaMeta.headCount
+            )
+
+            val totalLoadTime = currentTimeMillis() - loadStartTime
+            AppLogger.info("ModelLoader", "Model loaded successfully", mapOf(
+                "name" to name,
+                "totalLoadTimeMs" to "$totalLoadTime"
+            ))
+
+            val loadedModel = LoadedModel(
+                metadata = metadata,
+                modelPath = path,
+                format = ModelFormat.GGUF
+            )
+
+            emit(ModelLoadingState.Loaded(loadedModel, totalLoadTime))
+        } catch (e: Exception) {
+            AppLogger.error("ModelLoader", "Load with progress failed", mapOf(
+                "path" to path,
+                "error" to (e.message ?: "unknown")
+            ))
+            emit(ModelLoadingState.Error("Failed to load GGUF file: ${e.message}", e))
+        }
+    }.flowOn(Dispatchers.Default)
 
     private suspend fun loadGgufFromPath(path: String): ModelLoadResult = withContext(Dispatchers.Default) {
         try {

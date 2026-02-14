@@ -1,6 +1,7 @@
 package sk.ainet.apps.kllama.chat.domain.port
 
 import kotlinx.io.Source
+import sk.ainet.apps.kllama.chat.domain.model.DiscoveredModel
 import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.model.ModelFormat
 import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
@@ -68,4 +69,11 @@ interface ModelRepository {
      * Check if a model is currently loaded.
      */
     val isModelLoaded: Boolean
+
+    /**
+     * Discover GGUF model files available on the filesystem.
+     *
+     * @return List of discovered models with path, name, and size
+     */
+    suspend fun discoverModels(): List<DiscoveredModel>
 }

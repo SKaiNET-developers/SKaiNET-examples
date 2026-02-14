@@ -6,13 +6,20 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import sk.ainet.apps.kllama.chat.data.repository.CommonModelLoader
+import sk.ainet.apps.kllama.chat.data.source.FileSystemModelDataSource
 import sk.ainet.apps.kllama.chat.di.ServiceLocator
+import sk.ainet.apps.kllama.chat.logging.AppLogger
 
 fun main() = application {
-    // Initialize ServiceLocator with common model loader
+    // Initialize ServiceLocator with common model loader and filesystem data source
     if (!ServiceLocator.isInitialized) {
-        ServiceLocator.initialize(CommonModelLoader())
+        ServiceLocator.configure(
+            loader = CommonModelLoader(),
+            dataSource = FileSystemModelDataSource()
+        )
     }
+
+    logSimdStatus()
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -21,4 +28,14 @@ fun main() = application {
     ) {
         App()
     }
+}
+
+private fun logSimdStatus() {
+    val available = try {
+        Class.forName("jdk.incubator.vector.FloatVector")
+        true
+    } catch (_: ClassNotFoundException) {
+        false
+    }
+    AppLogger.info("Platform", "SIMD (Vector API) available: $available")
 }
