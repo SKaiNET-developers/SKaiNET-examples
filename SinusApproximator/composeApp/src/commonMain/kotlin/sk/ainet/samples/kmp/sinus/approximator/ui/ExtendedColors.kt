@@ -5,6 +5,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import sk.ainet.ui.theme.*
 
 /**
  * Extended color system for SKaiNET theme

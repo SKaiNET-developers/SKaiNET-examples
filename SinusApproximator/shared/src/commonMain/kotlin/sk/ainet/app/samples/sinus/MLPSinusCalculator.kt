@@ -3,6 +3,7 @@ package sk.ainet.app.samples.sinus
 import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.context.ExecutionContext
 import sk.ainet.context.data
+import sk.ainet.context.observers.LatencyExecutionObserver
 import sk.ainet.execute.context.computation
 import sk.ainet.lang.model.dnn.mlp.pretrained.SinusApproximatorWandB
 import sk.ainet.lang.nn.definition
@@ -97,11 +98,19 @@ class SineNN(private val ctx: ExecutionContext) {
 
 class MLPSinusCalculator() : SinusCalculator {
     private val ctx = DirectCpuExecutionContext()
+    private val observer = LatencyExecutionObserver()
+
+    init {
+        ctx.registerObserver(observer)
+    }
+
     val _model = SineNN(ctx)
     val model = _model.model
 
 
     override fun calculate(angle: Float): Float = _model.calcSine(angle)
+
+    fun getLatencyResults() = observer.results()
 
     override suspend fun loadModel() {
         // TODO model has pretrained weights as a part of model

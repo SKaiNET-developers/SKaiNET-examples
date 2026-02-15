@@ -35,7 +35,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import sk.ainet.ui.components.LoadingIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -414,11 +414,10 @@ fun DrawingScreen(handleSource: () -> Source) {
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                CircularProgressIndicator(
+                                LoadingIndicator(
                                     modifier = Modifier
-                                        .size(60.dp)
                                         .alpha(loadingAlpha.value),
-                                    color = MaterialTheme.colorScheme.primary
+                                    size = 60.dp
                                 )
                                 Text(
                                     text = "Loading model...",

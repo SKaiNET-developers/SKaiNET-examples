@@ -58,6 +58,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kotlinx.io.core)
+            implementation("sk.ainet.ui:skainet-ui")
 
             implementation(libs.skainet.lang.core)
             implementation(libs.skainet.lang.dag)

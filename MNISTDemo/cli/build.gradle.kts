@@ -28,7 +28,9 @@ application {
     mainClass.set("sk.ainet.cli.MainKt")
 }
 
-tasks.named<JavaExec>("run") {
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs("--enable-preview", "--add-modules", "jdk.incubator.vector")
+    systemProperty("skainet.cpu.vector.enabled", "true")
     standardInput = System.`in`
 }
 

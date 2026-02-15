@@ -58,6 +58,7 @@ kotlin {
             implementation(projects.shared)
 
             implementation(libs.kotlinx.io.core)
+            implementation("sk.ainet.ui:skainet-ui")
 
         }
         desktopMain.dependencies {

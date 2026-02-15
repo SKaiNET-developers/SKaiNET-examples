@@ -10,7 +10,7 @@ import sk.ainet.lang.graph.DefaultGraphExecutionContext
 import sk.ainet.lang.nn.dsl.sequential
 import sk.ainet.lang.nn.dsl.training
 import sk.ainet.lang.nn.loss.MSELoss
-import sk.ainet.lang.nn.optim.sgd
+import sk.ainet.lang.nn.optim.adamw
 import sk.ainet.lang.tensor.relu
 import sk.ainet.lang.types.FP32
 import kotlin.math.PI
@@ -35,7 +35,7 @@ class SinusTrainer {
     
     fun getModel() = model
 
-    fun train(epochs: Int = 1000, batchSize: Int = 64, lr: Double = 0.1): Flow<TrainingProgress> = flow {
+    fun train(epochs: Int = 1000, batchSize: Int = 64, lr: Double = 0.001): Flow<TrainingProgress> = flow {
         val xValues = FloatArray(batchSize) { i ->
             (i.toFloat() / (batchSize - 1)) * (PI.toFloat() / 2f)
         }
@@ -48,7 +48,7 @@ class SinusTrainer {
             model { model }
             loss { MSELoss() }
             optimizer {
-                sgd(lr = lr).apply {
+                adamw(lr = lr, weightDecay = 0.01).apply {
                     model.trainableParameters().forEach {
                         addParameter(it)
                     }

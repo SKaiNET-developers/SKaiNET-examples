@@ -18,10 +18,13 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
     }
 }
+
+includeBuild("../skainet-ui")
 
 include(":composeApp")
 include(":shared")

@@ -17,6 +17,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -27,6 +28,8 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
+includeBuild("../skainet-ui")
 
 include(":composeApp")
 include(":shared")

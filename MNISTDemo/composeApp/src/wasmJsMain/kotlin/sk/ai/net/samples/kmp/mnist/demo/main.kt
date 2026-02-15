@@ -96,7 +96,7 @@ fun main() {
             } else {
                 println("LoadingState: $loadingState, showing loading indicator")
                 // Show loading indicator
-                androidx.compose.material.CircularProgressIndicator()
+                sk.ainet.ui.components.LoadingIndicator()
             }
         }
     } catch (e: Exception) {
