@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDA Lab — SKaiNET</title>
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; background: #0A0B0D; color: #F2F2F2; font-family: system-ui, sans-serif; }
+        #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; padding: 24px; }
+        #loading .spinner { width: 28px; height: 28px; border: 3px solid #262B31; border-top-color: #DC2626; border-radius: 50%; animation: spin 0.9s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #loading small { color: #6B7280; }
+    </style>
+    <script>
+        // Compose for Web needs WebAssembly GC (Chrome 119+, Firefox 120+, Safari 18.2+).
+        // Validate a minimal GC module; on failure replace the spinner with an explanation.
+        (function () {
+            var gcModule = new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,95,1,120,0]);
+            var ok = typeof WebAssembly !== "undefined" && WebAssembly.validate(gcModule);
+            window.addEventListener("DOMContentLoaded", function () {
+                if (ok) return;
+                var el = document.getElementById("loading");
+                el.innerHTML = "<strong>This browser cannot run TDA Lab.</strong>" +
+                    "<div>It needs WebAssembly GC: Chrome/Edge 119+, Firefox 120+ or Safari 18.2+.</div>" +
+                    "<small>" + navigator.userAgent + "</small>";
+            });
+        })();
+    </script>
+    <script type="application/javascript" src="composeApp.js"></script>
+</head>
+<body>
+<div id="loading">
+    <div class="spinner"></div>
+    <div>Loading TDA Lab…</div>
+    <small>about 12 MB of WebAssembly on first visit</small>
+</div>
+</body>
+</html>

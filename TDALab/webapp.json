@@ -1,0 +1,15 @@
+{
+  "id": "tdalab",
+  "name": "TDA Lab",
+  "description": "Interactive topological data analysis: Vietoris-Rips filtration, persistent homology (H0, H1) and barcodes over a 2-D point cloud, with the distance matrix computed by SKaiNET",
+  "platforms": ["android", "ios", "desktop", "wasm"],
+  "distDirs": [
+    "app/build/kotlin-webpack/wasmJs/productionExecutable",
+    "app/build/processedResources/wasmJs/main"
+  ],
+  "build": {
+    "command": "./gradlew :app:wasmJsBrowserProductionWebpack",
+    "description": "Builds the wasm browser distribution"
+  },
+  "screenshot": "docs/screenshots/tdalab.png"
+}

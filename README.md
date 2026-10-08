@@ -67,6 +67,19 @@ language toggle.
 
 ---
 
+### 🔵 TDA Lab
+
+Interactive **topological data analysis**: pick or paste a 2-D point cloud, grow the
+Vietoris-Rips radius ε with a slider and watch edges appear, components merge and loops open
+and close, with live Betti numbers, a persistence barcode and a persistence diagram. The
+distance matrix is a SKaiNET tensor expression; H₀ and H₁ come from a real ℤ/2 boundary-matrix
+reduction in plain Kotlin. A Kotlin Multiplatform re-implementation of
+[TDA Lab](https://github.com/Starchild13/TDAProject) for Android.
+
+📂 [`TDALab/`](TDALab/) · runs on Android · iOS · Desktop · Wasm
+
+---
+
 ### 🏁 Kernel Race
 
 On-device LLM chat accelerated by SKaiNET's hand-written ARM NEON kernels on Android, with a
