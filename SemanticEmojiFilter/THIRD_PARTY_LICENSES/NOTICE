@@ -1,0 +1,21 @@
+Third-party content used by the Semantic Emoji Filter example
+=============================================================
+
+MongoDB LEAF retrieval encoder (mdbr-leaf-ir)
+  https://huggingface.co/MongoDB/mdbr-leaf-ir  (revision 4262131b32c3182bd06e67e92ae69d7bd66e0c5c)
+  Copyright MongoDB, Inc. Licensed under the Apache License, Version 2.0 (Apache-2.0.txt).
+  Downloaded at build time (web) or first run (desktop, Android); not redistributed in this repository.
+
+Laya decision model, multilingual checkpoint
+  https://huggingface.co/convaiinnovations/laya  (revision 7b928d828b7b0e022f929d9bd2e44165aa270148)
+  Copyright Convai Innovations. Licensed under the Apache License, Version 2.0 (Apache-2.0.txt).
+  Downloaded on first use of the optional verifier (-PlayaVerifier=true); not redistributed.
+
+Unicode CLDR emoji annotations (release 47)
+  https://github.com/unicode-org/cldr  common/annotations/{en,de}.xml, common/annotationsDerived/{en,de}.xml
+  Copyright Unicode, Inc. Licensed under the Unicode License v3 (Unicode-3.0.txt).
+  The English and German emoji names and keywords in catalog/catalog.json are derived from these files
+  by scripts/generate-catalog.py; the tags and groups are this example's own curation.
+
+coi-serviceworker (web build)
+  https://github.com/gzuidhof/coi-serviceworker  MIT License, see the header of composeApp/src/wasmJsMain/resources/coi-serviceworker.js.

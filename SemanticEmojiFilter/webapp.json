@@ -1,0 +1,14 @@
+{
+  "id": "semanticemojifilter",
+  "name": "Semantic Emoji Filter",
+  "description": "Type what you mean, get the emoji: on-device sentence embeddings (MongoDB LEAF, 23M parameters) rank 200 emoji live in the browser; desktop and Android add the Laya decision model as a second stage that re-checks the top hits.",
+  "platforms": ["android", "desktop", "wasm"],
+  "distDirs": [
+    "composeApp/build/dist/wasmJs/productionExecutable"
+  ],
+  "build": {
+    "command": "./gradlew :composeApp:wasmJsBrowserDistribution",
+    "description": "Builds the wasm browser distribution, including the bundled ~92 MB LEAF checkpoint"
+  },
+  "screenshot": "docs/screenshots/grid.png"
+}
