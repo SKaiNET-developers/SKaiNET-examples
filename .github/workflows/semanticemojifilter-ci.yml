@@ -48,8 +48,8 @@ jobs:
           path: SemanticEmojiFilter/composeApp/src/wasmJsMain/composeResources/files/leaf
           key: semanticemojifilter-leaf-4262131b
 
-      # Unit tests on JVM + Android (no device), the Android debug APK, and a wasm compile check.
-      # The Laya verifier module is not built here: it needs transformers 0.59.0 on Maven Central.
+      # Unit tests on JVM + Android (no device), the Android debug APK, and a wasm compile check;
+      # then the opt-in Laya verifier module (desktop + Android source sets, its own tests).
       - name: Build and test
         working-directory: SemanticEmojiFilter
         run: |
@@ -60,4 +60,12 @@ jobs:
             :androidApp:assembleDebug \
             :shared:compileKotlinWasmJs \
             :composeApp:compileKotlinWasmJs \
+            --console=plain
+      - name: Build and test the Laya verifier
+        working-directory: SemanticEmojiFilter
+        run: |
+          ./gradlew -PlayaVerifier=true \
+            :verifier:jvmTest \
+            :cli:compileKotlin \
+            :composeApp:compileKotlinJvm \
             --console=plain

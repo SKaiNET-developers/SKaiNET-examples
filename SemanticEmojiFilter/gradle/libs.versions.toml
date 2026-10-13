@@ -14,14 +14,10 @@ kotlinx-coroutines = "1.11.0"
 kotlinxIo = "0.9.1"
 # The transformers 0.58.0 pin; the catalog JSON and calibration files are read with it.
 kotlinxSerialization = "1.11.0"
-# Engine and transformers released in lock-step; the bert encoder, the SafeTensors reader and
-# the engine tokenizers (WordPiece for LEAF) all come from these two BOMs.
+# The bert encoder, the SafeTensors reader and the engine tokenizers (WordPiece for LEAF) come from
+# the engine BOM; the typed-decision contract, runtime and the Laya adapter need transformers 0.59.0.
 skainet = "0.58.0"
-skainet-transformers = "0.58.0"
-# The typed-decision contract, runtime and the Laya adapter are on transformers `develop` and
-# ship with 0.59.0. Until then the verifier (-PlayaVerifier=true) resolves them from a local
-# publish; move the three coordinates under the BOM when 0.59.0 is on Maven Central.
-skainet-transformers-decisions = "0.59.0-SNAPSHOT"
+skainet-transformers = "0.59.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -52,10 +48,10 @@ skainet-frontend-text = { module = "sk.ainet.core:skainet-frontend-text" }
 # SKaiNET-transformers — BOM-governed
 skainet-transformers-bom = { module = "sk.ainet.transformers:skainet-transformers-bom", version.ref = "skainet-transformers" }
 skainet-transformers-inference-bert = { module = "sk.ainet.transformers:skainet-transformers-inference-bert" }
-# Verifier only (see the version comment above)
-skainet-transformers-decisions-api = { module = "sk.ainet.transformers:skainet-transformers-decisions-api", version.ref = "skainet-transformers-decisions" }
-skainet-transformers-decisions-runtime = { module = "sk.ainet.transformers:skainet-transformers-decisions-runtime", version.ref = "skainet-transformers-decisions" }
-skainet-transformers-inference-laya = { module = "sk.ainet.transformers:skainet-transformers-inference-laya", version.ref = "skainet-transformers-decisions" }
+# Verifier only (-PlayaVerifier=true)
+skainet-transformers-decisions-api = { module = "sk.ainet.transformers:skainet-transformers-decisions-api" }
+skainet-transformers-decisions-runtime = { module = "sk.ainet.transformers:skainet-transformers-decisions-runtime" }
+skainet-transformers-inference-laya = { module = "sk.ainet.transformers:skainet-transformers-inference-laya" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

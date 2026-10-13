@@ -1,9 +1,8 @@
 rootProject.name = "SemanticEmojiFilter"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-// Opt-in second stage: the Laya decision model as a verifier behind the embedding filter.
-// It needs the SKaiNET-transformers `decisions` and `laya` modules, which ship with 0.59.0;
-// until then they come from a local publish (`publishToMavenLocal` as 0.59.0-SNAPSHOT).
+// Opt-in second stage: the Laya decision model as a verifier behind the embedding filter
+// (the SKaiNET-transformers `decisions` and `laya` modules, 0.59.0+). Desktop and Android only.
 val layaVerifier = providers.gradleProperty("layaVerifier").orNull == "true"
 
 pluginManagement {
@@ -28,9 +27,6 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.android")
                 includeGroupAndSubgroups("com.google")
             }
-        }
-        if (layaVerifier) {
-            mavenLocal { content { includeGroupByRegex("sk\\.ainet(\\..*)?") } }
         }
         mavenCentral()
     }
