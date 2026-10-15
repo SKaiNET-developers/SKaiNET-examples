@@ -1,0 +1,71 @@
+name: SemanticEmojiFilter CI
+
+on:
+  pull_request:
+    paths:
+      - "SemanticEmojiFilter/**"
+      - "skainet-ui/**"
+      - ".github/workflows/semanticemojifilter-ci.yml"
+  push:
+    branches:
+      - develop
+    paths:
+      - "SemanticEmojiFilter/**"
+      - "skainet-ui/**"
+      - ".github/workflows/semanticemojifilter-ci.yml"
+
+concurrency:
+  group: semanticemojifilter-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x SemanticEmojiFilter/gradlew
+
+      # composeApp's Kotlin compile tasks depend on the bundled LEAF checkpoint (fetchModel — see
+      # composeApp/build.gradle.kts) even for a plain compile check, since Compose resource
+      # processing needs the files present. Cache them so only the first run per revision pays
+      # the ~92 MB download.
+      - name: Cache bundled LEAF checkpoint
+        uses: actions/cache@v4
+        with:
+          path: SemanticEmojiFilter/composeApp/src/wasmJsMain/composeResources/files/leaf
+          key: semanticemojifilter-leaf-4262131b
+
+      # Unit tests on JVM + Android (no device), the Android debug APK, and a wasm compile check;
+      # then the opt-in Laya verifier module (desktop + Android source sets, its own tests).
+      - name: Build and test
+        working-directory: SemanticEmojiFilter
+        run: |
+          ./gradlew \
+            :shared:jvmTest \
+            :shared:testAndroidHostTest \
+            :cli:compileKotlin \
+            :androidApp:assembleDebug \
+            :shared:compileKotlinWasmJs \
+            :composeApp:compileKotlinWasmJs \
+            --console=plain
+      - name: Build and test the Laya verifier
+        working-directory: SemanticEmojiFilter
+        run: |
+          ./gradlew -PlayaVerifier=true \
+            :verifier:jvmTest \
+            :cli:compileKotlin \
+            :composeApp:compileKotlinJvm \
+            --console=plain

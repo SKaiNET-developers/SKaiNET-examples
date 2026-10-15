@@ -1,0 +1,5517 @@
+{
+    "version": 1,
+    "cldr": "47",
+    "embeddingTextVersion": 1,
+    "embeddingsSha256": "21d90c9fcb6b1895dc9b2b4fa6eaa87f228dd0a99182ebc38ab7852c2dba94a3",
+    "items": [
+        {
+            "id": "1F957",
+            "emoji": "🥗",
+            "nameEn": "green salad",
+            "nameDe": "Salat",
+            "keywordsEn": [
+                "food",
+                "green",
+                "salad"
+            ],
+            "keywordsDe": [
+                "Blattgemüse",
+                "Essen",
+                "gesund",
+                "grün",
+                "Salat"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F34E",
+            "emoji": "🍎",
+            "nameEn": "red apple",
+            "nameDe": "roter Apfel",
+            "keywordsEn": [
+                "apple",
+                "diet",
+                "food",
+                "fruit",
+                "health",
+                "red",
+                "ripe"
+            ],
+            "keywordsDe": [
+                "Apfel",
+                "Frucht",
+                "Obst",
+                "rot",
+                "roter Apfel"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F966",
+            "emoji": "🥦",
+            "nameEn": "broccoli",
+            "nameDe": "Brokkoli",
+            "keywordsEn": [
+                "broccoli",
+                "cabbage",
+                "wild"
+            ],
+            "keywordsDe": [
+                "Broccoli",
+                "Brokkoli",
+                "essen",
+                "Gemüse",
+                "Gemüsekohl",
+                "Kohl"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F955",
+            "emoji": "🥕",
+            "nameEn": "carrot",
+            "nameDe": "Karotte",
+            "keywordsEn": [
+                "carrot",
+                "food",
+                "vegetable"
+            ],
+            "keywordsDe": [
+                "Gemüse",
+                "Karotte",
+                "Möhre",
+                "Mohrrübe"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F34C",
+            "emoji": "🍌",
+            "nameEn": "banana",
+            "nameDe": "Banane",
+            "keywordsEn": [
+                "banana",
+                "fruit",
+                "potassium"
+            ],
+            "keywordsDe": [
+                "Banane",
+                "Frucht",
+                "Obst",
+                "Schale"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F347",
+            "emoji": "🍇",
+            "nameEn": "grapes",
+            "nameDe": "Trauben",
+            "keywordsEn": [
+                "Dionysus",
+                "fruit",
+                "grape",
+                "grapes"
+            ],
+            "keywordsDe": [
+                "Frucht",
+                "Obst",
+                "Traube",
+                "Trauben",
+                "Wein"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F353",
+            "emoji": "🍓",
+            "nameEn": "strawberry",
+            "nameDe": "Erdbeere",
+            "keywordsEn": [
+                "berry",
+                "fruit",
+                "strawberry"
+            ],
+            "keywordsDe": [
+                "Beere",
+                "Erdbeere",
+                "Essen",
+                "Frucht",
+                "Obst"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F951",
+            "emoji": "🥑",
+            "nameEn": "avocado",
+            "nameDe": "Avocado",
+            "keywordsEn": [
+                "avocado",
+                "food",
+                "fruit"
+            ],
+            "keywordsDe": [
+                "Avocado",
+                "Essen",
+                "Frucht"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F345",
+            "emoji": "🍅",
+            "nameEn": "tomato",
+            "nameDe": "Tomate",
+            "keywordsEn": [
+                "food",
+                "fruit",
+                "tomato",
+                "vegetable"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "Gemüse",
+                "Obst",
+                "Tomate"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F952",
+            "emoji": "🥒",
+            "nameEn": "cucumber",
+            "nameDe": "Gurke",
+            "keywordsEn": [
+                "cucumber",
+                "food",
+                "pickle",
+                "vegetable"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "Gemüse",
+                "Gurke",
+                "Scheiben"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F34A",
+            "emoji": "🍊",
+            "nameEn": "tangerine",
+            "nameDe": "Mandarine",
+            "keywordsEn": [
+                "c",
+                "citrus",
+                "fruit",
+                "nectarine",
+                "orange",
+                "tangerine",
+                "vitamin"
+            ],
+            "keywordsDe": [
+                "Apfelsine",
+                "Frucht",
+                "Mandarine",
+                "Obst",
+                "Orange",
+                "Vitamin"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F34B",
+            "emoji": "🍋",
+            "nameEn": "lemon",
+            "nameDe": "Zitrone",
+            "keywordsEn": [
+                "citrus",
+                "fruit",
+                "lemon",
+                "sour"
+            ],
+            "keywordsDe": [
+                "Frucht",
+                "Obst",
+                "sauer",
+                "Zitrone",
+                "Zitrusfrucht"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F349",
+            "emoji": "🍉",
+            "nameEn": "watermelon",
+            "nameDe": "Wassermelone",
+            "keywordsEn": [
+                "fruit",
+                "watermelon"
+            ],
+            "keywordsDe": [
+                "Frucht",
+                "Melone",
+                "Obst",
+                "Wasser",
+                "Wassermelone"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F96C",
+            "emoji": "🥬",
+            "nameEn": "leafy green",
+            "nameDe": "Blattgemüse",
+            "keywordsEn": [
+                "bok",
+                "burgers",
+                "cabbage",
+                "choy",
+                "green",
+                "kale",
+                "leafy",
+                "lettuce",
+                "salad"
+            ],
+            "keywordsDe": [
+                "Blattgemüse",
+                "blattgrün",
+                "Essen",
+                "Gemüse",
+                "Grünkohl",
+                "Grünzeug",
+                "Kohl",
+                "Kraut",
+                "Mangold",
+                "Pak Choi",
+                "Pok Choi",
+                "Salat",
+                "Salatblatt",
+                "Spinat"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F360",
+            "emoji": "🍠",
+            "nameEn": "roasted sweet potato",
+            "nameDe": "geröstete Süßkartoffel",
+            "keywordsEn": [
+                "food",
+                "potato",
+                "roasted",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "Gemüse",
+                "geröstet",
+                "Süßkartoffel"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F95C",
+            "emoji": "🥜",
+            "nameEn": "peanuts",
+            "nameDe": "Erdnuss",
+            "keywordsEn": [
+                "food",
+                "nut",
+                "peanut",
+                "peanuts",
+                "vegetable"
+            ],
+            "keywordsDe": [
+                "Erdnuss",
+                "Essen"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F95B",
+            "emoji": "🥛",
+            "nameEn": "glass of milk",
+            "nameDe": "Glas Milch",
+            "keywordsEn": [
+                "drink",
+                "glass",
+                "milk"
+            ],
+            "keywordsDe": [
+                "Getränk",
+                "Glas",
+                "Milch",
+                "trinken"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1FAD0",
+            "emoji": "🫐",
+            "nameEn": "blueberries",
+            "nameDe": "Blaubeeren",
+            "keywordsEn": [
+                "berries",
+                "berry",
+                "bilberry",
+                "blue",
+                "blueberries",
+                "blueberry",
+                "food",
+                "fruit"
+            ],
+            "keywordsDe": [
+                "Beere",
+                "blau",
+                "Blaubeere",
+                "Blaubeeren",
+                "Essen",
+                "Frucht",
+                "Heidelbeere",
+                "Heidelbeeren",
+                "Lebensmittel",
+                "Nahrung",
+                "Obst"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F95D",
+            "emoji": "🥝",
+            "nameEn": "kiwi fruit",
+            "nameDe": "Kiwi",
+            "keywordsEn": [
+                "food",
+                "fruit",
+                "kiwi"
+            ],
+            "keywordsDe": [
+                "Frucht",
+                "Kiwi",
+                "Obst"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F352",
+            "emoji": "🍒",
+            "nameEn": "cherries",
+            "nameDe": "Kirschen",
+            "keywordsEn": [
+                "berries",
+                "cherries",
+                "cherry",
+                "fruit",
+                "red"
+            ],
+            "keywordsDe": [
+                "Frucht",
+                "Kirsche",
+                "Kirschen",
+                "Obst"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F351",
+            "emoji": "🍑",
+            "nameEn": "peach",
+            "nameDe": "Pfirsich",
+            "keywordsEn": [
+                "fruit",
+                "peach"
+            ],
+            "keywordsDe": [
+                "Frucht",
+                "Obst",
+                "Pfirsich"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F350",
+            "emoji": "🍐",
+            "nameEn": "pear",
+            "nameDe": "Birne",
+            "keywordsEn": [
+                "fruit",
+                "pear"
+            ],
+            "keywordsDe": [
+                "Birne",
+                "Frucht",
+                "Obst"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F33D",
+            "emoji": "🌽",
+            "nameEn": "ear of corn",
+            "nameDe": "Maiskolben",
+            "keywordsEn": [
+                "corn",
+                "crops",
+                "ear",
+                "farm",
+                "maize",
+                "maze"
+            ],
+            "keywordsDe": [
+                "Gemüse",
+                "Mais",
+                "Maiskolben"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F954",
+            "emoji": "🥔",
+            "nameEn": "potato",
+            "nameDe": "Kartoffel",
+            "keywordsEn": [
+                "food",
+                "potato",
+                "vegetable"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "Gemüse",
+                "Kartoffel"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F363",
+            "emoji": "🍣",
+            "nameEn": "sushi",
+            "nameDe": "Sushi",
+            "keywordsEn": [
+                "food",
+                "sushi"
+            ],
+            "keywordsDe": [
+                "japanisches Gericht",
+                "Restaurant",
+                "Sushi"
+            ],
+            "tags": [
+                "food",
+                "healthy"
+            ],
+            "group": "food-healthy"
+        },
+        {
+            "id": "1F355",
+            "emoji": "🍕",
+            "nameEn": "pizza",
+            "nameDe": "Pizza",
+            "keywordsEn": [
+                "cheese",
+                "food",
+                "hungry",
+                "pepperoni",
+                "pizza",
+                "slice"
+            ],
+            "keywordsDe": [
+                "Pizza",
+                "Pizzastück",
+                "Pizzeria"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F354",
+            "emoji": "🍔",
+            "nameEn": "hamburger",
+            "nameDe": "Hamburger",
+            "keywordsEn": [
+                "burger",
+                "eat",
+                "fast",
+                "food",
+                "hamburger",
+                "hungry"
+            ],
+            "keywordsDe": [
+                "Burger",
+                "Fast Food",
+                "Hamburger",
+                "Restaurant"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F35F",
+            "emoji": "🍟",
+            "nameEn": "french fries",
+            "nameDe": "Pommes frites",
+            "keywordsEn": [
+                "fast",
+                "food",
+                "french",
+                "fries"
+            ],
+            "keywordsDe": [
+                "Fritten",
+                "Pommes",
+                "Pommes frites",
+                "Pommes Frites"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F32D",
+            "emoji": "🌭",
+            "nameEn": "hot dog",
+            "nameDe": "Hotdog",
+            "keywordsEn": [
+                "dog",
+                "frankfurter",
+                "hot",
+                "hotdog",
+                "sausage"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "Frankfurter",
+                "Hot Dog",
+                "Hotdog",
+                "Wurst",
+                "Würstchen"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F369",
+            "emoji": "🍩",
+            "nameEn": "doughnut",
+            "nameDe": "Donut",
+            "keywordsEn": [
+                "breakfast",
+                "dessert",
+                "donut",
+                "doughnut",
+                "food",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Donut",
+                "Doughnut",
+                "Essen",
+                "Kuchen",
+                "süß"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F36A",
+            "emoji": "🍪",
+            "nameEn": "cookie",
+            "nameDe": "Keks",
+            "keywordsEn": [
+                "chip",
+                "chocolate",
+                "cookie",
+                "dessert",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Cookie",
+                "Keks",
+                "Plätchen"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F382",
+            "emoji": "🎂",
+            "nameEn": "birthday cake",
+            "nameDe": "Geburtstagskuchen",
+            "keywordsEn": [
+                "bday",
+                "birthday",
+                "cake",
+                "celebration",
+                "dessert",
+                "happy",
+                "pastry",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "feier",
+                "Feier",
+                "Geburtstag",
+                "Geburtstagskuchen",
+                "Geburtstagstorte",
+                "happy birthday",
+                "kerzen",
+                "Kuchen",
+                "Lebensmittel",
+                "Torte"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F370",
+            "emoji": "🍰",
+            "nameEn": "shortcake",
+            "nameDe": "Torte",
+            "keywordsEn": [
+                "cake",
+                "dessert",
+                "pastry",
+                "shortcake",
+                "slice",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Kuchen",
+                "Kuchenstück",
+                "Stück Torte",
+                "Torte",
+                "Tortenstück"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F9C1",
+            "emoji": "🧁",
+            "nameEn": "cupcake",
+            "nameDe": "Cupcake",
+            "keywordsEn": [
+                "bakery",
+                "cupcake",
+                "dessert",
+                "sprinkles",
+                "sugar",
+                "sweet",
+                "treat"
+            ],
+            "keywordsDe": [
+                "Bäckerei",
+                "Cupcake",
+                "Dessert",
+                "Essen",
+                "Gebäck",
+                "Kalorienbombe",
+                "Konditorei",
+                "Muffin",
+                "Nachspeise",
+                "Streusel",
+                "süß",
+                "Zucker"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F36B",
+            "emoji": "🍫",
+            "nameEn": "chocolate bar",
+            "nameDe": "Schokoladentafel",
+            "keywordsEn": [
+                "bar",
+                "candy",
+                "chocolate",
+                "dessert",
+                "halloween",
+                "sweet",
+                "tooth"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "Schokolade",
+                "Schokoladentafel",
+                "Süßigkeit"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F36C",
+            "emoji": "🍬",
+            "nameEn": "candy",
+            "nameDe": "Bonbon",
+            "keywordsEn": [
+                "candy",
+                "cavities",
+                "dessert",
+                "halloween",
+                "restaurant",
+                "sweet",
+                "tooth",
+                "wrapper"
+            ],
+            "keywordsDe": [
+                "Bonbon",
+                "süß",
+                "Süßigkeit"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F36D",
+            "emoji": "🍭",
+            "nameEn": "lollipop",
+            "nameDe": "Lutscher",
+            "keywordsEn": [
+                "candy",
+                "dessert",
+                "food",
+                "lollipop",
+                "restaurant",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Lolli",
+                "Lutscher",
+                "Süßigkeit"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F366",
+            "emoji": "🍦",
+            "nameEn": "soft ice cream",
+            "nameDe": "Softeis",
+            "keywordsEn": [
+                "cream",
+                "dessert",
+                "food",
+                "ice",
+                "icecream",
+                "restaurant",
+                "serve",
+                "soft",
+                "sweet"
+            ],
+            "keywordsDe": [
+                "Eis",
+                "Softeis"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F37F",
+            "emoji": "🍿",
+            "nameEn": "popcorn",
+            "nameDe": "Popcorn",
+            "keywordsEn": [
+                "corn",
+                "movie",
+                "pop",
+                "popcorn"
+            ],
+            "keywordsDe": [
+                "Kino",
+                "Popcorn",
+                "Snack"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F953",
+            "emoji": "🥓",
+            "nameEn": "bacon",
+            "nameDe": "Bacon",
+            "keywordsEn": [
+                "bacon",
+                "breakfast",
+                "food",
+                "meat"
+            ],
+            "keywordsDe": [
+                "Bacon",
+                "Essen",
+                "Frühstücksspeck",
+                "Speck",
+                "Speckstreifen"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F9C0",
+            "emoji": "🧀",
+            "nameEn": "cheese wedge",
+            "nameDe": "Käsestück",
+            "keywordsEn": [
+                "cheese",
+                "wedge"
+            ],
+            "keywordsDe": [
+                "Käse",
+                "Käsestück"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F32E",
+            "emoji": "🌮",
+            "nameEn": "taco",
+            "nameDe": "Taco",
+            "keywordsEn": [
+                "mexican",
+                "taco"
+            ],
+            "keywordsDe": [
+                "Essen",
+                "mexikanisch",
+                "Taco"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F950",
+            "emoji": "🥐",
+            "nameEn": "croissant",
+            "nameDe": "Croissant",
+            "keywordsEn": [
+                "bread",
+                "breakfast",
+                "crescent",
+                "croissant",
+                "food",
+                "french",
+                "roll"
+            ],
+            "keywordsDe": [
+                "Corissant",
+                "Croissant",
+                "französisch",
+                "Frühstück",
+                "Frühstückshörnchen"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F37A",
+            "emoji": "🍺",
+            "nameEn": "beer mug",
+            "nameDe": "Bierkrug",
+            "keywordsEn": [
+                "alcohol",
+                "ale",
+                "bar",
+                "beer",
+                "booze",
+                "drink",
+                "drinking",
+                "drinks",
+                "mug",
+                "octoberfest",
+                "oktoberfest",
+                "pint",
+                "stein",
+                "summer"
+            ],
+            "keywordsDe": [
+                "Bar",
+                "Bier",
+                "Bierkrug",
+                "Krug",
+                "Oktoberfest",
+                "prost",
+                "Weizenbier"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F377",
+            "emoji": "🍷",
+            "nameEn": "wine glass",
+            "nameDe": "Weinglas",
+            "keywordsEn": [
+                "alcohol",
+                "bar",
+                "beverage",
+                "booze",
+                "club",
+                "drink",
+                "drinking",
+                "drinks",
+                "glass",
+                "restaurant",
+                "wine"
+            ],
+            "keywordsDe": [
+                "Alkohol",
+                "Bar",
+                "Glas",
+                "Wein",
+                "Weinglas"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "2615",
+            "emoji": "☕",
+            "nameEn": "hot beverage",
+            "nameDe": "Heißgetränk",
+            "keywordsEn": [
+                "beverage",
+                "cafe",
+                "caffeine",
+                "chai",
+                "coffee",
+                "drink",
+                "hot",
+                "morning",
+                "steaming",
+                "tea"
+            ],
+            "keywordsDe": [
+                "Cafe",
+                "dampfend",
+                "Getränk",
+                "heiß",
+                "Heißgetränk",
+                "Kaffee",
+                "Tasse",
+                "Tee",
+                "trinken"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F35D",
+            "emoji": "🍝",
+            "nameEn": "spaghetti",
+            "nameDe": "Spaghetti",
+            "keywordsEn": [
+                "food",
+                "meatballs",
+                "pasta",
+                "restaurant",
+                "spaghetti"
+            ],
+            "keywordsDe": [
+                "Essse",
+                "Nudeln mit Tomatensoße",
+                "Pasta",
+                "Restaurant",
+                "Spaghetti"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F35C",
+            "emoji": "🍜",
+            "nameEn": "steaming bowl",
+            "nameDe": "Schüssel und Essstäbchen",
+            "keywordsEn": [
+                "bowl",
+                "chopsticks",
+                "food",
+                "noodle",
+                "pho",
+                "ramen",
+                "soup",
+                "steaming"
+            ],
+            "keywordsDe": [
+                "chinesisches Essen",
+                "dampfend",
+                "Eiernudeln",
+                "Nudeln",
+                "Schüssel",
+                "Schüssel und Essstäbchen",
+                "Stäbchen",
+                "Suppe"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F95E",
+            "emoji": "🥞",
+            "nameEn": "pancakes",
+            "nameDe": "Pfannkuchen",
+            "keywordsEn": [
+                "breakfast",
+                "crêpe",
+                "food",
+                "hotcake",
+                "pancake",
+                "pancakes"
+            ],
+            "keywordsDe": [
+                "Crepe",
+                "Eierpfannkuchen",
+                "Essen",
+                "Pfannkuchen"
+            ],
+            "tags": [
+                "food",
+                "indulgent"
+            ],
+            "group": "food-indulgent"
+        },
+        {
+            "id": "1F912",
+            "emoji": "🤒",
+            "nameEn": "face with thermometer",
+            "nameDe": "Gesicht mit Fieberthermometer",
+            "keywordsEn": [
+                "face",
+                "ill",
+                "sick",
+                "thermometer"
+            ],
+            "keywordsDe": [
+                "Fieber",
+                "Gesicht",
+                "krank",
+                "messen",
+                "Smiley",
+                "Thermometer"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F927",
+            "emoji": "🤧",
+            "nameEn": "sneezing face",
+            "nameDe": "niesendes Gesicht",
+            "keywordsEn": [
+                "face",
+                "fever",
+                "flu",
+                "gesundheit",
+                "sick",
+                "sneeze",
+                "sneezing"
+            ],
+            "keywordsDe": [
+                "erkältet",
+                "Erkältung",
+                "Gesicht",
+                "Gesundheit",
+                "Grippe",
+                "hatschi",
+                "krank",
+                "Nase",
+                "niesen",
+                "putzen",
+                "Smiley",
+                "Taschentuch"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F92E",
+            "emoji": "🤮",
+            "nameEn": "face vomiting",
+            "nameDe": "kotzendes Gesicht",
+            "keywordsEn": [
+                "barf",
+                "ew",
+                "face",
+                "gross",
+                "puke",
+                "sick",
+                "spew",
+                "throw",
+                "up",
+                "vomit",
+                "vomiting"
+            ],
+            "keywordsDe": [
+                "brechen",
+                "erbrechen",
+                "Gesicht",
+                "kotzen",
+                "krank",
+                "schlecht",
+                "Smiley",
+                "speien",
+                "spucken",
+                "übel",
+                "übergeben"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F922",
+            "emoji": "🤢",
+            "nameEn": "nauseated face",
+            "nameDe": "würgendes Gesicht",
+            "keywordsEn": [
+                "face",
+                "gross",
+                "nasty",
+                "nauseated",
+                "sick",
+                "vomit"
+            ],
+            "keywordsDe": [
+                "ekel",
+                "eklig",
+                "erbrechen",
+                "Gesicht",
+                "grün",
+                "igitt",
+                "Smiley",
+                "Übelkeit",
+                "übergeben",
+                "widerlich",
+                "würgen"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F637",
+            "emoji": "😷",
+            "nameEn": "face with medical mask",
+            "nameDe": "Gesicht mit Atemschutzmaske",
+            "keywordsEn": [
+                "cold",
+                "dentist",
+                "dermatologist",
+                "doctor",
+                "dr",
+                "face",
+                "germs",
+                "mask",
+                "medical",
+                "medicine",
+                "sick"
+            ],
+            "keywordsDe": [
+                "Arzt",
+                "Atemschutzmaske",
+                "Bazillen",
+                "erkältet",
+                "Gesicht",
+                "krank",
+                "Krankheit",
+                "Mund",
+                "Mundschutz",
+                "Schutzmaske",
+                "Smiley",
+                "Viren",
+                "Virus"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F915",
+            "emoji": "🤕",
+            "nameEn": "face with head-bandage",
+            "nameDe": "Gesicht mit Kopfverband",
+            "keywordsEn": [
+                "bandage",
+                "face",
+                "head-bandage",
+                "hurt",
+                "injury",
+                "ouch"
+            ],
+            "keywordsDe": [
+                "aua",
+                "autsch",
+                "Gesicht",
+                "Kopf",
+                "Schmerzen",
+                "Smiley",
+                "Verband",
+                "Verletzung"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F48A",
+            "emoji": "💊",
+            "nameEn": "pill",
+            "nameDe": "Kapsel",
+            "keywordsEn": [
+                "doctor",
+                "drugs",
+                "medicated",
+                "medicine",
+                "pill",
+                "pills",
+                "sick",
+                "vitamin"
+            ],
+            "keywordsDe": [
+                "Arznei",
+                "Arzt",
+                "Kapsel",
+                "Medizin",
+                "Pille",
+                "Tabletten"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1FA7A",
+            "emoji": "🩺",
+            "nameEn": "stethoscope",
+            "nameDe": "Stethoskop",
+            "keywordsEn": [
+                "doctor",
+                "heart",
+                "medicine",
+                "stethoscope"
+            ],
+            "keywordsDe": [
+                "abhören",
+                "Arzt",
+                "Doktor",
+                "Herz",
+                "Herzschlag",
+                "Medizin",
+                "Stethoskop",
+                "Untersuchung"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F321",
+            "emoji": "🌡️",
+            "nameEn": "thermometer",
+            "nameDe": "Thermometer",
+            "keywordsEn": [
+                "thermometer",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Temperatur",
+                "Thermometer",
+                "Wetter"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F3E5",
+            "emoji": "🏥",
+            "nameEn": "hospital",
+            "nameDe": "Krankenhaus",
+            "keywordsEn": [
+                "building",
+                "doctor",
+                "hospital",
+                "medicine"
+            ],
+            "keywordsDe": [
+                "Ambulanz",
+                "Arzt",
+                "Gebäude",
+                "krank",
+                "Krankenhaus",
+                "Medizin",
+                "Notaufnahme"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F489",
+            "emoji": "💉",
+            "nameEn": "syringe",
+            "nameDe": "Spritze",
+            "keywordsEn": [
+                "doctor",
+                "flu",
+                "medicine",
+                "needle",
+                "shot",
+                "sick",
+                "syringe",
+                "tool",
+                "vaccination"
+            ],
+            "keywordsDe": [
+                "Arzt",
+                "impfen",
+                "Impfung",
+                "Injektion",
+                "Kanüle",
+                "Nadel",
+                "Spritze"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1FA79",
+            "emoji": "🩹",
+            "nameEn": "adhesive bandage",
+            "nameDe": "Heftpflaster",
+            "keywordsEn": [
+                "adhesive",
+                "bandage"
+            ],
+            "keywordsDe": [
+                "Heftpflaster",
+                "Pflaster",
+                "verletzt",
+                "Wunde"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F6CC",
+            "emoji": "🛌",
+            "nameEn": "person in bed",
+            "nameDe": "im Bett liegende Person",
+            "keywordsEn": [
+                "bed",
+                "bedtime",
+                "good",
+                "goodnight",
+                "hotel",
+                "nap",
+                "night",
+                "person",
+                "sleep",
+                "tired",
+                "zzz"
+            ],
+            "keywordsDe": [
+                "Bett",
+                "gute Nacht",
+                "Heia",
+                "im Bett liegende Person",
+                "Im Bett liegende Person",
+                "müde",
+                "Nachtruhe",
+                "schlaf schön",
+                "schlafen",
+                "zzz"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F691",
+            "emoji": "🚑",
+            "nameEn": "ambulance",
+            "nameDe": "Krankenwagen",
+            "keywordsEn": [
+                "ambulance",
+                "emergency",
+                "vehicle"
+            ],
+            "keywordsDe": [
+                "Ambulanz",
+                "Krankenwagen",
+                "Notfall"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F9A0",
+            "emoji": "🦠",
+            "nameEn": "microbe",
+            "nameDe": "Mikrobe",
+            "keywordsEn": [
+                "amoeba",
+                "bacteria",
+                "microbe",
+                "science",
+                "virus"
+            ],
+            "keywordsDe": [
+                "Amöbe",
+                "Amöben",
+                "Bakterie",
+                "Bakterien",
+                "Einzeller",
+                "Medizin",
+                "Mikrobe",
+                "Virus",
+                "Wissenschaft"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F9EC",
+            "emoji": "🧬",
+            "nameEn": "dna",
+            "nameDe": "DNA",
+            "keywordsEn": [
+                "biologist",
+                "dna",
+                "evolution",
+                "gene",
+                "genetics",
+                "life"
+            ],
+            "keywordsDe": [
+                "Biologe",
+                "Biologie",
+                "Biologin",
+                "DNA",
+                "DNS",
+                "Evolution",
+                "Gen",
+                "Genetik",
+                "Genmanipulation",
+                "Leben"
+            ],
+            "tags": [
+                "health",
+                "sick"
+            ],
+            "group": "health-sick"
+        },
+        {
+            "id": "1F3B8",
+            "emoji": "🎸",
+            "nameEn": "guitar",
+            "nameDe": "Gitarre",
+            "keywordsEn": [
+                "guitar",
+                "instrument",
+                "music",
+                "strat"
+            ],
+            "keywordsDe": [
+                "Gitarre",
+                "Instrument",
+                "Musik",
+                "Musikinstrument"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F941",
+            "emoji": "🥁",
+            "nameEn": "drum",
+            "nameDe": "Trommel",
+            "keywordsEn": [
+                "drum",
+                "drumsticks",
+                "music"
+            ],
+            "keywordsDe": [
+                "Drumsticks",
+                "Instrument",
+                "Musik",
+                "Schlägel",
+                "Sticks",
+                "Trommel",
+                "Trommelstöcke"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3A4",
+            "emoji": "🎤",
+            "nameEn": "microphone",
+            "nameDe": "Mikrofon",
+            "keywordsEn": [
+                "karaoke",
+                "mic",
+                "microphone",
+                "music",
+                "sing",
+                "sound"
+            ],
+            "keywordsDe": [
+                "Karaoke",
+                "Mikrofon",
+                "Singen",
+                "Unterhaltung"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3B9",
+            "emoji": "🎹",
+            "nameEn": "musical keyboard",
+            "nameDe": "Klaviatur",
+            "keywordsEn": [
+                "instrument",
+                "keyboard",
+                "music",
+                "musical",
+                "piano"
+            ],
+            "keywordsDe": [
+                "Instrument",
+                "Klaviatur",
+                "Klavier",
+                "Musik",
+                "Musikinstrument",
+                "Piano",
+                "Tastatur",
+                "Tasten"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3BA",
+            "emoji": "🎺",
+            "nameEn": "trumpet",
+            "nameDe": "Trompete",
+            "keywordsEn": [
+                "instrument",
+                "music",
+                "trumpet"
+            ],
+            "keywordsDe": [
+                "Instrument",
+                "Musik",
+                "Musikinstrument",
+                "Trompete"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3B7",
+            "emoji": "🎷",
+            "nameEn": "saxophone",
+            "nameDe": "Saxofon",
+            "keywordsEn": [
+                "instrument",
+                "music",
+                "sax",
+                "saxophone"
+            ],
+            "keywordsDe": [
+                "Instrument",
+                "Musik",
+                "Musikinstrument",
+                "Saxofon"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3BB",
+            "emoji": "🎻",
+            "nameEn": "violin",
+            "nameDe": "Geige",
+            "keywordsEn": [
+                "instrument",
+                "music",
+                "violin"
+            ],
+            "keywordsDe": [
+                "Geige",
+                "Instrument",
+                "Musik",
+                "Musikinstrument",
+                "Violine"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F918",
+            "emoji": "🤘",
+            "nameEn": "sign of the horns",
+            "nameDe": "Teufelsgruß",
+            "keywordsEn": [
+                "finger",
+                "hand",
+                "horns",
+                "rock-on",
+                "sign"
+            ],
+            "keywordsDe": [
+                "corna",
+                "Finger",
+                "Hand",
+                "Heavy",
+                "Hörner",
+                "Mano cornuta",
+                "Metal",
+                "Metalhand",
+                "Pommesgabel",
+                "Rock",
+                "Teufel",
+                "Teufelsgruß",
+                "yeah"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3B6",
+            "emoji": "🎶",
+            "nameEn": "musical notes",
+            "nameDe": "Musiknoten",
+            "keywordsEn": [
+                "music",
+                "musical",
+                "note",
+                "notes",
+                "sound"
+            ],
+            "keywordsDe": [
+                "Musik",
+                "Musiknoten",
+                "Noten"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3B5",
+            "emoji": "🎵",
+            "nameEn": "musical note",
+            "nameDe": "Musiknote",
+            "keywordsEn": [
+                "music",
+                "musical",
+                "note",
+                "sound"
+            ],
+            "keywordsDe": [
+                "Lied",
+                "Melodie",
+                "Musik",
+                "Musiknote",
+                "Note"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3A7",
+            "emoji": "🎧",
+            "nameEn": "headphone",
+            "nameDe": "Kopfhörer",
+            "keywordsEn": [
+                "earbud",
+                "headphone",
+                "sound"
+            ],
+            "keywordsDe": [
+                "Kopfhörer",
+                "Musik",
+                "Unterhaltung"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F50A",
+            "emoji": "🔊",
+            "nameEn": "speaker high volume",
+            "nameDe": "Lautsprecher mit hoher Lautstärke",
+            "keywordsEn": [
+                "high",
+                "loud",
+                "music",
+                "sound",
+                "speaker",
+                "volume"
+            ],
+            "keywordsDe": [
+                "Dezibel",
+                "laut",
+                "Lautsprecher mit drei Schallwellen",
+                "Lautsprecher mit hoher Lautstärke",
+                "Musik",
+                "Schallwellen"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F3BC",
+            "emoji": "🎼",
+            "nameEn": "musical score",
+            "nameDe": "Notenschlüssel",
+            "keywordsEn": [
+                "music",
+                "musical",
+                "note",
+                "score"
+            ],
+            "keywordsDe": [
+                "Musik",
+                "Noten",
+                "Notenschlüssel",
+                "Partitur",
+                "Violinschlüssel"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F4FB",
+            "emoji": "📻",
+            "nameEn": "radio",
+            "nameDe": "Radio",
+            "keywordsEn": [
+                "entertainment",
+                "radio",
+                "tbt",
+                "video"
+            ],
+            "keywordsDe": [
+                "Musik",
+                "Radio"
+            ],
+            "tags": [
+                "music",
+                "rock-band"
+            ],
+            "group": "music-rock"
+        },
+        {
+            "id": "1F436",
+            "emoji": "🐶",
+            "nameEn": "dog face",
+            "nameDe": "Hundegesicht",
+            "keywordsEn": [
+                "adorbs",
+                "animal",
+                "dog",
+                "face",
+                "pet",
+                "puppies",
+                "puppy"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Hund",
+                "Hundegesicht",
+                "Tier",
+                "treu",
+                "Wau",
+                "wuff"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F431",
+            "emoji": "🐱",
+            "nameEn": "cat face",
+            "nameDe": "Katzengesicht",
+            "keywordsEn": [
+                "animal",
+                "cat",
+                "face",
+                "kitten",
+                "kitty",
+                "pet"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Katze",
+                "Katzengesicht",
+                "Miau",
+                "Miez",
+                "Miezekatze",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F42D",
+            "emoji": "🐭",
+            "nameEn": "mouse face",
+            "nameDe": "Mäusegesicht",
+            "keywordsEn": [
+                "animal",
+                "face",
+                "mouse"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Maus",
+                "Mäusegesicht",
+                "Mausgesicht",
+                "Nagetier",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F439",
+            "emoji": "🐹",
+            "nameEn": "hamster",
+            "nameDe": "Hamster",
+            "keywordsEn": [
+                "animal",
+                "face",
+                "hamster",
+                "pet"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Hamster",
+                "Hamstergesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F430",
+            "emoji": "🐰",
+            "nameEn": "rabbit face",
+            "nameDe": "Hasengesicht",
+            "keywordsEn": [
+                "animal",
+                "bunny",
+                "face",
+                "pet",
+                "rabbit"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Hase",
+                "Hasengesicht",
+                "Kaninchen",
+                "Karnickel",
+                "Langohr",
+                "Mümmelmann",
+                "Nager",
+                "Nagetier",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F98A",
+            "emoji": "🦊",
+            "nameEn": "fox",
+            "nameDe": "Fuchs",
+            "keywordsEn": [
+                "animal",
+                "face",
+                "fox"
+            ],
+            "keywordsDe": [
+                "Fuchs",
+                "Fuchsgesicht",
+                "Gesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F43B",
+            "emoji": "🐻",
+            "nameEn": "bear",
+            "nameDe": "Bär",
+            "keywordsEn": [
+                "animal",
+                "bear",
+                "face",
+                "grizzly",
+                "growl",
+                "honey"
+            ],
+            "keywordsDe": [
+                "Bär",
+                "Bärengesicht",
+                "Gesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F43C",
+            "emoji": "🐼",
+            "nameEn": "panda",
+            "nameDe": "Panda",
+            "keywordsEn": [
+                "animal",
+                "bamboo",
+                "face",
+                "panda"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Panda",
+                "Pandabär",
+                "Pandagesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F428",
+            "emoji": "🐨",
+            "nameEn": "koala",
+            "nameDe": "Koala",
+            "keywordsEn": [
+                "animal",
+                "australia",
+                "bear",
+                "down",
+                "face",
+                "koala",
+                "marsupial",
+                "under"
+            ],
+            "keywordsDe": [
+                "Koala",
+                "Koalabär",
+                "Koalagesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F981",
+            "emoji": "🦁",
+            "nameEn": "lion",
+            "nameDe": "Löwe",
+            "keywordsEn": [
+                "alpha",
+                "animal",
+                "face",
+                "Leo",
+                "lion",
+                "mane",
+                "order",
+                "rawr",
+                "roar",
+                "safari",
+                "strong",
+                "zodiac"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Löwe",
+                "Löwengesicht",
+                "Sternzeichen",
+                "Tier",
+                "Tierkreis"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F42E",
+            "emoji": "🐮",
+            "nameEn": "cow face",
+            "nameDe": "Kuhgesicht",
+            "keywordsEn": [
+                "animal",
+                "cow",
+                "face",
+                "farm",
+                "milk",
+                "moo"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Kuh",
+                "Kuhgesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F437",
+            "emoji": "🐷",
+            "nameEn": "pig face",
+            "nameDe": "Schweinegesicht",
+            "keywordsEn": [
+                "animal",
+                "bacon",
+                "face",
+                "farm",
+                "pig",
+                "pork"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Schwein",
+                "Schweinegesicht",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F438",
+            "emoji": "🐸",
+            "nameEn": "frog",
+            "nameDe": "Frosch",
+            "keywordsEn": [
+                "animal",
+                "face",
+                "frog"
+            ],
+            "keywordsDe": [
+                "Frosch",
+                "Froschgesicht",
+                "Gesicht",
+                "grün",
+                "quak",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F435",
+            "emoji": "🐵",
+            "nameEn": "monkey face",
+            "nameDe": "Affengesicht",
+            "keywordsEn": [
+                "animal",
+                "banana",
+                "face",
+                "monkey"
+            ],
+            "keywordsDe": [
+                "Affe",
+                "Affengesicht",
+                "Banane",
+                "Dschungel",
+                "Gesicht",
+                "Tier",
+                "Zoo"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F414",
+            "emoji": "🐔",
+            "nameEn": "chicken",
+            "nameDe": "Huhn",
+            "keywordsEn": [
+                "animal",
+                "bird",
+                "chicken",
+                "ornithology"
+            ],
+            "keywordsDe": [
+                "Geflügel",
+                "Henne",
+                "Huhn",
+                "Tier",
+                "Tierkopf"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F427",
+            "emoji": "🐧",
+            "nameEn": "penguin",
+            "nameDe": "Pinguin",
+            "keywordsEn": [
+                "animal",
+                "antarctica",
+                "bird",
+                "ornithology",
+                "penguin"
+            ],
+            "keywordsDe": [
+                "Pinguin",
+                "Pinguinkopf",
+                "Tier",
+                "Vogel"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F98B",
+            "emoji": "🦋",
+            "nameEn": "butterfly",
+            "nameDe": "Schmetterling",
+            "keywordsEn": [
+                "butterfly",
+                "insect",
+                "pretty"
+            ],
+            "keywordsDe": [
+                "Insekt",
+                "Schmetterling",
+                "schön"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F41D",
+            "emoji": "🐝",
+            "nameEn": "honeybee",
+            "nameDe": "Biene",
+            "keywordsEn": [
+                "animal",
+                "bee",
+                "bumblebee",
+                "honey",
+                "honeybee",
+                "insect",
+                "nature",
+                "spring"
+            ],
+            "keywordsDe": [
+                "Biene",
+                "Honig",
+                "Honigbiene",
+                "Hummel",
+                "Insekt",
+                "Maja",
+                "Natur",
+                "Summ",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F40D",
+            "emoji": "🐍",
+            "nameEn": "snake",
+            "nameDe": "Schlange",
+            "keywordsEn": [
+                "animal",
+                "bearer",
+                "Ophiuchus",
+                "serpent",
+                "snake",
+                "zodiac"
+            ],
+            "keywordsDe": [
+                "Schlange",
+                "Schlangenträger",
+                "Sternzeichen",
+                "Tier",
+                "Tierkreis"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F422",
+            "emoji": "🐢",
+            "nameEn": "turtle",
+            "nameDe": "Schildkröte",
+            "keywordsEn": [
+                "animal",
+                "terrapin",
+                "tortoise",
+                "turtle"
+            ],
+            "keywordsDe": [
+                "Schildkröte",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F42C",
+            "emoji": "🐬",
+            "nameEn": "dolphin",
+            "nameDe": "Delfin",
+            "keywordsEn": [
+                "animal",
+                "beach",
+                "dolphin",
+                "flipper",
+                "ocean"
+            ],
+            "keywordsDe": [
+                "Delfin",
+                "Meer",
+                "Ozean",
+                "Strand",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F433",
+            "emoji": "🐳",
+            "nameEn": "spouting whale",
+            "nameDe": "blasender Wal",
+            "keywordsEn": [
+                "animal",
+                "beach",
+                "face",
+                "ocean",
+                "spouting",
+                "whale"
+            ],
+            "keywordsDe": [
+                "blasender Wal",
+                "Blasender Wal",
+                "Meer",
+                "Ozean",
+                "Tier",
+                "Wal"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F988",
+            "emoji": "🦈",
+            "nameEn": "shark",
+            "nameDe": "Hai",
+            "keywordsEn": [
+                "animal",
+                "fish",
+                "shark"
+            ],
+            "keywordsDe": [
+                "Fisch",
+                "Hai",
+                "Haifisch",
+                "Meer",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F419",
+            "emoji": "🐙",
+            "nameEn": "octopus",
+            "nameDe": "Oktopus",
+            "keywordsEn": [
+                "animal",
+                "creature",
+                "ocean",
+                "octopus"
+            ],
+            "keywordsDe": [
+                "Krake",
+                "Meer",
+                "Oktopus",
+                "Tier",
+                "Tintenfisch"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F989",
+            "emoji": "🦉",
+            "nameEn": "owl",
+            "nameDe": "Eule",
+            "keywordsEn": [
+                "animal",
+                "bird",
+                "ornithology",
+                "owl",
+                "wise"
+            ],
+            "keywordsDe": [
+                "Eule",
+                "Raubvogel",
+                "Tier",
+                "Uhu",
+                "Vogel",
+                "weise"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "1F418",
+            "emoji": "🐘",
+            "nameEn": "elephant",
+            "nameDe": "Elefant",
+            "keywordsEn": [
+                "animal",
+                "elephant"
+            ],
+            "keywordsDe": [
+                "Elefant",
+                "Tier"
+            ],
+            "tags": [
+                "animal"
+            ],
+            "group": "animals"
+        },
+        {
+            "id": "2600",
+            "emoji": "☀️",
+            "nameEn": "sun",
+            "nameDe": "Sonne",
+            "keywordsEn": [
+                "bright",
+                "rays",
+                "space",
+                "sun",
+                "sunny",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Sonne",
+                "Sonnenstrahlen",
+                "sonnig",
+                "Strahlen",
+                "Wetter"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F327",
+            "emoji": "🌧️",
+            "nameEn": "cloud with rain",
+            "nameDe": "Wolke mit Regen",
+            "keywordsEn": [
+                "cloud",
+                "rain",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Regen",
+                "Regenwolke",
+                "Wetter",
+                "Wolke",
+                "Wolke mit Regen"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "26C8",
+            "emoji": "⛈️",
+            "nameEn": "cloud with lightning and rain",
+            "nameDe": "Wolke mit Blitz und Regen",
+            "keywordsEn": [
+                "cloud",
+                "lightning",
+                "rain",
+                "thunder",
+                "thunderstorm"
+            ],
+            "keywordsDe": [
+                "Blitz",
+                "Gewitter",
+                "Regen",
+                "Wetter",
+                "Wolke",
+                "Wolke mit Blitz und Regen",
+                "wolkig"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "2744",
+            "emoji": "❄️",
+            "nameEn": "snowflake",
+            "nameDe": "Schneeflocke",
+            "keywordsEn": [
+                "cold",
+                "snow",
+                "snowflake",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Flocke",
+                "kalt",
+                "Schnee",
+                "Schneeflocke",
+                "schneien",
+                "Wetter",
+                "Winter"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F308",
+            "emoji": "🌈",
+            "nameEn": "rainbow",
+            "nameDe": "Regenbogen",
+            "keywordsEn": [
+                "gay",
+                "genderqueer",
+                "glbt",
+                "glbtq",
+                "lesbian",
+                "lgbt",
+                "lgbtq",
+                "lgbtqia",
+                "nature",
+                "pride",
+                "queer",
+                "rain",
+                "rainbow",
+                "trans",
+                "transgender",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Regenbogen",
+                "Wetter"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F32A",
+            "emoji": "🌪️",
+            "nameEn": "tornado",
+            "nameDe": "Wirbelsturm",
+            "keywordsEn": [
+                "cloud",
+                "tornado",
+                "weather",
+                "whirlwind"
+            ],
+            "keywordsDe": [
+                "Tornado",
+                "Wetter",
+                "Wirbelsturm"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F319",
+            "emoji": "🌙",
+            "nameEn": "crescent moon",
+            "nameDe": "Mondsichel",
+            "keywordsEn": [
+                "crescent",
+                "moon",
+                "ramadan",
+                "space"
+            ],
+            "keywordsDe": [
+                "Mond",
+                "Mondsichel",
+                "Nacht"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "2B50",
+            "emoji": "⭐",
+            "nameEn": "star",
+            "nameDe": "weißer mittelgroßer Stern",
+            "keywordsEn": [
+                "astronomy",
+                "medium",
+                "star",
+                "stars",
+                "white"
+            ],
+            "keywordsDe": [
+                "astronomie",
+                "gelber Stern",
+                "Himmel",
+                "Stern",
+                "weißer mittelgroßer Stern"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F525",
+            "emoji": "🔥",
+            "nameEn": "fire",
+            "nameDe": "Feuer",
+            "keywordsEn": [
+                "af",
+                "burn",
+                "fire",
+                "flame",
+                "hot",
+                "lit",
+                "litaf",
+                "tool"
+            ],
+            "keywordsDe": [
+                "brennen",
+                "Feuer",
+                "Flamme",
+                "heiß"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F4A7",
+            "emoji": "💧",
+            "nameEn": "droplet",
+            "nameDe": "Tropfen",
+            "keywordsEn": [
+                "cold",
+                "comic",
+                "drop",
+                "droplet",
+                "nature",
+                "sad",
+                "sweat",
+                "tear",
+                "water",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Schweiß",
+                "Träne",
+                "Tropfen",
+                "Wasser",
+                "Wassertropfen"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F30A",
+            "emoji": "🌊",
+            "nameEn": "water wave",
+            "nameDe": "Welle",
+            "keywordsEn": [
+                "nature",
+                "ocean",
+                "surf",
+                "surfer",
+                "surfing",
+                "water",
+                "wave"
+            ],
+            "keywordsDe": [
+                "Meer",
+                "Welle"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F338",
+            "emoji": "🌸",
+            "nameEn": "cherry blossom",
+            "nameDe": "Kirschblüte",
+            "keywordsEn": [
+                "blossom",
+                "cherry",
+                "flower",
+                "plant",
+                "spring",
+                "springtime"
+            ],
+            "keywordsDe": [
+                "Blume",
+                "Blüte",
+                "Kirschblüte",
+                "Kirsche",
+                "Pflanze"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F33B",
+            "emoji": "🌻",
+            "nameEn": "sunflower",
+            "nameDe": "Sonnenblume",
+            "keywordsEn": [
+                "flower",
+                "outdoors",
+                "plant",
+                "sun",
+                "sunflower"
+            ],
+            "keywordsDe": [
+                "Blume",
+                "Blüte",
+                "Pflanze",
+                "Sonne",
+                "Sonnenblume"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F332",
+            "emoji": "🌲",
+            "nameEn": "evergreen tree",
+            "nameDe": "Nadelbaum",
+            "keywordsEn": [
+                "christmas",
+                "evergreen",
+                "forest",
+                "pine",
+                "tree"
+            ],
+            "keywordsDe": [
+                "Baum",
+                "Nadelbaum",
+                "Pflanze",
+                "Tannenbaum"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F342",
+            "emoji": "🍂",
+            "nameEn": "fallen leaf",
+            "nameDe": "Laub",
+            "keywordsEn": [
+                "autumn",
+                "fall",
+                "fallen",
+                "falling",
+                "leaf"
+            ],
+            "keywordsDe": [
+                "Blatt",
+                "Blätter",
+                "Fallendes Laub",
+                "Herbst",
+                "Laub",
+                "Pflanze"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "2601",
+            "emoji": "☁️",
+            "nameEn": "cloud",
+            "nameDe": "Wolke",
+            "keywordsEn": [
+                "cloud",
+                "weather"
+            ],
+            "keywordsDe": [
+                "Wetter",
+                "Wolke",
+                "wolkig"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "1F30B",
+            "emoji": "🌋",
+            "nameEn": "volcano",
+            "nameDe": "Vulkan",
+            "keywordsEn": [
+                "eruption",
+                "mountain",
+                "nature",
+                "volcano"
+            ],
+            "keywordsDe": [
+                "Ausbruch",
+                "Berg",
+                "Lava",
+                "Vulkan",
+                "Vulkanausbruch",
+                "Wetter"
+            ],
+            "tags": [
+                "weather",
+                "nature"
+            ],
+            "group": "weather-nature"
+        },
+        {
+            "id": "26BD",
+            "emoji": "⚽",
+            "nameEn": "soccer ball",
+            "nameDe": "Fußball",
+            "keywordsEn": [
+                "ball",
+                "football",
+                "futbol",
+                "soccer",
+                "sport"
+            ],
+            "keywordsDe": [
+                "Ball",
+                "Bundesliga",
+                "Fußball",
+                "Messi"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3C0",
+            "emoji": "🏀",
+            "nameEn": "basketball",
+            "nameDe": "Basketball",
+            "keywordsEn": [
+                "ball",
+                "basketball",
+                "hoop",
+                "sport"
+            ],
+            "keywordsDe": [
+                "Ball",
+                "Basketball",
+                "Korb",
+                "Sport"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3BE",
+            "emoji": "🎾",
+            "nameEn": "tennis",
+            "nameDe": "Tennisball",
+            "keywordsEn": [
+                "ball",
+                "racquet",
+                "sport",
+                "tennis"
+            ],
+            "keywordsDe": [
+                "Ball",
+                "Sport",
+                "Tennis",
+                "Tennisball"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3C8",
+            "emoji": "🏈",
+            "nameEn": "american football",
+            "nameDe": "Football",
+            "keywordsEn": [
+                "american",
+                "ball",
+                "bowl",
+                "football",
+                "sport",
+                "super"
+            ],
+            "keywordsDe": [
+                "American Football",
+                "Amerika",
+                "Ball",
+                "Football",
+                "Sport",
+                "Super Bowl"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "26BE",
+            "emoji": "⚾",
+            "nameEn": "baseball",
+            "nameDe": "Baseball",
+            "keywordsEn": [
+                "ball",
+                "baseball",
+                "sport"
+            ],
+            "keywordsDe": [
+                "Ball",
+                "Baseball"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3CA",
+            "emoji": "🏊",
+            "nameEn": "person swimming",
+            "nameDe": "Schwimmer(in)",
+            "keywordsEn": [
+                "freestyle",
+                "person",
+                "sport",
+                "swim",
+                "swimmer",
+                "swimming",
+                "triathlon"
+            ],
+            "keywordsDe": [
+                "Kraulen",
+                "Person",
+                "Pool",
+                "Schwimmbecken",
+                "Schwimmen",
+                "Schwimmer",
+                "Schwimmer(in)",
+                "Schwimmerin",
+                "Sport",
+                "Triathlon",
+                "Wasser"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F6B4",
+            "emoji": "🚴",
+            "nameEn": "person biking",
+            "nameDe": "Radfahrer(in)",
+            "keywordsEn": [
+                "bicycle",
+                "bicyclist",
+                "bike",
+                "biking",
+                "cycle",
+                "cyclist",
+                "person",
+                "riding",
+                "sport"
+            ],
+            "keywordsDe": [
+                "Fahrrad",
+                "Person",
+                "Rad",
+                "radeln",
+                "Radfahren",
+                "Radfahrer",
+                "Radfahrer(in)",
+                "Radfahrerin",
+                "Sport",
+                "Tour de France"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3C3",
+            "emoji": "🏃",
+            "nameEn": "person running",
+            "nameDe": "laufende Person",
+            "keywordsEn": [
+                "fast",
+                "hurry",
+                "marathon",
+                "move",
+                "person",
+                "quick",
+                "race",
+                "racing",
+                "run",
+                "rush",
+                "speed"
+            ],
+            "keywordsDe": [
+                "eilig",
+                "joggen",
+                "laufen",
+                "Laufen",
+                "laufende Person",
+                "Läufer",
+                "Läuferin",
+                "Marathon",
+                "Person",
+                "rennen",
+                "schnell",
+                "Sport"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3CB",
+            "emoji": "🏋️",
+            "nameEn": "person lifting weights",
+            "nameDe": "Gewichtheber(in)",
+            "keywordsEn": [
+                "barbell",
+                "bodybuilder",
+                "deadlift",
+                "lifter",
+                "lifting",
+                "person",
+                "powerlifting",
+                "weight",
+                "weightlifter",
+                "weights",
+                "workout"
+            ],
+            "keywordsDe": [
+                "Gewicht",
+                "Gewichtheber",
+                "Gewichtheber(in)",
+                "Gewichtheberin",
+                "Hantel",
+                "Muskeln",
+                "Person",
+                "schwer",
+                "Sport",
+                "stark",
+                "Training"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "26F7",
+            "emoji": "⛷️",
+            "nameEn": "skier",
+            "nameDe": "Skifahrer(in)",
+            "keywordsEn": [
+                "ski",
+                "skier",
+                "snow"
+            ],
+            "keywordsDe": [
+                "Schnee",
+                "Ski",
+                "Skifahrer",
+                "Skifahrer(in)",
+                "Skifahrerin",
+                "Sport"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3C4",
+            "emoji": "🏄",
+            "nameEn": "person surfing",
+            "nameDe": "Surfer(in)",
+            "keywordsEn": [
+                "beach",
+                "ocean",
+                "person",
+                "sport",
+                "surf",
+                "surfer",
+                "surfing",
+                "swell",
+                "waves"
+            ],
+            "keywordsDe": [
+                "Person",
+                "Sport",
+                "Surfboard",
+                "Surfbrett",
+                "Surfen",
+                "Surfer",
+                "Surfer(in)",
+                "Surferin",
+                "Wassersport",
+                "Wellenreiten",
+                "Wellenreiter",
+                "Wellenreiterin"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F9D7",
+            "emoji": "🧗",
+            "nameEn": "person climbing",
+            "nameDe": "Bergsteiger(in)",
+            "keywordsEn": [
+                "climb",
+                "climber",
+                "climbing",
+                "mountain",
+                "person",
+                "rock",
+                "scale",
+                "up"
+            ],
+            "keywordsDe": [
+                "Bergsteiger",
+                "Bergsteiger(in)",
+                "Fels",
+                "Kletterer",
+                "klettern",
+                "Person",
+                "Sport"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F94A",
+            "emoji": "🥊",
+            "nameEn": "boxing glove",
+            "nameDe": "Boxhandschuh",
+            "keywordsEn": [
+                "boxing",
+                "glove"
+            ],
+            "keywordsDe": [
+                "Boxen",
+                "Boxhandschuh",
+                "Handschuh",
+                "Sport"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F3C6",
+            "emoji": "🏆",
+            "nameEn": "trophy",
+            "nameDe": "Pokal",
+            "keywordsEn": [
+                "champion",
+                "champs",
+                "prize",
+                "slay",
+                "sport",
+                "trophy",
+                "victory",
+                "win",
+                "winning"
+            ],
+            "keywordsDe": [
+                "Bundesliga",
+                "Champion",
+                "gewinnen",
+                "Pokal",
+                "Preis",
+                "Sieger",
+                "Sport",
+                "Trophäe"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F947",
+            "emoji": "🥇",
+            "nameEn": "1st place medal",
+            "nameDe": "Goldmedaille",
+            "keywordsEn": [
+                "1st",
+                "first",
+                "gold",
+                "medal",
+                "place"
+            ],
+            "keywordsDe": [
+                "Erster",
+                "Gewinn",
+                "Goldmedaille",
+                "Medaille 1. Platz"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "26F3",
+            "emoji": "⛳",
+            "nameEn": "flag in hole",
+            "nameDe": "Golffahne",
+            "keywordsEn": [
+                "flag",
+                "golf",
+                "hole",
+                "sport"
+            ],
+            "keywordsDe": [
+                "Golffahne",
+                "Golfplatz"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "1F9D8",
+            "emoji": "🧘",
+            "nameEn": "person in lotus position",
+            "nameDe": "Person im Lotossitz",
+            "keywordsEn": [
+                "cross",
+                "legged",
+                "legs",
+                "lotus",
+                "meditation",
+                "peace",
+                "person",
+                "position",
+                "relax",
+                "serenity",
+                "yoga",
+                "yogi",
+                "zen"
+            ],
+            "keywordsDe": [
+                "burmesischer Sitz",
+                "Frau",
+                "Lotussitz",
+                "Meditation",
+                "Person",
+                "Person im Lotossitz",
+                "Person in Lotussitz",
+                "Schneidersitz",
+                "Yoga",
+                "Zen"
+            ],
+            "tags": [
+                "sport"
+            ],
+            "group": "sport"
+        },
+        {
+            "id": "2708",
+            "emoji": "✈️",
+            "nameEn": "airplane",
+            "nameDe": "Flugzeug",
+            "keywordsEn": [
+                "aeroplane",
+                "airplane",
+                "fly",
+                "flying",
+                "jet",
+                "plane",
+                "travel"
+            ],
+            "keywordsDe": [
+                "Flieger",
+                "Flugzeug"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F697",
+            "emoji": "🚗",
+            "nameEn": "automobile",
+            "nameDe": "Auto",
+            "keywordsEn": [
+                "automobile",
+                "car",
+                "driving",
+                "vehicle"
+            ],
+            "keywordsDe": [
+                "Auto",
+                "fahren",
+                "Fahrzeug",
+                "rot",
+                "Verkehr"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F682",
+            "emoji": "🚂",
+            "nameEn": "locomotive",
+            "nameDe": "Dampflokomotive",
+            "keywordsEn": [
+                "caboose",
+                "engine",
+                "locomotive",
+                "railway",
+                "steam",
+                "train",
+                "trains",
+                "travel"
+            ],
+            "keywordsDe": [
+                "Bahn",
+                "Dampf",
+                "Dampflok",
+                "Dampflokomotive",
+                "Fahrzeug",
+                "Lokomotive",
+                "Schiene",
+                "Zug"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F6B2",
+            "emoji": "🚲",
+            "nameEn": "bicycle",
+            "nameDe": "Fahrrad",
+            "keywordsEn": [
+                "bicycle",
+                "bike",
+                "class",
+                "cycle",
+                "cycling",
+                "cyclist",
+                "gang",
+                "ride",
+                "spin",
+                "spinning"
+            ],
+            "keywordsDe": [
+                "BMX",
+                "Fahrrad",
+                "Rad",
+                "Radeln",
+                "Radler",
+                "Spinning"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F680",
+            "emoji": "🚀",
+            "nameEn": "rocket",
+            "nameDe": "Rakete",
+            "keywordsEn": [
+                "launch",
+                "rocket",
+                "rockets",
+                "space",
+                "travel"
+            ],
+            "keywordsDe": [
+                "All",
+                "Rakete",
+                "Weltraum"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "26F5",
+            "emoji": "⛵",
+            "nameEn": "sailboat",
+            "nameDe": "Segelboot",
+            "keywordsEn": [
+                "boat",
+                "resort",
+                "sailboat",
+                "sailing",
+                "sea",
+                "yacht"
+            ],
+            "keywordsDe": [
+                "Boot",
+                "Segelboot"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F3D6",
+            "emoji": "🏖️",
+            "nameEn": "beach with umbrella",
+            "nameDe": "Strand mit Sonnenschirm",
+            "keywordsEn": [
+                "beach",
+                "umbrella"
+            ],
+            "keywordsDe": [
+                "Meer",
+                "Sonnenschirm",
+                "Strand",
+                "Strand mit Sonnenschirm"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F3D4",
+            "emoji": "🏔️",
+            "nameEn": "snow-capped mountain",
+            "nameDe": "schneebedeckter Berg",
+            "keywordsEn": [
+                "cold",
+                "mountain",
+                "snow",
+                "snow-capped"
+            ],
+            "keywordsDe": [
+                "Berg",
+                "Gebirge",
+                "kalt",
+                "Schnee",
+                "schneebedeckter Berg",
+                "Schneebedeckter Berg"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F5FA",
+            "emoji": "🗺️",
+            "nameEn": "world map",
+            "nameDe": "Weltkarte",
+            "keywordsEn": [
+                "map",
+                "world"
+            ],
+            "keywordsDe": [
+                "Karte",
+                "Landkarte",
+                "reisen",
+                "Welt",
+                "Weltkarte"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F9F3",
+            "emoji": "🧳",
+            "nameEn": "luggage",
+            "nameDe": "Gepäck",
+            "keywordsEn": [
+                "bag",
+                "luggage",
+                "packing",
+                "roller",
+                "suitcase",
+                "travel"
+            ],
+            "keywordsDe": [
+                "Ballast",
+                "Gepäck",
+                "Hartschalenkoffer",
+                "Koffer",
+                "Reise",
+                "Trolley-Tasche"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F3E8",
+            "emoji": "🏨",
+            "nameEn": "hotel",
+            "nameDe": "Hotel",
+            "keywordsEn": [
+                "building",
+                "hotel"
+            ],
+            "keywordsDe": [
+                "Gebäude",
+                "Hotel",
+                "übernachten",
+                "Unterkunft"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F695",
+            "emoji": "🚕",
+            "nameEn": "taxi",
+            "nameDe": "Taxi",
+            "keywordsEn": [
+                "cab",
+                "cabbie",
+                "car",
+                "drive",
+                "taxi",
+                "vehicle",
+                "yellow"
+            ],
+            "keywordsDe": [
+                "Auto",
+                "Fahrzeug",
+                "Taxi"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F68C",
+            "emoji": "🚌",
+            "nameEn": "bus",
+            "nameDe": "Bus",
+            "keywordsEn": [
+                "bus",
+                "school",
+                "vehicle"
+            ],
+            "keywordsDe": [
+                "Bus",
+                "Fahrzeug",
+                "Schulbus"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F6F3",
+            "emoji": "🛳️",
+            "nameEn": "passenger ship",
+            "nameDe": "Passagierschiff",
+            "keywordsEn": [
+                "passenger",
+                "ship"
+            ],
+            "keywordsDe": [
+                "Aida",
+                "Passagierschiff",
+                "Rundreise",
+                "Schiff",
+                "Seereise",
+                "Traumschiff"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "26FA",
+            "emoji": "⛺",
+            "nameEn": "tent",
+            "nameDe": "Zelt",
+            "keywordsEn": [
+                "camping",
+                "tent"
+            ],
+            "keywordsDe": [
+                "Camping",
+                "Campingurlaub",
+                "Zelt",
+                "Zeltplatz"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F5FD",
+            "emoji": "🗽",
+            "nameEn": "Statue of Liberty",
+            "nameDe": "Freiheitsstatue",
+            "keywordsEn": [
+                "liberty",
+                "Liberty",
+                "new",
+                "ny",
+                "nyc",
+                "statue",
+                "Statue",
+                "york"
+            ],
+            "keywordsDe": [
+                "Amerika",
+                "Freiheit",
+                "Freiheitsstatue"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F9ED",
+            "emoji": "🧭",
+            "nameEn": "compass",
+            "nameDe": "Kompass",
+            "keywordsEn": [
+                "compass",
+                "direction",
+                "magnetic",
+                "navigation",
+                "orienteering"
+            ],
+            "keywordsDe": [
+                "Himmelsrichtung",
+                "Kompass",
+                "magnetisch",
+                "Navigation",
+                "Orientierung",
+                "Richtung",
+                "Windrose"
+            ],
+            "tags": [
+                "travel"
+            ],
+            "group": "travel"
+        },
+        {
+            "id": "1F600",
+            "emoji": "😀",
+            "nameEn": "grinning face",
+            "nameDe": "grinsendes Gesicht",
+            "keywordsEn": [
+                "cheerful",
+                "cheery",
+                "face",
+                "grin",
+                "grinning",
+                "happy",
+                "laugh",
+                "nice",
+                "smile",
+                "smiling",
+                "teeth"
+            ],
+            "keywordsDe": [
+                "froh",
+                "fröhlich",
+                "Gesicht",
+                "grinsen",
+                "haha",
+                "lachen",
+                "lol",
+                "lustig",
+                "Smiley"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F602",
+            "emoji": "😂",
+            "nameEn": "face with tears of joy",
+            "nameDe": "Gesicht mit Freudentränen",
+            "keywordsEn": [
+                "crying",
+                "face",
+                "feels",
+                "funny",
+                "haha",
+                "happy",
+                "hehe",
+                "hilarious",
+                "joy",
+                "laugh",
+                "lmao",
+                "lol",
+                "rofl",
+                "roflmao",
+                "tear"
+            ],
+            "keywordsDe": [
+                "Freude",
+                "Freudentränen",
+                "fröhlich",
+                "Gesicht",
+                "haha",
+                "happy",
+                "hehe",
+                "hihi",
+                "lachen",
+                "lol",
+                "lustig",
+                "muahaha",
+                "rofl",
+                "Smiley",
+                "Tränen",
+                "witzig"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F60D",
+            "emoji": "😍",
+            "nameEn": "smiling face with heart-eyes",
+            "nameDe": "lächelndes Gesicht mit herzförmigen Augen",
+            "keywordsEn": [
+                "143",
+                "bae",
+                "eye",
+                "face",
+                "feels",
+                "heart-eyes",
+                "hearts",
+                "ily",
+                "kisses",
+                "love",
+                "romance",
+                "romantic",
+                "smile",
+                "xoxo"
+            ],
+            "keywordsDe": [
+                "Augen",
+                "Gesicht",
+                "glücklich",
+                "Herzen",
+                "herzförmig",
+                "lächeln",
+                "Liebe",
+                "Smiley",
+                "verliebt"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F622",
+            "emoji": "😢",
+            "nameEn": "crying face",
+            "nameDe": "weinendes Gesicht",
+            "keywordsEn": [
+                "awful",
+                "cry",
+                "crying",
+                "face",
+                "feels",
+                "miss",
+                "sad",
+                "tear",
+                "triste",
+                "unhappy"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Smiley",
+                "Träne",
+                "traurig",
+                "weinen"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F62D",
+            "emoji": "😭",
+            "nameEn": "loudly crying face",
+            "nameDe": "heulendes Gesicht",
+            "keywordsEn": [
+                "bawling",
+                "cry",
+                "crying",
+                "face",
+                "loudly",
+                "sad",
+                "sob",
+                "tear",
+                "tears",
+                "unhappy"
+            ],
+            "keywordsDe": [
+                "flennen",
+                "Gesicht",
+                "heulen",
+                "schluchzen",
+                "Smiley",
+                "Tränen",
+                "Tränenfluss",
+                "traurig",
+                "weinen"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F621",
+            "emoji": "😡",
+            "nameEn": "enraged face",
+            "nameDe": "schmollendes Gesicht",
+            "keywordsEn": [
+                "anger",
+                "angry",
+                "enraged",
+                "face",
+                "feels",
+                "mad",
+                "maddening",
+                "pouting",
+                "rage",
+                "red",
+                "shade",
+                "unhappy",
+                "upset"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "rot",
+                "Rot angelaufener Smiley",
+                "schmollendes Gesicht",
+                "wütend"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F631",
+            "emoji": "😱",
+            "nameEn": "face screaming in fear",
+            "nameDe": "vor Angst schreiendes Gesicht",
+            "keywordsEn": [
+                "epic",
+                "face",
+                "fear",
+                "fearful",
+                "munch",
+                "scared",
+                "scream",
+                "screamer",
+                "screaming",
+                "shocked",
+                "surprised",
+                "woah"
+            ],
+            "keywordsDe": [
+                "Angst",
+                "ängstlich",
+                "Gesicht",
+                "Munch",
+                "omg",
+                "Panik",
+                "Schrei",
+                "schreien",
+                "schreiend"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F634",
+            "emoji": "😴",
+            "nameEn": "sleeping face",
+            "nameDe": "schlafendes Gesicht",
+            "keywordsEn": [
+                "bed",
+                "bedtime",
+                "face",
+                "good",
+                "goodnight",
+                "nap",
+                "night",
+                "sleep",
+                "sleeping",
+                "tired",
+                "whatever",
+                "yawn",
+                "zzz"
+            ],
+            "keywordsDe": [
+                "dösen",
+                "einschlafen",
+                "gähnen",
+                "Gesicht",
+                "gute Nacht",
+                "langweilig",
+                "Mittagsschlaf",
+                "müde",
+                "Nickerchen",
+                "Schlaf",
+                "schlafen",
+                "Smiley",
+                "zzz"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F914",
+            "emoji": "🤔",
+            "nameEn": "thinking face",
+            "nameDe": "nachdenkendes Gesicht",
+            "keywordsEn": [
+                "chin",
+                "consider",
+                "face",
+                "hmm",
+                "ponder",
+                "pondering",
+                "thinking",
+                "wondering"
+            ],
+            "keywordsDe": [
+                "fragen",
+                "Gesicht",
+                "grübeln",
+                "hm",
+                "komisch",
+                "nachdenken",
+                "nachdenklich",
+                "Smiley",
+                "wundern"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F60E",
+            "emoji": "😎",
+            "nameEn": "smiling face with sunglasses",
+            "nameDe": "lächelndes Gesicht mit Sonnenbrille",
+            "keywordsEn": [
+                "awesome",
+                "beach",
+                "bright",
+                "bro",
+                "chilling",
+                "cool",
+                "face",
+                "rad",
+                "relaxed",
+                "shades",
+                "slay",
+                "smile",
+                "style",
+                "sunglasses",
+                "swag",
+                "win"
+            ],
+            "keywordsDe": [
+                "cool",
+                "Gesicht",
+                "lächeln",
+                "Smiley",
+                "Sonnenbrille"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F973",
+            "emoji": "🥳",
+            "nameEn": "partying face",
+            "nameDe": "Partygesicht",
+            "keywordsEn": [
+                "bday",
+                "birthday",
+                "celebrate",
+                "celebration",
+                "excited",
+                "face",
+                "happy",
+                "hat",
+                "hooray",
+                "horn",
+                "party",
+                "partying"
+            ],
+            "keywordsDe": [
+                "aufgeregt",
+                "Feier",
+                "Fest",
+                "fröhlich",
+                "Geburtstag",
+                "Gesicht",
+                "Glückwunsch",
+                "Hurra",
+                "Hut",
+                "Party",
+                "Smiley",
+                "Überraschung"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F62C",
+            "emoji": "😬",
+            "nameEn": "grimacing face",
+            "nameDe": "Grimassen schneidendes Gesicht",
+            "keywordsEn": [
+                "awk",
+                "awkward",
+                "dentist",
+                "face",
+                "grimace",
+                "grimacing",
+                "grinning",
+                "smile",
+                "smiling"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "Grimasse",
+                "peinlich",
+                "schneiden",
+                "Smiley",
+                "verziehen",
+                "Zähne"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F644",
+            "emoji": "🙄",
+            "nameEn": "face with rolling eyes",
+            "nameDe": "Augen verdrehendes Gesicht",
+            "keywordsEn": [
+                "eyeroll",
+                "eyes",
+                "face",
+                "rolling",
+                "shade",
+                "ugh",
+                "whatever"
+            ],
+            "keywordsDe": [
+                "Augen",
+                "genervt",
+                "Gesicht",
+                "meinetwegen",
+                "nerv",
+                "ohje",
+                "rollen",
+                "Smiley",
+                "verdrehen",
+                "verrollen"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F607",
+            "emoji": "😇",
+            "nameEn": "smiling face with halo",
+            "nameDe": "lächelndes Gesicht mit Heiligenschein",
+            "keywordsEn": [
+                "angel",
+                "angelic",
+                "angels",
+                "blessed",
+                "face",
+                "fairy",
+                "fairytale",
+                "fantasy",
+                "halo",
+                "happy",
+                "innocent",
+                "peaceful",
+                "smile",
+                "smiling",
+                "spirit",
+                "tale"
+            ],
+            "keywordsDe": [
+                "brav",
+                "Engel",
+                "Gesicht",
+                "glücklich",
+                "Heiligenschein",
+                "Lächeln",
+                "lieb",
+                "seelig",
+                "Smiley"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F917",
+            "emoji": "🤗",
+            "nameEn": "smiling face with open hands",
+            "nameDe": "Gesicht mit umarmenden Händen",
+            "keywordsEn": [
+                "face",
+                "hands",
+                "hug",
+                "hugging",
+                "open",
+                "smiling"
+            ],
+            "keywordsDe": [
+                "drücken",
+                "Gesicht",
+                "Hände",
+                "Smiley",
+                "umarmen",
+                "Umarmung"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F624",
+            "emoji": "😤",
+            "nameEn": "face with steam from nose",
+            "nameDe": "schnaubendes Gesicht",
+            "keywordsEn": [
+                "anger",
+                "angry",
+                "face",
+                "feels",
+                "fume",
+                "fuming",
+                "furious",
+                "fury",
+                "mad",
+                "nose",
+                "steam",
+                "triumph",
+                "unhappy",
+                "won"
+            ],
+            "keywordsDe": [
+                "erleichtert",
+                "Gesicht",
+                "gewonnen",
+                "schnaubendes Gesicht"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F970",
+            "emoji": "🥰",
+            "nameEn": "smiling face with hearts",
+            "nameDe": "lächelndes Gesicht mit Herzen",
+            "keywordsEn": [
+                "3",
+                "adore",
+                "crush",
+                "face",
+                "heart",
+                "hearts",
+                "ily",
+                "love",
+                "romance",
+                "smile",
+                "smiling",
+                "you"
+            ],
+            "keywordsDe": [
+                "3",
+                "anhimmeln",
+                "bewundern",
+                "Gesicht",
+                "HDGDL",
+                "HDL",
+                "Herzchen",
+                "Herzen",
+                "lächeln",
+                "lieb",
+                "Liebe",
+                "Smiley",
+                "verknallt",
+                "verliebt",
+                "verzückt"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F605",
+            "emoji": "😅",
+            "nameEn": "grinning face with sweat",
+            "nameDe": "grinsendes Gesicht mit Schweißtropfen",
+            "keywordsEn": [
+                "cold",
+                "dejected",
+                "excited",
+                "face",
+                "grinning",
+                "mouth",
+                "nervous",
+                "open",
+                "smile",
+                "smiling",
+                "stress",
+                "stressed",
+                "sweat"
+            ],
+            "keywordsDe": [
+                "Gesicht",
+                "grinsen",
+                "lächeln",
+                "lachen",
+                "lustig",
+                "Mund",
+                "nervös",
+                "offen",
+                "Schweiß",
+                "Schweißtropfen",
+                "schwitzen",
+                "Smiley"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1FAE0",
+            "emoji": "🫠",
+            "nameEn": "melting face",
+            "nameDe": "schmelzendes Gesicht",
+            "keywordsEn": [
+                "disappear",
+                "dissolve",
+                "embarrassed",
+                "face",
+                "haha",
+                "heat",
+                "hot",
+                "liquid",
+                "lol",
+                "melt",
+                "melting",
+                "sarcasm",
+                "sarcastic"
+            ],
+            "keywordsDe": [
+                "auflösen",
+                "beschämt",
+                "flüssig",
+                "Gesicht",
+                "Hitze",
+                "Sarkasmus",
+                "sarkastisch",
+                "schmelzen",
+                "schwitzen",
+                "Smiley",
+                "verschwinden"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F610",
+            "emoji": "😐",
+            "nameEn": "neutral face",
+            "nameDe": "neutrales Gesicht",
+            "keywordsEn": [
+                "awkward",
+                "blank",
+                "deadpan",
+                "expressionless",
+                "face",
+                "fine",
+                "jealous",
+                "meh",
+                "neutral",
+                "oh",
+                "shade",
+                "straight",
+                "unamused",
+                "unhappy",
+                "unimpressed",
+                "whatever"
+            ],
+            "keywordsDe": [
+                "ausdruckslos",
+                "Gesicht",
+                "kommentarlos",
+                "neutral",
+                "Smiley",
+                "todernst",
+                "unbeeindruckt"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "2764",
+            "emoji": "❤️",
+            "nameEn": "red heart",
+            "nameDe": "rotes Herz",
+            "keywordsEn": [
+                "emotion",
+                "heart",
+                "love",
+                "red"
+            ],
+            "keywordsDe": [
+                "Herz",
+                "rotes Herz"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F494",
+            "emoji": "💔",
+            "nameEn": "broken heart",
+            "nameDe": "gebrochenes Herz",
+            "keywordsEn": [
+                "break",
+                "broken",
+                "crushed",
+                "emotion",
+                "heart",
+                "heartbroken",
+                "lonely",
+                "sad"
+            ],
+            "keywordsDe": [
+                "allein",
+                "gebrochen",
+                "Gefühl",
+                "Herz",
+                "Herzschmerz",
+                "Liebeskummer",
+                "Schmerz",
+                "traurig",
+                "Trennung",
+                "zerbrochen"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F44D",
+            "emoji": "👍",
+            "nameEn": "thumbs up",
+            "nameDe": "Daumen hoch",
+            "keywordsEn": [
+                "+1",
+                "good",
+                "hand",
+                "like",
+                "thumb",
+                "up",
+                "yes"
+            ],
+            "keywordsDe": [
+                "Daumen",
+                "Daumen hoch",
+                "einverstanden",
+                "Finger",
+                "gut",
+                "Hand",
+                "in Ordnung",
+                "jawohl",
+                "klar",
+                "klasse",
+                "like",
+                "nach oben",
+                "ok",
+                "super",
+                "top"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F44E",
+            "emoji": "👎",
+            "nameEn": "thumbs down",
+            "nameDe": "Daumen runter",
+            "keywordsEn": [
+                "-1",
+                "bad",
+                "dislike",
+                "down",
+                "good",
+                "hand",
+                "no",
+                "nope",
+                "thumb",
+                "thumbs"
+            ],
+            "keywordsDe": [
+                "Daumen",
+                "Daumen runter",
+                "Hand",
+                "nach unten",
+                "schlecht"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F64F",
+            "emoji": "🙏",
+            "nameEn": "folded hands",
+            "nameDe": "zusammengelegte Handflächen",
+            "keywordsEn": [
+                "appreciate",
+                "ask",
+                "beg",
+                "blessed",
+                "bow",
+                "cmon",
+                "five",
+                "folded",
+                "gesture",
+                "hand",
+                "high",
+                "please",
+                "pray",
+                "thanks",
+                "thx"
+            ],
+            "keywordsDe": [
+                "beten",
+                "betend",
+                "bitten",
+                "danke",
+                "danken",
+                "Gebet",
+                "gefaltet",
+                "grüßen",
+                "Handflächen",
+                "zusammengelegt"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F44F",
+            "emoji": "👏",
+            "nameEn": "clapping hands",
+            "nameDe": "klatschende Hände",
+            "keywordsEn": [
+                "applause",
+                "approval",
+                "awesome",
+                "clap",
+                "congrats",
+                "congratulations",
+                "excited",
+                "good",
+                "great",
+                "hand",
+                "homie",
+                "job",
+                "nice",
+                "prayed",
+                "well",
+                "yay"
+            ],
+            "keywordsDe": [
+                "applaudieren",
+                "Applaus",
+                "Beifall",
+                "Gratulation",
+                "großartig",
+                "gut",
+                "Hand",
+                "Hände",
+                "Klatschen",
+                "klatschend",
+                "toll"
+            ],
+            "tags": [
+                "emotion"
+            ],
+            "group": "emotions"
+        },
+        {
+            "id": "1F4BB",
+            "emoji": "💻",
+            "nameEn": "laptop",
+            "nameDe": "Laptop",
+            "keywordsEn": [
+                "computer",
+                "laptop",
+                "office",
+                "pc",
+                "personal"
+            ],
+            "keywordsDe": [
+                "Bildschirm",
+                "Computer",
+                "Computermonitor",
+                "Laptop",
+                "Monitor",
+                "Notebook",
+                "PC"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4F1",
+            "emoji": "📱",
+            "nameEn": "mobile phone",
+            "nameDe": "Mobiltelefon",
+            "keywordsEn": [
+                "cell",
+                "communication",
+                "mobile",
+                "phone",
+                "telephone"
+            ],
+            "keywordsDe": [
+                "Handy",
+                "iPhone",
+                "Mobiltelefon",
+                "Smartphone",
+                "telefonieren"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "231A",
+            "emoji": "⌚",
+            "nameEn": "watch",
+            "nameDe": "Armbanduhr",
+            "keywordsEn": [
+                "clock",
+                "time",
+                "watch"
+            ],
+            "keywordsDe": [
+                "Armbanduhr",
+                "Uhr",
+                "Zeit"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4F7",
+            "emoji": "📷",
+            "nameEn": "camera",
+            "nameDe": "Fotoapparat",
+            "keywordsEn": [
+                "camera",
+                "photo",
+                "selfie",
+                "snap",
+                "tbt",
+                "trip",
+                "video"
+            ],
+            "keywordsDe": [
+                "Fotoapparat",
+                "Fotos",
+                "Kamera"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F511",
+            "emoji": "🔑",
+            "nameEn": "key",
+            "nameDe": "Schlüssel",
+            "keywordsEn": [
+                "key",
+                "keys",
+                "lock",
+                "major",
+                "password",
+                "unlock"
+            ],
+            "keywordsDe": [
+                "Passwort",
+                "schließen",
+                "Schlüssel"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F512",
+            "emoji": "🔒",
+            "nameEn": "locked",
+            "nameDe": "geschlossenes Schloss",
+            "keywordsEn": [
+                "closed",
+                "lock",
+                "locked",
+                "private"
+            ],
+            "keywordsDe": [
+                "Datenschutz",
+                "geschlossen",
+                "geschlossenes Schloss",
+                "Geschlossenes Schloss",
+                "Schloss",
+                "Sicherheit"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4DA",
+            "emoji": "📚",
+            "nameEn": "books",
+            "nameDe": "Bücherstapel",
+            "keywordsEn": [
+                "book",
+                "books",
+                "education",
+                "fantasy",
+                "knowledge",
+                "library",
+                "novels",
+                "reading",
+                "school",
+                "study"
+            ],
+            "keywordsDe": [
+                "Bücher",
+                "Bücherstapel",
+                "Fantasie",
+                "lesen",
+                "Roman"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "270F",
+            "emoji": "✏️",
+            "nameEn": "pencil",
+            "nameDe": "Bleistift",
+            "keywordsEn": [
+                "pencil"
+            ],
+            "keywordsDe": [
+                "Bleistift",
+                "Stift"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4CE",
+            "emoji": "📎",
+            "nameEn": "paperclip",
+            "nameDe": "Büroklammer",
+            "keywordsEn": [
+                "paperclip"
+            ],
+            "keywordsDe": [
+                "Büroklammer"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4A1",
+            "emoji": "💡",
+            "nameEn": "light bulb",
+            "nameDe": "Glühbirne",
+            "keywordsEn": [
+                "bulb",
+                "comic",
+                "electric",
+                "idea",
+                "light"
+            ],
+            "keywordsDe": [
+                "Glühbirne",
+                "hell",
+                "Idee",
+                "Lampe",
+                "Licht"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F527",
+            "emoji": "🔧",
+            "nameEn": "wrench",
+            "nameDe": "Schraubenschlüssel",
+            "keywordsEn": [
+                "home",
+                "improvement",
+                "spanner",
+                "tool",
+                "wrench"
+            ],
+            "keywordsDe": [
+                "Schraubenschlüssel",
+                "Werkzeug"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F528",
+            "emoji": "🔨",
+            "nameEn": "hammer",
+            "nameDe": "Hammer",
+            "keywordsEn": [
+                "hammer",
+                "home",
+                "improvement",
+                "repairs",
+                "tool"
+            ],
+            "keywordsDe": [
+                "Hammer",
+                "Werkzeug"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4B0",
+            "emoji": "💰",
+            "nameEn": "money bag",
+            "nameDe": "Geldsack",
+            "keywordsEn": [
+                "bag",
+                "bank",
+                "bet",
+                "billion",
+                "cash",
+                "cost",
+                "dollar",
+                "gold",
+                "million",
+                "money",
+                "moneybag",
+                "paid",
+                "paying",
+                "pot",
+                "rich",
+                "win"
+            ],
+            "keywordsDe": [
+                "Geld",
+                "Geldsack",
+                "Moneten",
+                "reich",
+                "Sack"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F381",
+            "emoji": "🎁",
+            "nameEn": "wrapped gift",
+            "nameDe": "Geschenk",
+            "keywordsEn": [
+                "birthday",
+                "bow",
+                "box",
+                "celebration",
+                "christmas",
+                "gift",
+                "present",
+                "surprise",
+                "wrapped"
+            ],
+            "keywordsDe": [
+                "Feier",
+                "Geburtstag",
+                "Geschenk",
+                "Schachtel",
+                "Schleife",
+                "Überraschung",
+                "verpackt",
+                "Weihnachten"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F388",
+            "emoji": "🎈",
+            "nameEn": "balloon",
+            "nameDe": "Luftballon",
+            "keywordsEn": [
+                "balloon",
+                "birthday",
+                "celebrate",
+                "celebration"
+            ],
+            "keywordsDe": [
+                "Ballon",
+                "Feier",
+                "Geburtstag",
+                "Luftballon"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "23F0",
+            "emoji": "⏰",
+            "nameEn": "alarm clock",
+            "nameDe": "Wecker",
+            "keywordsEn": [
+                "alarm",
+                "clock",
+                "hours",
+                "hrs",
+                "late",
+                "time",
+                "waiting"
+            ],
+            "keywordsDe": [
+                "Uhr",
+                "Uhrzeit",
+                "Wecker",
+                "Zeit"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F4C5",
+            "emoji": "📅",
+            "nameEn": "calendar",
+            "nameDe": "Kalender",
+            "keywordsEn": [
+                "calendar",
+                "date"
+            ],
+            "keywordsDe": [
+                "Datum",
+                "Kalender",
+                "Kalenderblatt"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F5D1",
+            "emoji": "🗑️",
+            "nameEn": "wastebasket",
+            "nameDe": "Papierkorb",
+            "keywordsEn": [
+                "can",
+                "garbage",
+                "trash",
+                "waste",
+                "wastebasket"
+            ],
+            "keywordsDe": [
+                "Abfalleimer",
+                "Papierkorb"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F9F9",
+            "emoji": "🧹",
+            "nameEn": "broom",
+            "nameDe": "Besen",
+            "keywordsEn": [
+                "broom",
+                "cleaning",
+                "sweeping",
+                "witch"
+            ],
+            "keywordsDe": [
+                "Besen",
+                "fegen",
+                "Fegen",
+                "Hexe",
+                "Hexenbesen",
+                "kehren",
+                "Kehren",
+                "reinigen",
+                "sauber machen",
+                "säubern"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F6D2",
+            "emoji": "🛒",
+            "nameEn": "shopping cart",
+            "nameDe": "Einkaufswagen",
+            "keywordsEn": [
+                "cart",
+                "shopping",
+                "trolley"
+            ],
+            "keywordsDe": [
+                "einkaufen",
+                "Einkaufswagen"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F3AE",
+            "emoji": "🎮",
+            "nameEn": "video game",
+            "nameDe": "Gamepad",
+            "keywordsEn": [
+                "controller",
+                "entertainment",
+                "game",
+                "video"
+            ],
+            "keywordsDe": [
+                "Gamepad",
+                "Gaming",
+                "Unterhaltung",
+                "Videospiel"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F3B2",
+            "emoji": "🎲",
+            "nameEn": "game die",
+            "nameDe": "Spielwürfel",
+            "keywordsEn": [
+                "dice",
+                "die",
+                "entertainment",
+                "game"
+            ],
+            "keywordsDe": [
+                "Casino",
+                "Spiel",
+                "Spielwürfel",
+                "Unterhaltung",
+                "Würfel",
+                "würfeln",
+                "Zufall"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F9E9",
+            "emoji": "🧩",
+            "nameEn": "puzzle piece",
+            "nameDe": "Puzzleteil",
+            "keywordsEn": [
+                "clue",
+                "interlocking",
+                "jigsaw",
+                "piece",
+                "puzzle"
+            ],
+            "keywordsDe": [
+                "Bestandteile",
+                "Hinweise",
+                "Hobby",
+                "passen",
+                "puzzeln",
+                "Puzzle",
+                "Puzzlestück",
+                "Puzzleteil",
+                "Puzzleteile",
+                "Spiel",
+                "Teile",
+                "zusammenpassen",
+                "zusammensetzen"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F3E0",
+            "emoji": "🏠",
+            "nameEn": "house",
+            "nameDe": "Haus",
+            "keywordsEn": [
+                "building",
+                "country",
+                "heart",
+                "home",
+                "house",
+                "ranch",
+                "settle",
+                "simple",
+                "suburban",
+                "suburbia",
+                "where"
+            ],
+            "keywordsDe": [
+                "Gebäude",
+                "Haus",
+                "Zuhause"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F6BF",
+            "emoji": "🚿",
+            "nameEn": "shower",
+            "nameDe": "Dusche",
+            "keywordsEn": [
+                "shower",
+                "water"
+            ],
+            "keywordsDe": [
+                "Dusche",
+                "Duschkopf"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        },
+        {
+            "id": "1F6CF",
+            "emoji": "🛏️",
+            "nameEn": "bed",
+            "nameDe": "Bett",
+            "keywordsEn": [
+                "bed",
+                "hotel",
+                "sleep"
+            ],
+            "keywordsDe": [
+                "Bett",
+                "Hotel",
+                "schlafen",
+                "Übernachtung"
+            ],
+            "tags": [
+                "object",
+                "everyday"
+            ],
+            "group": "objects"
+        }
+    ]
+}

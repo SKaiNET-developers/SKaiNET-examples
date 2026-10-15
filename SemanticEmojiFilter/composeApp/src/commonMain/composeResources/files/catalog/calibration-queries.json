@@ -1,0 +1,293 @@
+[
+  {
+    "query": "healthy things to eat",
+    "matches": [
+      "1F957",
+      "1F34E",
+      "1F966",
+      "1F955",
+      "1F34C",
+      "1F347",
+      "1F353",
+      "1F951",
+      "1F345",
+      "1F952",
+      "1F96C",
+      "1FAD0",
+      "1F95D",
+      "1F352"
+    ]
+  },
+  {
+    "query": "fruit",
+    "matches": [
+      "1F34E",
+      "1F34C",
+      "1F347",
+      "1F353",
+      "1F34A",
+      "1F34B",
+      "1F349",
+      "1FAD0",
+      "1F95D",
+      "1F352",
+      "1F351",
+      "1F350"
+    ]
+  },
+  {
+    "query": "junk food",
+    "matches": [
+      "1F355",
+      "1F354",
+      "1F35F",
+      "1F32D",
+      "1F369",
+      "1F37F",
+      "1F953",
+      "1F32E"
+    ]
+  },
+  {
+    "query": "something sweet",
+    "matches": [
+      "1F369",
+      "1F36A",
+      "1F382",
+      "1F370",
+      "1F9C1",
+      "1F36B",
+      "1F36C",
+      "1F36D",
+      "1F366"
+    ]
+  },
+  {
+    "query": "birthday cake",
+    "matches": [
+      "1F382",
+      "1F370",
+      "1F9C1",
+      "1F381",
+      "1F388"
+    ]
+  },
+  {
+    "query": "breakfast",
+    "matches": [
+      "1F95E",
+      "1F950",
+      "2615",
+      "1F95B",
+      "1F34C"
+    ]
+  },
+  {
+    "query": "feeling sick",
+    "matches": [
+      "1F912",
+      "1F927",
+      "1F92E",
+      "1F922",
+      "1F637",
+      "1F915",
+      "1F48A"
+    ]
+  },
+  {
+    "query": "hospital",
+    "matches": [
+      "1F3E5",
+      "1F691",
+      "1FA7A",
+      "1F489",
+      "1F48A",
+      "1F915"
+    ]
+  },
+  {
+    "query": "rock band",
+    "matches": [
+      "1F3B8",
+      "1F941",
+      "1F3A4",
+      "1F3B9",
+      "1F918",
+      "1F3B6"
+    ]
+  },
+  {
+    "query": "classical music",
+    "matches": [
+      "1F3BB",
+      "1F3B9",
+      "1F3BA",
+      "1F3B7",
+      "1F3BC",
+      "1F3B5"
+    ]
+  },
+  {
+    "query": "cute pets",
+    "matches": [
+      "1F436",
+      "1F431",
+      "1F439",
+      "1F430",
+      "1F42D"
+    ]
+  },
+  {
+    "query": "sea creatures",
+    "matches": [
+      "1F42C",
+      "1F433",
+      "1F988",
+      "1F419",
+      "1F422"
+    ]
+  },
+  {
+    "query": "rainy weather",
+    "matches": [
+      "1F327",
+      "26C8",
+      "2601",
+      "1F4A7"
+    ]
+  },
+  {
+    "query": "hot summer day",
+    "matches": [
+      "2600",
+      "1F525",
+      "1F3D6",
+      "1F349",
+      "1F366"
+    ]
+  },
+  {
+    "query": "winter sports",
+    "matches": [
+      "26F7",
+      "2744",
+      "1F3D4"
+    ]
+  },
+  {
+    "query": "team sports",
+    "matches": [
+      "26BD",
+      "1F3C0",
+      "1F3C8",
+      "26BE"
+    ]
+  },
+  {
+    "query": "going to the gym",
+    "matches": [
+      "1F3CB",
+      "1F3C3",
+      "1F94A",
+      "1F9D8"
+    ]
+  },
+  {
+    "query": "going on holiday",
+    "matches": [
+      "2708",
+      "1F3D6",
+      "1F9F3",
+      "1F3E8",
+      "26F5",
+      "1F6F3"
+    ]
+  },
+  {
+    "query": "camping in the mountains",
+    "matches": [
+      "26FA",
+      "1F3D4",
+      "1F332",
+      "1F525"
+    ]
+  },
+  {
+    "query": "very happy",
+    "matches": [
+      "1F600",
+      "1F60D",
+      "1F973",
+      "1F970",
+      "1F607"
+    ]
+  },
+  {
+    "query": "sad and crying",
+    "matches": [
+      "1F622",
+      "1F62D",
+      "1F494"
+    ]
+  },
+  {
+    "query": "angry",
+    "matches": [
+      "1F621",
+      "1F624"
+    ]
+  },
+  {
+    "query": "tired, need sleep",
+    "matches": [
+      "1F634",
+      "1F6CC",
+      "1F6CF",
+      "1F62C"
+    ]
+  },
+  {
+    "query": "working late at the office",
+    "matches": [
+      "1F4BB",
+      "23F0",
+      "2615",
+      "1F4C5"
+    ]
+  },
+  {
+    "query": "cleaning the house",
+    "matches": [
+      "1F9F9",
+      "1F3E0",
+      "1F5D1"
+    ]
+  },
+  {
+    "query": "video games",
+    "matches": [
+      "1F3AE",
+      "1F3B2",
+      "1F9E9",
+      "1F4BB"
+    ]
+  },
+  {
+    "query": "money and shopping",
+    "matches": [
+      "1F4B0",
+      "1F6D2",
+      "1F381"
+    ]
+  },
+  {
+    "query": "beach holiday",
+    "matches": [
+      "1F3D6",
+      "26F5",
+      "1F6F3",
+      "1F30A",
+      "2708"
+    ]
+  }
+]

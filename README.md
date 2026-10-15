@@ -80,6 +80,21 @@ falls back to without NEON hardware.
 
 ---
 
+### 🔎 Semantic Emoji Filter
+
+Type what you mean, get the emoji. Every keystroke is embedded on-device with the MongoDB LEAF
+retrieval encoder (23M parameters, BERT in the SKaiNET NN DSL) and ranked against a bilingual
+catalog of about 200 emoji; items above a calibrated threshold move up with a confidence badge.
+Desktop and Android add a second stage: the **Laya decision model** answers a typed yes/no
+question per candidate through `sk.ainet.decisions`, so 🍕 drops for "healthy things to eat"
+while 🥗 stays, and an unsure model says `?` instead of guessing.
+
+<img src="SemanticEmojiFilter/docs/screenshots/grid.png" alt="Semantic Emoji Filter — matches above the threshold with vector and Laya confidence" width="640" />
+
+📂 [`SemanticEmojiFilter/`](SemanticEmojiFilter/) · runs on Android · Desktop · Wasm
+
+---
+
 ### 💬 Kllama Demo
 
 A Qwen3 LLM **playground in the browser** — chat, completion, translation, tool
