@@ -15,9 +15,10 @@ kotlinxIo = "0.9.1"
 # The transformers 0.58.0 pin; the catalog JSON and calibration files are read with it.
 kotlinxSerialization = "1.11.0"
 # The bert encoder, the SafeTensors reader and the engine tokenizers (WordPiece for LEAF) come from
-# the engine BOM; the typed-decision contract, runtime and the Laya adapter need transformers 0.59.0.
-skainet = "0.58.0"
-skainet-transformers = "0.59.0"
+# the engine BOM; the typed-decision contract, runtime and the Laya adapter need transformers 0.59.0+
+# (0.60.0 runs Laya's exact GELU through engine 0.59.0's gelu op instead of a host-side loop).
+skainet = "0.59.0"
+skainet-transformers = "0.60.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
