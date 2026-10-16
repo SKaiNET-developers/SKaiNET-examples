@@ -5,7 +5,7 @@ A CLI MNIST digit detector written in Java 21, demonstrating JVM interoperabilit
 ## Prerequisites
 
 - **Java 21+** (with preview features)
-- **SKaiNET 0.40.1** -- resolved directly from Maven Central, no local publish needed
+- **SKaiNET 0.60.0** -- resolved directly from Maven Central, no local publish needed
 - **GGUF model file** -- a trained MNIST CNN model in GGUF format
 
 ## Usage
