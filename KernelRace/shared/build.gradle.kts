@@ -51,7 +51,7 @@ kotlin {
             api(libs.skainet.io.gguf)
 
             // SKaiNET-transformers: Llama inference + generation. agent and
-            // runtime-kllama both publish wasmJs targets as of 0.39.1, so the
+            // runtime-kllama both publish wasmJs targets (since 0.39.1), so the
             // whole engine (unlike KllamaDemo's 0.34.1-era jvmMain-only split)
             // lives in commonMain.
             api(project.dependencies.platform(libs.skainet.transformers.bom))
