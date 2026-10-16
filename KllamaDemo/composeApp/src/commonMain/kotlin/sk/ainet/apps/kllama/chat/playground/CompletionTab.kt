@@ -76,7 +76,7 @@ fun CompletionTab(state: QwenLoadingState) {
                                     prompt = tokens,
                                     steps = 128,
                                     temperature = 0.8f,
-                                ) { id -> output += ready.tokenizer.decode(id) }
+                                ) { id -> output += ready.tokenizer.decodeToken(id) }
                             }
                         } finally {
                             generating = false

@@ -62,7 +62,7 @@ fun TokenizerTab(state: QwenLoadingState) {
                             tonalElevation = 1.dp,
                         ) {
                             Text(
-                                text = "${id.toString().padStart(5)}  ${escape(state.tokenizer.decode(id))}",
+                                text = "${id.toString().padStart(5)}  ${escape(state.tokenizer.decodeToken(id))}",
                                 modifier = Modifier.padding(8.dp),
                                 fontFamily = FontFamily.Monospace,
                                 style = MaterialTheme.typography.bodyMedium,

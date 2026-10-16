@@ -197,7 +197,7 @@ private fun TokenStrip(
                     onClick = {},
                     label = {
                         Text(
-                            text = displayToken(tokenizer.decode(id)),
+                            text = displayToken(tokenizer.decodeToken(id)),
                             fontFamily = FontFamily.Monospace,
                             style = MaterialTheme.typography.labelSmall,
                         )

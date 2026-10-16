@@ -81,6 +81,9 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            // The Qwen playground keeps GGUF weights packed and memory-mapped; this pack
+            // runs the packed matmuls natively instead of the slow decoding reference kernel.
+            implementation(libs.skainet.backend.native.cpu)
         }
         named("webMain").configure {
             dependencies {

@@ -4,21 +4,19 @@ import kotlinx.io.Buffer
 import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.context.ExecutionContext
-import sk.ainet.io.model.QuantPolicy
 import sk.ainet.lang.types.FP32
 import sk.ainet.models.qwen.QwenNetworkLoader
 
 /**
  * Platform-split loader. On JVM we take the fast path:
- * `JvmRandomAccessSource` over a temp file → `QuantPolicy.NATIVE_OPTIMIZED`
- * → `DecoderGgufMemSegConverter` wraps Q4_0 / Q8_0 tensors as
- * `Q4MemorySegmentTensorData` / `Q8MemorySegmentTensorData`. SIMD packed-
- * byte matmul kernels dispatch on those markers at forward time, no
+ * `JvmRandomAccessSource` over a temp file → the engine's streaming GGUF
+ * loader keeps Q4_0 / Q8_0 tensors packed and memory-mapped, and the
+ * engine's row-major kernel packs run the matmuls on the packed bytes, no
  * per-call dequant.
  *
  * On wasmJs / iOS / Android we fall back to [buildQwenRuntimeFallback]:
- * a sequential `kotlinx.io.Source` over the byte buffer +
- * `QuantPolicy.DEQUANTIZE_TO_FP32`. Same correctness, much slower
+ * a sequential `kotlinx.io.Source` over the byte buffer, which always
+ * dequantizes to FP32. Same correctness, much slower
  * throughput — the SIMD/MemSeg kernels are JVM-only.
  */
 internal expect suspend fun buildQwenRuntime(
@@ -42,7 +40,7 @@ internal suspend fun buildQwenRuntimeFallback(
 ): OptimizedLLMRuntime<FP32> {
     val sourceProvider = { Buffer().apply { write(bytes) } }
     val model = QwenNetworkLoader
-        .fromGguf(sourceProvider, QuantPolicy.DEQUANTIZE_TO_FP32)
+        .fromGguf(sourceProvider)
         .load<FP32, Float>(ctx)
 
     return OptimizedLLMRuntime(

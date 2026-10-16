@@ -15,7 +15,6 @@ import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.apps.llm.Tokenizer
 import sk.ainet.apps.llm.generate
 import sk.ainet.apps.llm.tokenizer.GGUFTokenizer
-import sk.ainet.io.model.QuantPolicy
 import sk.ainet.lang.nn.topology.ModuleNode
 import sk.ainet.lang.types.FP32
 import sk.ainet.models.qwen.QwenNetworkLoader
@@ -124,7 +123,7 @@ class QwenModelHolder {
             inputTokenId = tokenId,
             tokensSoFar = priorTokens + sampledId,
             sampledTokenId = sampledId,
-            sampledTokenText = ready.tokenizer.decode(sampledId),
+            sampledTokenText = ready.tokenizer.decodeToken(sampledId),
             topK = topK,
             perLayerAttention = instrumented.attentionCaptures(),
             perLayerResidual = instrumented.residualCaptures(),
@@ -220,7 +219,7 @@ class QwenModelHolder {
         val probs = softmax(logits, effectiveT)
         val indexed = probs.withIndex().sortedByDescending { it.value }.take(k)
         return indexed.map { (idx, prob) ->
-            TopKEntry(id = idx, text = tokenizer.decode(idx), probability = prob)
+            TopKEntry(id = idx, text = tokenizer.decodeToken(idx), probability = prob)
         }
     }
 
@@ -242,7 +241,7 @@ class QwenModelHolder {
                 steps = maxTokens,
                 temperature = temperature,
             ) { id ->
-                onChunk(ready.tokenizer.decode(id))
+                onChunk(ready.tokenizer.decodeToken(id))
             }
         }
     }
