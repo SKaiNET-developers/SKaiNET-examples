@@ -15,6 +15,14 @@ expect val currentSamplePlatform: SamplePlatform
 /** Human-readable label for the kernel path this platform/process is running — shown in the UI. */
 expect fun kernelTierLabel(): String
 
+/**
+ * Brings up the fastest kernel tier of this platform; call it once, before the first execution
+ * context is built. Desktop (Panama Vector) and Android (JNI NEON) pick their tier statically, so
+ * their actuals are no-ops; the web actual loads the SIMD128 sidecar and falls back to the scalar
+ * lane when that fails, so the page always comes up.
+ */
+expect suspend fun installPlatformKernels(onProgress: (String) -> Unit)
+
 /** Reads a whole text file; only the filesystem targets (desktop, Android) implement it. */
 expect fun readTextFile(path: String): String
 

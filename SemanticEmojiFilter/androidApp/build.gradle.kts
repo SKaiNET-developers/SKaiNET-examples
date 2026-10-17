@@ -41,8 +41,6 @@ android {
         // ARM only — the JNI NEON kernels are what makes the encoder fast on a phone.
         ndk { abiFilters += "arm64-v8a" }
 
-        // Shown in the diagnostics row — always matches the dependency in the catalog.
-        buildConfigField("String", "SKAINET_VERSION", "\"${libs.versions.skainet.asProvider().get()}\"")
         buildConfigField("boolean", "VERIFIER_ENABLED", layaVerifier.toString())
     }
 

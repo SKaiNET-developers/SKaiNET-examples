@@ -75,7 +75,7 @@ fun EmojiCard(ranked: RankedItem, verdict: Verdict?, german: Boolean, highlighte
     )
     Card(colors = CardDefaults.cardColors(containerColor = container)) {
         Column(Modifier.padding(10.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(ranked.item.emoji, fontSize = 34.sp)
+            Text(ranked.item.emoji, fontSize = 34.sp, fontFamily = LocalEmojiFontFamily.current)
             Spacer(Modifier.height(4.dp))
             Text(ranked.item.name(german), style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (highlighted || ranked.cosine != 0f) {
