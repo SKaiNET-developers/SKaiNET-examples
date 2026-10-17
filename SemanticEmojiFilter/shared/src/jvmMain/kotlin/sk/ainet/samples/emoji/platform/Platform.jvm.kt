@@ -9,6 +9,8 @@ actual val currentSamplePlatform: SamplePlatform = SamplePlatform.DESKTOP
 actual fun kernelTierLabel(): String =
     if (PanamaVectorKernelProvider.isAvailable()) "Panama Vector (SIMD)" else "JVM (scalar)"
 
+actual suspend fun installPlatformKernels(onProgress: (String) -> Unit) = Unit
+
 actual fun readTextFile(path: String): String = File(path).readText()
 
 internal actual fun platformLog(line: String) {

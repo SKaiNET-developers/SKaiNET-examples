@@ -19,3 +19,10 @@ Unicode CLDR emoji annotations (release 47)
 
 coi-serviceworker (web build)
   https://github.com/gzuidhof/coi-serviceworker  MIT License, see the header of composeApp/src/wasmJsMain/resources/coi-serviceworker.js.
+
+Noto Color Emoji (web build)
+  https://github.com/google/fonts  ofl/notocoloremoji/NotoColorEmoji-Regular.ttf (commit 142c8963e7606b510c93a644c82a4c4cdeae6ef9, version 2.055)
+  Copyright 2021 Google Inc. Licensed under the SIL Open Font License, Version 1.1 (OFL-1.1-NotoColorEmoji.txt).
+  composeApp/src/wasmJsMain/composeResources/files/font/noto-color-emoji-subset.ttf is this font cut down to the
+  catalog's emoji by scripts/subset-emoji-font.sh (COLRv1 glyphs, SVG table dropped). Compose for Web draws text
+  through Skiko, which has no system emoji font in a browser.

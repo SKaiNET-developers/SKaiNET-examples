@@ -73,6 +73,10 @@ kotlin {
                 implementation(libs.skainet.backend.jni.cpu)
             }
         }
+        wasmJsMain.dependencies {
+            // SIMD128 sidecar kernels (WasmSimd.install() before the first execution context).
+            implementation(libs.skainet.backend.wasm.simd)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)

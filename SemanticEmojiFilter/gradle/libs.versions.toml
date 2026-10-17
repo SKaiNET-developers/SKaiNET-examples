@@ -9,7 +9,7 @@ androidx-lifecycle = "2.11.0"
 # pulls two Skiko versions onto the desktop classpath, which crashes with
 # UnsatisfiedLinkError (getAdapterMaxTextureSize) at first render on macOS/Metal.
 composeMultiplatform = "1.11.1"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 kotlinx-coroutines = "1.11.0"
 kotlinxIo = "0.9.1"
 # The transformers 0.58.0 pin; the catalog JSON and calibration files are read with it.
@@ -39,6 +39,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 skainet-bom = { module = "sk.ainet:skainet-bom", version.ref = "skainet" }
 skainet-lang-core = { module = "sk.ainet.core:skainet-lang-core" }
 skainet-backend-cpu = { module = "sk.ainet.core:skainet-backend-cpu" }
+# Browser only: the SIMD128 kernel sidecar (pthreads when the page is cross-origin isolated), installed at startup.
+skainet-backend-wasm-simd = { module = "sk.ainet.core:skainet-backend-wasm-simd" }
 # Compile-time only on the JVM: PanamaVectorKernelProvider.isAvailable() for the kernel label.
 skainet-backend-api = { module = "sk.ainet.core:skainet-backend-api" }
 # Hand-written ARM NEON kernels — Android JNI only.

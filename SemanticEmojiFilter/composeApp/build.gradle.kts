@@ -11,6 +11,27 @@ plugins {
 
 val layaVerifier = providers.gradleProperty("layaVerifier").orNull == "true"
 
+// The engine version the diagnostics row shows, taken from the version catalog at build time so a
+// dependency bump can never leave a stale number in the UI (every target reads this constant).
+val generateBuildInfo by tasks.registering {
+    val skainetVersion = libs.versions.skainet.asProvider()
+    val outDir = layout.buildDirectory.dir("generated/buildInfo/kotlin")
+    inputs.property("skainetVersion", skainetVersion)
+    outputs.dir(outDir)
+    doLast {
+        val file = outDir.get().file("sk/ainet/samples/emoji/BuildInfo.kt").asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """
+            |package sk.ainet.samples.emoji
+            |
+            |/** Generated from `skainet` in gradle/libs.versions.toml; see generateBuildInfo in composeApp/build.gradle.kts. */
+            |const val SKAINET_VERSION: String = "${skainetVersion.get()}"
+            |""".trimMargin(),
+        )
+    }
+}
+
 kotlin {
     jvmToolchain(21)
 
@@ -36,6 +57,9 @@ kotlin {
     }
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir(generateBuildInfo)
+        }
         commonMain.dependencies {
             implementation(projects.shared)
             implementation("sk.ainet.ui:skainet-ui")

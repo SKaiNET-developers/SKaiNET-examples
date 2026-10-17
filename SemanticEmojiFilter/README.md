@@ -55,6 +55,19 @@ The LEAF checkpoint (92 MB) is downloaded on first run into `~/.skainet-examples
 ./gradlew :composeApp:wasmJsBrowserDistribution        # what the examples site deploys
 ```
 
+The web build installs the SIMD128 kernel sidecar (`skainet-backend-wasm-simd`, `WasmSimd.install()`)
+before it builds the first execution context; the diagnostics row then reads *Wasm SIMD128 (threads)*
+when the page is cross-origin isolated (the `coi-serviceworker` shim in `index.html` / `app.html`
+provides that, which needs https or `localhost`), *Wasm SIMD128 (single thread)* otherwise, and
+*Wasm (scalar)* only when the sidecar failed to load. To try it from another machine on the LAN, serve
+`composeApp/build/dist/wasmJs/productionExecutable` with any static file server; a plain-http origin is
+not a secure context, so either allow it in the browser
+(`chrome://flags/#unsafely-treat-insecure-origin-as-secure`) or expect the single-threaded sidecar.
+
+Skiko has no system fonts in a browser, so the web build bundles a subset of Noto Color Emoji (OFL-1.1,
+356 KB, `composeApp/src/wasmJsMain/composeResources/files/font/`) cut down to the catalog's emoji;
+`scripts/subset-emoji-font.sh` regenerates it after the catalog changed (needs `pip install fonttools`).
+
 ### CLI (measure, calibrate, regenerate)
 
 ```bash
@@ -133,14 +146,15 @@ shared/     commonMain  domain/   Catalog, CatalogItem.embeddingText(), Calibrat
                         model/    LeafProvider + LeafResolver (pure plan); jvmAndroidMain: streamed download
                         verify/   Verifier API (Verdict, VerifierState, NoopVerifier) — no Laya dependency
                         vm/       EmojiSearchViewModel: debounce 120 ms, mapLatest, stable-query trigger 500 ms
-            jvmMain / androidMain / wasmJsMain   platform actuals, checkpoint providers
+            jvmMain / androidMain / wasmJsMain   platform actuals (kernel tier, sidecar install), checkpoint providers
 verifier/   jvm + android only   LayaVerifier (one request per item, cancellable between items, verdict cache),
                                  EmojiMatchSchema (decisionSchema { probability(...); policy { boolean { abstainBetween(0.4, 0.6) } } }),
                                  DecisionAdapterSource (the seam a decision cartridge replaces later), LayaFileSource
 composeApp/ Compose UI; src/{jvm,android}{Verifier,NoVerifier}/ pick the verifier at build time
 androidApp/ MainActivity, EmojiApp
 cli/        bench | embed-catalog | calibrate | golden | query | tokens
-scripts/    fetch-model.sh (LEAF, pinned revision), generate-catalog.py (CLDR -> catalog.json), catalog-selection.json
+scripts/    fetch-model.sh (LEAF, pinned revision), generate-catalog.py (CLDR -> catalog.json), catalog-selection.json,
+            subset-emoji-font.sh (Noto Color Emoji cut to the catalog, web build)
 ```
 
 The ranking flow never waits for the verifier: verdicts stream into a separate state and are

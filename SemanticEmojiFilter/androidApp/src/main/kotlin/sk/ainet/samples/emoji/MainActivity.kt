@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            App(viewModel = viewModel, skainetVersion = BuildConfig.SKAINET_VERSION)
+            App(viewModel = viewModel, skainetVersion = SKAINET_VERSION)
         }
     }
 }

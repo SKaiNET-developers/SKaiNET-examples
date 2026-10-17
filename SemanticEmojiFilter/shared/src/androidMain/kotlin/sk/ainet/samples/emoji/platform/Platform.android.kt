@@ -9,6 +9,8 @@ actual val currentSamplePlatform: SamplePlatform = SamplePlatform.ANDROID
 actual fun kernelTierLabel(): String =
     if (JniKernelProvider.isAvailable()) "ARM NEON" else "NEON (unavailable)"
 
+actual suspend fun installPlatformKernels(onProgress: (String) -> Unit) = Unit
+
 actual fun readTextFile(path: String): String = File(path).readText()
 
 internal actual fun platformLog(line: String) {
