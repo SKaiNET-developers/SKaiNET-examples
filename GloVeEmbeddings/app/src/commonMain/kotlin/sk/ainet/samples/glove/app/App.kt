@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import sk.ainet.ui.components.LoadingIndicator
 import sk.ainet.ui.theme.SKaiNETTheme
 import sk.ainet.ui.theme.ThemeController
+import sk.ainet.ui.components.PoweredBySKaiNET
 
 /**
  * Offline embeddings explorer: type a word to see its nearest neighbours, or run vector
@@ -73,6 +74,7 @@ public fun App() {
                     },
                 )
             },
+            bottomBar = { PoweredBySKaiNET(BuildInfo.SKAINET_VERSION) },
         ) { padding ->
             Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
                 when (val s = vm.load) {

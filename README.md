@@ -130,6 +130,14 @@ Confidence: 98.3%
 
 📂 [`MnistJavaDemo/`](MnistJavaDemo/) · command-line · Java 21+
 
+### 🌸 Iris Classifier
+
+The classic Iris dataset as the smallest possible **training loop**: a two-layer dense
+network from the `sequential` DSL, categorical cross-entropy, Adam and the training
+runner, with a train/test split and the test accuracy printed at the end.
+
+📂 [`IrisDemo/`](IrisDemo/) · command-line · JVM
+
 ## New here?
 
 If this is your first SKaiNET example, start with **Sinus Approximator** — it is

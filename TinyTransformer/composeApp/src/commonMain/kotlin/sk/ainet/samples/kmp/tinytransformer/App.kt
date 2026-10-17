@@ -16,6 +16,7 @@ import sk.ainet.samples.kmp.tinytransformer.i18n.Language
 import sk.ainet.samples.kmp.tinytransformer.i18n.stringsFor
 import sk.ainet.ui.theme.SKaiNETTheme
 import sk.ainet.ui.theme.ThemeController
+import sk.ainet.ui.components.PoweredBySKaiNET
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +44,8 @@ fun App() {
                         }
                     }
                 )
-            }
+            },
+            bottomBar = { PoweredBySKaiNET(BuildInfo.SKAINET_VERSION) },
         ) { padding ->
             TinyTransformerScreen(
                 viewModel = viewModel,

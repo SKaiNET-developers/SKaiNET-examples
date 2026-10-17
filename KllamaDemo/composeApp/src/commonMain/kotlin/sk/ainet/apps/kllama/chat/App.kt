@@ -8,6 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import sk.ainet.apps.kllama.chat.playground.QwenPlaygroundHost
 import sk.ainet.ui.theme.SKaiNETTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import sk.ainet.ui.components.PoweredBySKaiNET
 
 /**
  * Main app composable with SKaiNET Design System theming. Renders the
@@ -23,7 +26,10 @@ fun App(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            QwenPlaygroundHost()
+            Column {
+                Box(Modifier.weight(1f)) { QwenPlaygroundHost() }
+                PoweredBySKaiNET(BuildInfo.SKAINET_VERSION)
+            }
         }
     }
 }

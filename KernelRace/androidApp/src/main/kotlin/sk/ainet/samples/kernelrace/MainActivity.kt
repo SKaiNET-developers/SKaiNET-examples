@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 viewModel = viewModel,
-                skainetVersion = BuildConfig.SKAINET_VERSION,
+                skainetVersion = SKAINET_VERSION,
                 kernelControls = { busy, vm, currentPrompt -> KernelRaceControls(busy, vm, currentPrompt) },
             )
         }
