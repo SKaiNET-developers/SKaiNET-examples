@@ -6,7 +6,6 @@ import sk.ainet.apps.llm.Tokenizer
 import sk.ainet.apps.llm.tokenizer.TokenizerFactory
 import sk.ainet.context.ExecutionContext
 import sk.ainet.io.RandomAccessSource
-import sk.ainet.io.model.QuantPolicy
 import sk.ainet.lang.types.FP32
 import sk.ainet.models.llama.LlamaNetworkLoader
 import sk.ainet.samples.kernelrace.model.ModelData
@@ -47,7 +46,7 @@ private class InMemoryRandomAccessSource(private val bytes: ByteArray) : RandomA
 /**
  * Platform-split loader:
  * - Android takes the "five lines" fast path: random-access reads straight off the file,
- *   `QuantPolicy.NATIVE_OPTIMIZED` keeps Q8_0 packed for the hand-written ARM NEON kernels.
+ *   the loader's default `WeightForm` (packed, mapped) keeps Q8_0 packed for the hand-written ARM NEON kernels.
  * - Desktop JVM takes the same file-based path (no NEON kernels to dispatch to on non-Android
  *   hardware, but still avoids materializing the whole file on-heap).
  * - wasmJs has no filesystem, so it falls back to [buildLlamaComponentsFallback]: the whole GGUF
@@ -74,7 +73,7 @@ suspend fun buildLlamaComponentsFallback(ctx: ExecutionContext, bytes: ByteArray
     val tokenizer = TokenizerFactory.fromGgufSource(InMemoryRandomAccessSource(bytes))
     val randomAccessProvider = { InMemoryRandomAccessSource(bytes) }
     val model = LlamaNetworkLoader
-        .fromGguf(randomAccessProvider, QuantPolicy.NATIVE_OPTIMIZED, false)
+        .fromGguf(randomAccessProvider)
         .load<FP32, Float>(ctx)
     val runtime = OptimizedLLMRuntime(
         model = model,

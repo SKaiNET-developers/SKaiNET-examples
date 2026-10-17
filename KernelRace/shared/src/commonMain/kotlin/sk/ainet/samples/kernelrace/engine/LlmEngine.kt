@@ -47,9 +47,9 @@ class LlmEngine private constructor(private val components: LlamaComponents) : G
             onToken = { tokenId ->
                 if (tokenCount == 0) firstTokenAt = TimeSource.Monotonic.markNow()
                 tokenCount++
-                onToken(tokenizer.decode(tokenId))
+                onToken(tokenizer.decodeToken(tokenId))
             },
-            decode = { tokenizer.decode(it) },
+            decode = { tokenizer.decodeToken(it) },
         )
         val totalMs = genStart.elapsedNow().inWholeMilliseconds
         val decodeS = firstTokenAt?.elapsedNow()?.inWholeMilliseconds?.let { it / 1000.0 } ?: 0.0
