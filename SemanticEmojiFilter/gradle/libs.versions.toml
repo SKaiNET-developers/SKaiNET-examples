@@ -17,9 +17,10 @@ kotlinxSerialization = "1.11.0"
 # The bert encoder, the SafeTensors reader and the engine tokenizers (WordPiece for LEAF) come from
 # the engine BOM; the typed-decision contract, runtime and the Laya adapter need transformers 0.59.0+
 # (0.60.0 runs Laya's exact GELU through the engine's exact gelu op instead of a host-side loop;
-# 0.61.0 adds padded batches for the BERT and Laya encoders on engine 0.60.0).
-skainet = "0.60.0"
-skainet-transformers = "0.61.0"
+# 0.61.0 adds padded batches for the BERT and Laya encoders on engine 0.60.0; 0.62.1 on engine
+# 0.61.0 makes the Laya loader common code and adds the packed Q8_0 lane, opt-in).
+skainet = "0.61.0"
+skainet-transformers = "0.62.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
