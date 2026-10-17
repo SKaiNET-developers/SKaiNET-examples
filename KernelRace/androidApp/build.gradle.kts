@@ -49,7 +49,6 @@ android {
         }.getProperty("HF_TOKEN") ?: ""
         buildConfigField("String", "HF_TOKEN", "\"$hfToken\"")
         // Shown next to the logo — always matches the dependency in the catalog.
-        buildConfigField("String", "SKAINET_VERSION", "\"${libs.versions.skainet.asProvider().get()}\"")
     }
 
     buildFeatures {

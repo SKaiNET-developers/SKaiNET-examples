@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import sk.ainet.clean.BuildInfo
+import sk.ainet.ui.components.PoweredBySKaiNET
 
 /**
  * Home screen with app description and mode selection
@@ -194,15 +195,8 @@ fun HomeScreen(
             }
         }
 
-        // Powered by SKaiNET
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Powered by SKaiNET ${BuildInfo.SKAINET_VERSION}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        PoweredBySKaiNET(BuildInfo.SKAINET_VERSION, modifier = Modifier.padding(bottom = 8.dp))
     }
 }
 

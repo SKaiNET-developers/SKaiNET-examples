@@ -14,7 +14,7 @@ val layaVerifier = providers.gradleProperty("layaVerifier").orNull == "true"
 // The engine version the diagnostics row shows, taken from the version catalog at build time so a
 // dependency bump can never leave a stale number in the UI (every target reads this constant).
 val generateBuildInfo by tasks.registering {
-    val skainetVersion = libs.versions.skainet.asProvider()
+    val skainetVersion = versionCatalogs.named("libs").findVersion("skainet").get().requiredVersion
     val outDir = layout.buildDirectory.dir("generated/buildInfo/kotlin")
     inputs.property("skainetVersion", skainetVersion)
     outputs.dir(outDir)
@@ -26,7 +26,7 @@ val generateBuildInfo by tasks.registering {
             |package sk.ainet.samples.emoji
             |
             |/** Generated from `skainet` in gradle/libs.versions.toml; see generateBuildInfo in composeApp/build.gradle.kts. */
-            |const val SKAINET_VERSION: String = "${skainetVersion.get()}"
+            |const val SKAINET_VERSION: String = "$skainetVersion"
             |""".trimMargin(),
         )
     }

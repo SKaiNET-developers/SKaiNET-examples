@@ -121,3 +121,25 @@ compose.desktop {
         }
     }
 }
+
+// The engine version the UI shows ("Powered by SKaiNET …"), taken from the version catalog at
+// build time so a dependency bump can never leave a stale number behind.
+val generateBuildInfo by tasks.registering {
+    val skainetVersion = versionCatalogs.named("libs").findVersion("skainet").get().requiredVersion
+    val outDir = layout.buildDirectory.dir("generated/buildInfo/kotlin")
+    inputs.property("skainetVersion", skainetVersion)
+    outputs.dir(outDir)
+    doLast {
+        val file = outDir.get().file("sk/ainet/samples/kernelrace/BuildInfo.kt").asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """
+            |package sk.ainet.samples.kernelrace
+            |
+            |/** Generated from `skainet` in gradle/libs.versions.toml by generateBuildInfo; do not edit. */
+            |const val SKAINET_VERSION: String = "$skainetVersion"
+            |""".trimMargin(),
+        )
+    }
+}
+kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(generateBuildInfo)

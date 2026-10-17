@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import sk.ainet.samples.tda.Datasets
 import sk.ainet.ui.theme.SKaiNETTheme
 import sk.ainet.ui.theme.ThemeController
+import sk.ainet.ui.components.PoweredBySKaiNET
 
 /**
  * TDA Lab: pick or paste a 2-D point cloud, grow the Vietoris-Rips radius ε with a slider and
@@ -57,26 +58,29 @@ public fun App() {
                 )
             },
             bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = vm.screen == Screen.DATA,
-                        onClick = { vm.screen = Screen.DATA },
-                        icon = { DotsIcon() },
-                        label = { Text("Data") },
-                    )
-                    NavigationBarItem(
-                        selected = vm.screen == Screen.RESULTS,
-                        onClick = { vm.screen = Screen.RESULTS },
-                        enabled = vm.analysis != null,
-                        icon = { RingIcon() },
-                        label = { Text("Results") },
-                    )
-                    NavigationBarItem(
-                        selected = vm.screen == Screen.LOGIC,
-                        onClick = { vm.screen = Screen.LOGIC },
-                        icon = { Text("∂") },
-                        label = { Text("How it works") },
-                    )
+                Column {
+                    PoweredBySKaiNET(BuildInfo.SKAINET_VERSION)
+                    NavigationBar {
+                        NavigationBarItem(
+                            selected = vm.screen == Screen.DATA,
+                            onClick = { vm.screen = Screen.DATA },
+                            icon = { DotsIcon() },
+                            label = { Text("Data") },
+                        )
+                        NavigationBarItem(
+                            selected = vm.screen == Screen.RESULTS,
+                            onClick = { vm.screen = Screen.RESULTS },
+                            enabled = vm.analysis != null,
+                            icon = { RingIcon() },
+                            label = { Text("Results") },
+                        )
+                        NavigationBarItem(
+                            selected = vm.screen == Screen.LOGIC,
+                            onClick = { vm.screen = Screen.LOGIC },
+                            icon = { Text("∂") },
+                            label = { Text("How it works") },
+                        )
+                    }
                 }
             },
         ) { padding ->

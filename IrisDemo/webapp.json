@@ -1,0 +1,9 @@
+{
+  "id": "irisdemo",
+  "name": "Iris Classifier",
+  "description": "Trains a small dense classifier on the Iris dataset with the SKaiNET sequential DSL, Adam and the training runner, then reports test accuracy — a JVM command-line sample.",
+  "platforms": [
+    "cli",
+    "jvm"
+  ]
+}

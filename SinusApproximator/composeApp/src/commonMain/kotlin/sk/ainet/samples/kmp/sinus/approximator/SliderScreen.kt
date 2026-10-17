@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import sk.ainet.app.samples.sinus.BuildInfo
 import kotlin.math.PI
 import kotlin.math.abs
+import sk.ainet.ui.components.PoweredBySKaiNET
 
 @Composable
 fun SinusSliderScreen(
@@ -158,14 +159,7 @@ fun SinusSliderScreen(
             }
         }
 
-        // Powered by SKaiNET
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Powered by SKaiNET ${BuildInfo.SKAINET_VERSION}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        PoweredBySKaiNET(BuildInfo.SKAINET_VERSION, modifier = Modifier.padding(bottom = 8.dp))
     }
 }

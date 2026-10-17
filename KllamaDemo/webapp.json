@@ -1,0 +1,18 @@
+{
+  "id": "kllamademo",
+  "name": "Qwen3 Playground (KllamaDemo)",
+  "description": "Transformer explainer and chat with Qwen3-0.6B running fully in the browser on SKaiNET: the ~280 MB Q3_K_S GGUF model is bundled, so the first load is large and later loads hit the browser cache.",
+  "platforms": [
+    "android",
+    "ios",
+    "desktop",
+    "wasm"
+  ],
+  "distDirs": [
+    "composeApp/build/dist/wasmJs/productionExecutable"
+  ],
+  "build": {
+    "command": "./gradlew :composeApp:wasmJsBrowserDistribution",
+    "description": "Builds the wasm browser distribution, including the bundled ~280 MB Qwen3-0.6B GGUF model"
+  }
+}
