@@ -32,6 +32,21 @@ val generateBuildInfo by tasks.registering {
     }
 }
 
+// With -PlayaVerifier=true the web build ships the :webVerifier worker: the raw Kotlin/Wasm
+// compiler output (an ES module plus its .wasm), copied under laya-worker/ into the wasm
+// resources so the distribution and the dev server serve it next to the app.
+val copyLayaWorker = if (layaVerifier) {
+    tasks.register<Copy>("copyLayaWorker") {
+        val worker = project(":webVerifier")
+        dependsOn(worker.tasks.named("wasmJsProductionExecutableCompileSync"))
+        from(worker.layout.buildDirectory.dir("compileSync/wasmJs/main/productionExecutable/kotlin")) {
+            exclude("*.map")
+            into("laya-worker")
+        }
+        into(layout.buildDirectory.dir("generated/layaWorker"))
+    }
+} else null
+
 kotlin {
     jvmToolchain(21)
 
@@ -80,13 +95,18 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
-        wasmJsMain.dependencies {
-            implementation(libs.kotlinx.coroutines)
-        }
         // The Laya verifier is a build-time switch: with -PlayaVerifier=true the :verifier module
-        // is on the Desktop and Android classpath and the *Verifier source dirs provide
-        // createVerifier(); without it the *NoVerifier dirs return the no-op verifier.
+        // is on the Desktop and Android classpath (the web talks to the :webVerifier worker) and
+        // the *Verifier source dirs provide createVerifier(); without it the *NoVerifier dirs
+        // return the no-op verifier.
         val verifierDir = if (layaVerifier) "Verifier" else "NoVerifier"
+        wasmJsMain {
+            dependencies {
+                implementation(libs.kotlinx.coroutines)
+            }
+            kotlin.srcDir("src/wasmJs$verifierDir/kotlin")
+            if (copyLayaWorker != null) resources.srcDir(copyLayaWorker)
+        }
         jvmMain {
             kotlin.srcDir("src/jvm$verifierDir/kotlin")
             if (layaVerifier) dependencies { implementation(project(":verifier")) }

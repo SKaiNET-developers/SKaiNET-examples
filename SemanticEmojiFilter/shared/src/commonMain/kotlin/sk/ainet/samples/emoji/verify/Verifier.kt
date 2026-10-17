@@ -1,5 +1,7 @@
 package sk.ainet.samples.emoji.verify
 
+import kotlinx.serialization.Serializable
+
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -7,6 +9,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import sk.ainet.samples.emoji.domain.CatalogItem
 
 /** A decision model's verdict on one candidate item for the current query. */
+@Serializable
 data class Verdict(
     val itemId: String,
     /** `P(item matches query)` as the model sees it; null when the model failed on this item. */
@@ -19,6 +22,8 @@ data class Verdict(
 sealed interface VerifierState {
     /** No verifier built in, or the device cannot run it; the reason shows in the UI. */
     data class Disabled(val reason: String) : VerifierState
+    /** Built in, but waits for the user (a large download, as on the web); [Verifier.enable] starts it. */
+    data class OptIn(val message: String) : VerifierState
     data object Idle : VerifierState
     data class Loading(val message: String) : VerifierState
     data class Busy(val done: Int, val total: Int) : VerifierState
@@ -33,6 +38,8 @@ sealed interface VerifierState {
 interface Verifier {
     val state: StateFlow<VerifierState>
     fun verify(query: String, items: List<CatalogItem>): Flow<Verdict>
+    /** Starts a verifier in [VerifierState.OptIn]; a no-op for the others. */
+    fun enable() {}
 }
 
 /** The web build and any build without `-PlayaVerifier=true`. */

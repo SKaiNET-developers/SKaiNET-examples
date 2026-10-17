@@ -17,29 +17,30 @@ import sk.ainet.samples.emoji.vm.SearchStats
 
 /** Timings and the verifier state, so the demo shows its numbers instead of claiming them. */
 @Composable
-fun DiagnosticsRow(stats: SearchStats, verifierState: VerifierState, kernel: String) {
+fun DiagnosticsRow(stats: SearchStats, verifierState: VerifierState, kernel: String, onEnableVerifier: () -> Unit = {}) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         AssistChip(onClick = {}, label = { Text(kernel) })
         AssistChip(onClick = {}, label = { Text("load ${stats.modelLoadMs} ms · index ${stats.indexBuildMs} ms") })
         if (stats.queries > 0) {
             AssistChip(onClick = {}, label = { Text("query ${stats.lastQueryMs} ms · p50 ${stats.p50QueryMs} ms") })
         }
-        VerifierChip(verifierState)
+        VerifierChip(verifierState, onEnableVerifier)
     }
 }
 
 @Composable
-private fun VerifierChip(state: VerifierState) {
+private fun VerifierChip(state: VerifierState, onEnable: () -> Unit) {
     val label = when (state) {
         is VerifierState.Disabled -> "System 2: off (${state.reason})"
+        is VerifierState.OptIn -> "System 2: ${state.message}"
         VerifierState.Idle -> "System 2: Laya ready"
         is VerifierState.Loading -> "System 2: ${state.message}"
         is VerifierState.Busy -> "System 2: ${state.done}/${state.total}"
         is VerifierState.Error -> "System 2: error"
     }
     AssistChip(
-        onClick = {},
-        label = { Text(label, color = if (state is VerifierState.Error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface) },
+        onClick = { if (state is VerifierState.OptIn) onEnable() },
+        label = { Text(label, color = when (state) { is VerifierState.Error -> MaterialTheme.colorScheme.error; is VerifierState.OptIn -> MaterialTheme.colorScheme.primary; else -> MaterialTheme.colorScheme.onSurface }) },
         leadingIcon = {
             if (state is VerifierState.Loading || state is VerifierState.Busy) {
                 CircularProgressIndicator(Modifier.width(14.dp).height(14.dp), strokeWidth = 2.dp)

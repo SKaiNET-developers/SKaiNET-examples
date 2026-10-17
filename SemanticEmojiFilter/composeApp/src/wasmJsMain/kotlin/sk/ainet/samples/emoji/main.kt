@@ -55,7 +55,7 @@ fun main() {
                 },
                 loadIndex = { engine, onProgress -> CatalogResources.index(CatalogResources.catalog(), engine, onProgress = onProgress) },
                 calibration = loadedCalibration,
-                verifierTopK = 0,
+                verifier = createVerifier(),
             )
         }
         CompositionLocalProvider(LocalEmojiFontFamily provides emojiFont) {

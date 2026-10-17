@@ -40,4 +40,7 @@ include(":androidApp")
 include(":composeApp")
 include(":shared")
 include(":cli")
-if (layaVerifier) include(":verifier")
+if (layaVerifier) {
+    include(":verifier")
+    include(":webVerifier")
+}
