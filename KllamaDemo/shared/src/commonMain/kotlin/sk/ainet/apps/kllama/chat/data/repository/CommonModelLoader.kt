@@ -19,12 +19,14 @@ import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
 import sk.ainet.apps.kllama.chat.domain.model.currentTimeMillis
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
 import sk.ainet.apps.kllama.chat.logging.AppLogger
-import sk.ainet.models.llama.LlamaModelMetadata
+import sk.ainet.lang.nn.dsl.decoder.GgufDecoderMetadata
 import sk.ainet.models.llama.LlamaRuntimeWeights
-import sk.ainet.models.llama.DecoderGgufWeightLoader
+import sk.ainet.lang.nn.dsl.decoder.DecoderGgufWeightLoader
+import sk.ainet.lang.nn.dsl.decoder.decoderMetadataFromGguf
+import sk.ainet.io.gguf.StreamingGGUFReader
+import sk.ainet.io.openRandomAccessSource
 import sk.ainet.models.llama.LlamaWeightMapper
 import sk.ainet.context.DirectCpuExecutionContext
-import sk.ainet.io.model.QuantPolicy
 import sk.ainet.lang.types.FP32
 
 /**
@@ -100,10 +102,7 @@ class CommonModelLoader : PlatformModelLoader {
 
             emit(ModelLoadingState.ParsingMetadata(fileName))
 
-            val loader = DecoderGgufWeightLoader(
-                sourceProvider = sourceProvider,
-                quantPolicy = QuantPolicy.DEQUANTIZE_TO_FP32
-            )
+            val loader = DecoderGgufWeightLoader(sourceProvider = sourceProvider)
 
             emit(ModelLoadingState.LoadingWeights(fileName))
             AppLogger.debug("ModelLoader", "loadModelWithProgress: loadToMap starting")
@@ -193,10 +192,7 @@ class CommonModelLoader : PlatformModelLoader {
                 "format" to "GGUF"
             ))
 
-            val loader = DecoderGgufWeightLoader(
-                sourceProvider = sourceProvider,
-                quantPolicy = QuantPolicy.DEQUANTIZE_TO_FP32
-            )
+            val loader = DecoderGgufWeightLoader(sourceProvider = sourceProvider)
 
             val weightStart = currentTimeMillis()
             AppLogger.debug("ModelLoader", "Loading weights...")
@@ -286,10 +282,7 @@ class CommonModelLoader : PlatformModelLoader {
                 "format" to "GGUF"
             ))
 
-            val loader = DecoderGgufWeightLoader(
-                sourceProvider = sourceProvider,
-                quantPolicy = QuantPolicy.DEQUANTIZE_TO_FP32
-            )
+            val loader = DecoderGgufWeightLoader(sourceProvider = sourceProvider)
 
             val weightStart = currentTimeMillis()
             AppLogger.info("ModelLoader", "Phase 1/3: loadToMap starting...")
@@ -363,13 +356,12 @@ class CommonModelLoader : PlatformModelLoader {
             val ioPath = Path(path)
             if (!SystemFileSystem.exists(ioPath)) return null
 
-            val loader = DecoderGgufWeightLoader(
-                sourceProvider = { SystemFileSystem.source(ioPath).buffered() },
-                loadTensorData = false
-            )
-
-            val weights = loader.loadToMap<FP32, Float>(ctx)
-            val llamaMeta = weights.metadata
+            // Header-only pass: the streaming reader parses the GGUF fields and tensor
+            // infos without reading tensor data, whatever the model size.
+            val source = openRandomAccessSource(path) ?: return null
+            val llamaMeta: GgufDecoderMetadata = StreamingGGUFReader.open(source).use { reader ->
+                decoderMetadataFromGguf(reader.fields, reader.tensors)
+            }
             val sizeBytes = SystemFileSystem.metadataOrNull(ioPath)?.size ?: 0L
             val name = path.substringAfterLast('/').substringAfterLast('\\').substringBeforeLast('.')
 
@@ -389,7 +381,7 @@ class CommonModelLoader : PlatformModelLoader {
         }
     }
 
-    private fun estimateParamCount(meta: LlamaModelMetadata): Long {
+    private fun estimateParamCount(meta: GgufDecoderMetadata): Long {
         val embedding = meta.embeddingLength.toLong() * meta.vocabSize
         val perLayer = (
             4L * meta.embeddingLength * meta.embeddingLength +

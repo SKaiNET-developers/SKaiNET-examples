@@ -6,7 +6,6 @@ import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.apps.llm.generate
 import sk.ainet.context.DirectCpuExecutionContext
-import sk.ainet.io.model.QuantPolicy
 import sk.ainet.lang.types.FP32
 import sk.ainet.models.qwen.QwenNetworkLoader
 
@@ -34,7 +33,7 @@ suspend fun runQwenSpike(modelBytes: ByteArray): QwenSpikeResult {
         val loadStart = timeSource.markNow()
         val sourceProvider = { Buffer().apply { write(modelBytes) } }
         val m = QwenNetworkLoader
-            .fromGguf(sourceProvider, QuantPolicy.DEQUANTIZE_TO_FP32)
+            .fromGguf(sourceProvider)
             .load<FP32, Float>(ctx)
         loadStart to m
     } catch (e: Throwable) {

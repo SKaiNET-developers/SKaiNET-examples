@@ -32,7 +32,7 @@ suspend fun OptimizedLLMRuntime<FP32>.generateUntilImEnd(
     withContext(Dispatchers.Default) {
         generate(prompt = promptTokens, steps = maxTokens, temperature = temperature) { id ->
             if (stopped) return@generate
-            buffer.append(tokenizer.decode(id))
+            buffer.append(tokenizer.decodeToken(id))
 
             val idx = buffer.indexOf(stopMarker)
             if (idx >= 0) {

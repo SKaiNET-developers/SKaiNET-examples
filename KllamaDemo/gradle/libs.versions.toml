@@ -20,8 +20,8 @@ kotlinxIo = "0.9.0"
 ktor = "3.4.0"
 logback = "1.5.29"
 material3 = "1.10.0-alpha05"
-skainet = "0.39.1"
-skainet-transformers = "0.39.1"
+skainet = "0.60.0"
+skainet-transformers = "0.61.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -62,6 +62,9 @@ skainet-lang-core = { module = "sk.ainet.core:skainet-lang-core", version.ref = 
 skainet-lang-models = { module = "sk.ainet.core:skainet-lang-models", version.ref = "skainet" }
 skainet-compile-core = { module = "sk.ainet.core:skainet-compile-core", version.ref = "skainet" }
 skainet-backend-cpu = { module = "sk.ainet.core:skainet-backend-cpu", version.ref = "skainet" }
+# JVM only: FFM row-major kernel packs that serve packed (Q4_0 / Q8_0 / K-quant) GGUF weights
+# zero-copy; discovered by the engine via ServiceLoader on the first dispatch.
+skainet-backend-native-cpu = { module = "sk.ainet.core:skainet-backend-native-cpu", version.ref = "skainet" }
 skainet-io-core = { module = "sk.ainet.core:skainet-io-core", version.ref = "skainet" }
 skainet-io-gguf = { module = "sk.ainet.core:skainet-io-gguf", version.ref = "skainet" }
 

@@ -21,7 +21,7 @@ actual fun platformDecodeToken(tokenizer: Any, tokenId: Int): String? {
 }
 
 actual fun platformEosTokenId(tokenizer: Any): Int {
-    return (tokenizer as GGUFTokenizer).eosId
+    return (tokenizer as GGUFTokenizer).eosTokenId
 }
 
 @Suppress("UNCHECKED_CAST")
