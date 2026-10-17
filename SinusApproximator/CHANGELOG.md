@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.60.0] - 2026-10-16
+
+### Changed
+- Update to SKaiNET 0.60.0 from Maven Central (Kotlin stays at 2.4.10; the 0.60.0 klibs are built with 2.4.20 and load fine).
+
 ## [0.40.1] - 2026-08-12
 
 ### Changed

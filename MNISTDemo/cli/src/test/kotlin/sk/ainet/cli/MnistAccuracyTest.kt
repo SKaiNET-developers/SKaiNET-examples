@@ -5,7 +5,7 @@ import sk.ainet.lang.model.classifyImage
 import sk.ainet.lang.model.classifyImageCNN
 import sk.ainet.lang.model.createMNISTMLP
 import sk.ainet.lang.model.createMNISTCNN
-import sk.ainet.lang.model.loadGgufWeights
+import sk.ainet.lang.model.loadWeightsFromBytes
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -63,7 +63,7 @@ class MnistAccuracyTest {
         // Create model and load GGUF weights directly
         val model = createMNISTMLP()
         val modelBytes = modelFile.readBytes()
-        loadGgufWeights(model, modelBytes)
+        loadWeightsFromBytes(model, modelBytes)
         println("Model loaded from ${modelFile.absolutePath}: ${modelBytes.size} bytes")
 
         // Classify all test images
@@ -106,7 +106,7 @@ class MnistAccuracyTest {
         // Create model and load GGUF weights
         val model = createMNISTMLP()
         val modelBytes = modelFile.readBytes()
-        loadGgufWeights(model, modelBytes)
+        loadWeightsFromBytes(model, modelBytes)
 
         var correct = 0
         for (i in images.indices) {
@@ -142,7 +142,7 @@ class MnistAccuracyTest {
 
         // Load GGUF weights
         val modelBytes = modelFile.readBytes()
-        loadGgufWeights(model, modelBytes)
+        loadWeightsFromBytes(model, modelBytes)
         println("CNN model loaded from ${modelFile.absolutePath}: ${modelBytes.size} bytes")
 
         // Classify all test images using CNN
@@ -185,7 +185,7 @@ class MnistAccuracyTest {
         // Create CNN model and load GGUF weights
         val model = createMNISTCNN()
         val modelBytes = modelFile.readBytes()
-        loadGgufWeights(model, modelBytes)
+        loadWeightsFromBytes(model, modelBytes)
 
         var correct = 0
         for (i in images.indices) {
