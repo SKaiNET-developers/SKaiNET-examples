@@ -49,7 +49,8 @@ jobs:
           key: semanticemojifilter-leaf-4262131b
 
       # Unit tests on JVM + Android (no device), the Android debug APK, and a wasm compile check;
-      # then the opt-in Laya verifier module (desktop + Android source sets, its own tests).
+      # then the opt-in Laya verifier module (desktop + Android source sets, its own tests) and
+      # its web form, the :webVerifier worker plus the app built against it.
       - name: Build and test
         working-directory: SemanticEmojiFilter
         run: |
@@ -68,4 +69,7 @@ jobs:
             :verifier:jvmTest \
             :cli:compileKotlin \
             :composeApp:compileKotlinJvm \
+            :verifier:compileKotlinWasmJs \
+            :webVerifier:compileProductionExecutableKotlinWasmJs \
+            :composeApp:compileKotlinWasmJs \
             --console=plain

@@ -69,7 +69,7 @@ fun SearchScreen(viewModel: EmojiSearchViewModel, skainetVersion: String) {
                 }
                 is LoadState.Failed -> Text("Model failed to load: ${s.message}", color = MaterialTheme.colorScheme.error)
                 LoadState.Ready -> {
-                    DiagnosticsRow(stats = stats, verifierState = verifierState, kernel = kernelTierLabel())
+                    DiagnosticsRow(stats = stats, verifierState = verifierState, kernel = kernelTierLabel(), onEnableVerifier = viewModel.verifier::enable)
                     Spacer(Modifier.height(8.dp))
                     EmojiGrid(ranked = ranked, verdicts = verdicts, german = german, queryActive = query.isNotBlank(), modifier = Modifier.fillMaxSize())
                 }

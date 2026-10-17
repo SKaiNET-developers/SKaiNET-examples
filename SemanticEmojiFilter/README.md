@@ -21,8 +21,9 @@ been stable for half a second, the top candidates go to the **Laya** decision mo
 search?"). The badge then shows both numbers, the vector confidence and Laya's probability; a
 candidate the model is unsure about shows `?` instead of a guess (policy: reject below 0.2,
 accept from 0.6). This stage is opt-in
-(`-PlayaVerifier=true`), Desktop and Android only, and visibly asynchronous: Laya is a 322M-parameter
-encoder run on the eager FP32 CPU path, several seconds per question on a laptop.
+(`-PlayaVerifier=true`) and visibly asynchronous: Laya is a 322M-parameter encoder, several seconds
+per question on the eager FP32 CPU path of a laptop, about a second in the browser on the packed
+Q8_0 lane with the SIMD128 sidecar (see *The Laya verifier*).
 
 **Honest numbers.** The diagnostics row shows the kernel tier, model load time and the live query
 latency; the CLI below produced the numbers in this README on the machine named there.
@@ -86,6 +87,17 @@ the version catalog pins; `-PlayaVerifier=true` adds the `:verifier` module and 
 directories. The checkpoint (644 MB, `convaiinnovations/laya` `multilingual/`) downloads on the
 first verification into `~/.skainet-examples/semantic-emoji-filter/laya-multilingual/`
 (`LAYA_MODEL_DIR` overrides).
+
+**In the browser** the same flag adds the `:webVerifier` module: Laya runs inside a Web Worker
+(`laya-worker/` next to the app), so the page stays responsive while it loads and decides. It
+starts only when the user taps the *System 2* chip, because the first run fetches the 644 MB
+checkpoint from Hugging Face; the browser keeps it in the Cache API, so later visits read it from
+disk. The weights are quantized to Q8_0 at load (about 340 MB in memory instead of 1.3 GB of
+FP32) and served by the SIMD128 sidecar — with pthreads when the page is cross-origin isolated,
+which the examples site is. The decision quality of the Q8_0 lane is gated upstream (every choice
+of the FP32 reference agrees, probabilities within 0.05). The web and the desktop verifier share
+`LayaVerifier`, `EmojiMatchSchema` and the verdict cache; only the checkpoint source differs
+(`LayaWebSource` against `LayaFileSource`).
 
 ## Measured
 

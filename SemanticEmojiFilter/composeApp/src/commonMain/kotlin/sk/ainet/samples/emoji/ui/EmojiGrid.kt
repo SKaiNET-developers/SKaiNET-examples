@@ -14,12 +14,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +41,12 @@ import sk.ainet.samples.emoji.verify.Verdict
 fun EmojiGrid(ranked: List<RankedItem>, verdicts: Map<String, Verdict>, german: Boolean, queryActive: Boolean, modifier: Modifier = Modifier) {
     val top = if (queryActive) ranked.filter { it.tier == Tier.TOP } else emptyList()
     val rest = if (queryActive) ranked.filter { it.tier == Tier.REST } else ranked
-    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 112.dp), modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    // A new ranking starts at the top. The grid keys its cards by item id and would otherwise keep
+    // the first visible card anchored: 🥗 leads the unranked catalog, and for a query that sends it
+    // to rank 70 the grid followed it down and hid the matches.
+    val state = rememberLazyGridState()
+    LaunchedEffect(ranked) { state.scrollToItem(0) }
+    LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 112.dp), state = state, modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         if (queryActive) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 SectionLabel(if (german) "Treffer (${top.size})" else "Matches (${top.size})")

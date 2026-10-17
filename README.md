@@ -98,9 +98,10 @@ falls back to without NEON hardware.
 Type what you mean, get the emoji. Every keystroke is embedded on-device with the MongoDB LEAF
 retrieval encoder (23M parameters, BERT in the SKaiNET NN DSL) and ranked against a bilingual
 catalog of about 200 emoji; items above a calibrated threshold move up with a confidence badge.
-Desktop and Android add a second stage: the **Laya decision model** answers a typed yes/no
-question per candidate through `sk.ainet.decisions`, so 🍕 drops for "healthy things to eat"
-while 🥗 stays, and an unsure model says `?` instead of guessing.
+A second stage, the **Laya decision model**, answers a typed yes/no question per candidate
+through `sk.ainet.decisions`, so 🍕 drops for "healthy things to eat" while 🥗 stays, and an
+unsure model says `?` instead of guessing. On desktop and Android it loads from files; in the
+browser it runs in a Web Worker on the packed Q8_0 lane after a one-time opt-in download.
 
 <img src="SemanticEmojiFilter/docs/screenshots/grid.png" alt="Semantic Emoji Filter — matches above the threshold with vector and Laya confidence" width="640" />
 

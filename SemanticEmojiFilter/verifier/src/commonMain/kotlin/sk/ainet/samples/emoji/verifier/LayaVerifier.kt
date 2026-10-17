@@ -70,6 +70,11 @@ class LayaVerifier(
         }
     }
 
+    /** Loads the model now instead of on the first verification (the web worker does this on `LOAD`). */
+    suspend fun preload() {
+        openSession()
+    }
+
     private suspend fun openSession(): DecisionSession = loadMutex.withLock {
         session?.let { return it }
         _state.value = VerifierState.Loading("loading ${source.modelId}…")
