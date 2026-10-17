@@ -37,7 +37,7 @@ The LEAF checkpoint (92 MB) is downloaded on first run into `~/.skainet-examples
 
 ```bash
 ./gradlew :composeApp:run
-# with the Laya verifier (SKaiNET-transformers 0.60.0 decisions + laya modules, from Maven Central)
+# with the Laya verifier (SKaiNET-transformers 0.61.0 decisions + laya modules, from Maven Central)
 ./gradlew -PlayaVerifier=true :composeApp:run
 ```
 
@@ -68,7 +68,7 @@ The LEAF checkpoint (92 MB) is downloaded on first run into `~/.skainet-examples
 ### The Laya verifier
 
 The typed-decision contract (`skainet-transformers-decisions-api`, `-decisions-runtime`) and the
-Laya adapter (`skainet-transformers-inference-laya`) ship with SKaiNET-transformers 0.60.0, which
+Laya adapter (`skainet-transformers-inference-laya`) ship with SKaiNET-transformers 0.61.0, which
 the version catalog pins; `-PlayaVerifier=true` adds the `:verifier` module and the Laya source
 directories. The checkpoint (644 MB, `convaiinnovations/laya` `multilingual/`) downloads on the
 first verification into `~/.skainet-examples/semantic-emoji-filter/laya-multilingual/`
