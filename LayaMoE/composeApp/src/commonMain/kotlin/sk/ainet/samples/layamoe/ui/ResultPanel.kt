@@ -48,14 +48,14 @@ fun ResultPanel(result: AskResult, actThreshold: Double) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text("Routing — \"${LayaMoeRouter.QUESTION}\"", style = MaterialTheme.typography.titleSmall)
                     for ((kind, p, mapped) in routing.topKinds()) {
-                        Bar(label = "$kind → $mapped", value = p, highlighted = kind == routing.top)
+                        Bar(label = "$kind  ->  $mapped", value = p, highlighted = kind == routing.top)
                     }
                     val note = when {
                         routing.overridden -> "You chose ${routing.chosen}; the router would have picked ${routing.routerPick}."
                         routing.routerPick == LayaMoeRouter.GENERAL ->
                             if (LayaMoeRouter.expertFor(routing.top) == LayaMoeRouter.GENERAL) "\"${routing.top}\" has no expert, so the general head answered."
                             else "\"${routing.top}\" at ${formatFixed(routing.topProbability, 3)} is under the threshold ${formatFixed(routing.threshold, 2)}, so the general head answered."
-                        else -> "\"${routing.top}\" at ${formatFixed(routing.topProbability, 3)} → the ${routing.chosen} head answered."
+                        else -> "\"${routing.top}\" at ${formatFixed(routing.topProbability, 3)}: the ${routing.chosen} head answered."
                     }
                     Text(note, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }

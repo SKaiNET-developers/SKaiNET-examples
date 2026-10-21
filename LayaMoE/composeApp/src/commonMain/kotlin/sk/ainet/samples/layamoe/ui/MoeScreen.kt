@@ -141,10 +141,11 @@ private fun Header(deviceNote: String?) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            PoweredBySKaiNET(BuildInfo.SKAINET_VERSION)
-            AssistChip(onClick = {}, label = { Text("transformers ${BuildInfo.TRANSFORMERS_VERSION}") })
             PlatformChips()
+            AssistChip(onClick = {}, label = { Text("transformers ${BuildInfo.TRANSFORMERS_VERSION}") })
         }
+        // Fills the width by design (the shared component centres its one line), so it gets its own row.
+        PoweredBySKaiNET(BuildInfo.SKAINET_VERSION)
         if (deviceNote != null) Text(deviceNote, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
     }
 }
@@ -185,7 +186,7 @@ private fun LoadCard(status: LoadState, downloadBytes: Long, onLoad: () -> Unit)
 private fun PresetPicker(onPick: (Int) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        OutlinedButton(onClick = { open = true }) { Text("Choose an example ▾") }
+        OutlinedButton(onClick = { open = true }) { Text("Choose an example…") }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             Presets.ALL.forEachIndexed { index, preset ->
                 DropdownMenuItem(

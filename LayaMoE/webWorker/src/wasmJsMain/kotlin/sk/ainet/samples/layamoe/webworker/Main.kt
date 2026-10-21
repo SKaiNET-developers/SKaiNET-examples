@@ -29,19 +29,27 @@ external fun installOnMessage(handler: (String) -> Unit)
 
 private val scope = CoroutineScope(Job())
 private val service = MixtureService(WebModelFiles(), WeightLane.Q8_0)
+private var loading = false
 
 fun main() {
     installOnMessage { raw -> scope.launch { handle(raw) } }
+    // Only now can the page talk to us: a LOAD posted before this handler existed was lost.
+    postToMain(WorkerProtocol.HELLO)
 }
 
 private suspend fun handle(raw: String) {
     when {
-        raw == WorkerProtocol.LOAD -> try {
-            val tier = service.load { line -> postToMain(WorkerProtocol.loading(line)) }
-            postToMain(WorkerProtocol.ready(tier))
-        } catch (t: Throwable) {
-            postToMain(WorkerProtocol.failed(t.message ?: t::class.simpleName ?: "load failed"))
-            postToMain(WorkerProtocol.error(null, t.message ?: t::class.simpleName ?: "load failed"))
+        raw == WorkerProtocol.LOAD -> {
+            if (loading) return
+            loading = true
+            try {
+                val tier = service.load { line -> postToMain(WorkerProtocol.loading(line)) }
+                postToMain(WorkerProtocol.ready(tier))
+            } catch (t: Throwable) {
+                loading = false
+                postToMain(WorkerProtocol.failed(t.message ?: t::class.simpleName ?: "load failed"))
+                postToMain(WorkerProtocol.error(null, t.message ?: t::class.simpleName ?: "load failed"))
+            }
         }
         else -> {
             val (id, request) = WorkerProtocol.parseAsk(raw) ?: return

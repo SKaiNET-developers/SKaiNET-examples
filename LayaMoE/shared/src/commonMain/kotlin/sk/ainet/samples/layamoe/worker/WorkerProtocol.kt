@@ -6,11 +6,14 @@ import sk.ainet.samples.layamoe.engine.AskResult
 
 /**
  * The string protocol between the web page and the mixture's Web Worker (`webWorker/.../Main.kt`).
- * Page to worker: `LOAD`, `ASK:<id>:<AskRequest json>`. Worker to page: `STATE:<kind>:<text>`
+ * Worker to page first: `HELLO` once its message handler is installed — a message posted before
+ * that is lost, since the Kotlin/Wasm module installs the handler after it has instantiated. Then
+ * page to worker: `LOAD`, `ASK:<id>:<AskRequest json>`. Worker to page: `STATE:<kind>:<text>`
  * while loading (`loading`, `error`), `READY:<kernel tier>`, `RESULT:<id>:<AskResult json>`,
  * `ERROR:<id or ->:<message>`. Ids let the page match answers to requests.
  */
 object WorkerProtocol {
+    const val HELLO = "HELLO"
     const val LOAD = "LOAD"
     private val json = Json { ignoreUnknownKeys = true }
 

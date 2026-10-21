@@ -43,6 +43,12 @@ The first run downloads about 1.05 GB (the base checkpoint, 843 MB F16, and two 
 LAYAMOE_LANE=q8 ./gradlew :composeApp:run       # packed Q8_0 lane, less memory, same answers to within quantization noise
 ```
 
+> The Q8_0 lane on the desktop JVM needs SKaiNET 0.62.1 or later: on 0.62.0 the native FFM bindings of
+> the Q8_0 / Q4_0 / Q5_0 / Q5_1 kernels zero every row but the last of a multi-row product, so a Laya
+> request on that lane answers every question with uniform probabilities. Found while building this
+> example; fixed in the engine by PR #1436. The FP32 lane is unaffected, and so is the browser's Q8_0
+> lane (the SIMD128 sidecar has its own bindings).
+
 The checkpoints go to `~/.skainet-examples/layamoe/` (override with `LAYAMOE_MODEL_DIR`). The
 native FFM kernels of `skainet-backend-native-cpu` are on the classpath and register themselves.
 
@@ -82,10 +88,53 @@ cli/build/install/cli/bin/cli eval --cases 2 --q8                   # two cases 
 
 ## Measured
 
-_To be filled from the CLI runs on this branch (desktop FP32 and Q8_0 with the native FFM kernels,
-the web build under headless Chromium) before the PR is marked ready._ The transformers library's
-gated test (`LayaMoeEvalTest`) already replays the published evaluation: on the 18 cases it covers by
-default, the routing is identical to the PyTorch run and 612 answer values agree to within 5e-5.
+Desktop, 12-core laptop, JDK 21, SKaiNET 0.62.0 with the native FFM kernels, transformers 0.63.0,
+FP32 lane, 2026-10-21, `cli eval` over all 108 cases (312 answers). The accuracies are the ones
+layaMOE published for its PyTorch run — the port reproduces them to the answer (the library's gated
+`LayaMoeEvalTest` checks the probabilities themselves, within 5e-5 of the published values).
+
+| domain | cases | answers | general | routed | oracle | routed to | ms/case |
+|---|---|---|---|---|---|---|---|
+| support-tickets | 12 | 36 | 66.7 % | 83.3 % | 80.6 % | customer_ops 11, general 1 | 16640 |
+| product-reviews | 12 | 36 | 77.8 % | 77.8 % | 77.8 % | general 9, customer_ops 3 | 13740 |
+| agent-guardrails | 12 | 48 | 39.6 % | 66.7 % | 66.7 % | safety 12 | 15364 |
+| it-incidents | 12 | 36 | 61.1 % | 61.1 % | 61.1 % | general 12 | 11914 |
+| content-moderation | 12 | 36 | 75.0 % | 75.0 % | 83.3 % | general 8, safety 3, customer_ops 1 | 11749 |
+| email-triage | 12 | 36 | 52.8 % | 50.0 % | 58.3 % | safety 2, general 5, customer_ops 5 | 12798 |
+| delivery-exceptions | 12 | 36 | 47.2 % | 63.9 % | 63.9 % | customer_ops 11, general 1 | 14085 |
+| sales-leads | 12 | 24 | 41.7 % | 41.7 % | 41.7 % | general 12 | 10661 |
+| patient-messages | 12 | 24 | 83.3 % | 83.3 % | 83.3 % | general 12 | 10539 |
+| **all** | 108 | 312 | **59.6 %** | **67.3 %** | 68.9 % | customer_ops 31, general 60, safety 17 | 13054 |
+
+With an expert available (five domains): general 55.2 %, routed 67.7 %, oracle 70.3 %; without: 66.7 %
+either way. Twelve cases per domain, so differences under about ten points are noise — the README of
+layaMOE says the same. `general` is the original head, `routed` the prompted router's pick, `oracle` the
+expert of the case's domain. A score counts as right when its most probable level is the label, a
+yes/no at `P(true) ≥ 0.5`.
+
+Cost on the same machine: model load 13 s (843 MB F16 up-cast to FP32 plus two heads); the
+"drop a production table" preset (three questions plus the router, 370 tokens) 13.0 s per request;
+the support-ticket preset (JSON state, four-option choice, 433 tokens) 18.3 s. Every question is
+one ModernBERT-large encoder pass (28 layers, hidden 1024) and the router adds one more; the two
+head blocks and the scorer are about a tenth of it.
+
+**Web** (the same laptop, headless Chromium on a cross-origin-isolated page, `Wasm SIMD128 (threads)`,
+Q8_0 lane in the Web Worker): first visit downloads the 1.05 GB in 95 s and keeps it in the Cache
+API; building the Q8_0 model takes 104 s (the base, plus 2 s for the two heads), so the page is ready
+about 1 min 50 s after "Load model" on a cached visit and about 3 min 30 s on the first. The
+"drop a production table" preset then takes 31.9 s (encoder 30.0 s, router and heads 1.9 s) and
+answers exactly like the desktop within quantization noise: destructive 67.2 % (FP32: 65.1 %),
+needs_human 21.7 % (23.3 %), risk 2.12 (2.11), routed to `safety` at 0.746 on `agent_action`.
+
+**Desktop, Q8_0 lane** (same machine, engine with the fix of PR #1436): the "drop a production table" preset
+answers like the FP32 lane within quantization noise (destructive 67.2 %, needs_human 21.7 %, risk 2.12 —
+the browser's Q8_0 figures to the digit) but takes 25.3 s per request against 13.0 s on FP32: on the eager
+JVM path the packed kernels run one activation row at a time, so that lane is a memory measure (about
+450 MB of weights instead of 1.6 GB), not a speed one. A two-case-per-domain `eval --q8` on the same
+engine routed 18 cases at 26.3 s each; with twelve-case domains the accuracy table above is the one to
+quote.
+
+_Android: the APK builds (arm64-v8a, Q8_0 lane, JNI NEON kernels); numbers from a device follow._
 
 ## Architecture
 

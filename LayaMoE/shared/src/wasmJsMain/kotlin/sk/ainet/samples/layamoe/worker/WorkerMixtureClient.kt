@@ -45,7 +45,8 @@ class WorkerMixtureClient(private val workerUrl: String) : MixtureClient {
             ready.completeExceptionally(RuntimeException(message))
             pending?.second?.completeExceptionally(RuntimeException(message))
         }
-        workerPostMessage(w, WorkerProtocol.LOAD)
+        // LOAD goes out when the worker says HELLO (its handler is installed only after the module
+        // has instantiated; a message before that is lost and the page would wait forever).
         return ready.await()
     }
 
@@ -66,6 +67,12 @@ class WorkerMixtureClient(private val workerUrl: String) : MixtureClient {
     }
 
     private fun onMessage(raw: String) {
+        if (raw == WorkerProtocol.HELLO) {
+            logEvent("worker_hello")
+            progress?.invoke("loading…")
+            worker?.let { workerPostMessage(it, WorkerProtocol.LOAD) }
+            return
+        }
         WorkerProtocol.parseReady(raw)?.let { tier ->
             logEvent("worker_ready", "tier" to tier)
             loaded?.complete(tier)
