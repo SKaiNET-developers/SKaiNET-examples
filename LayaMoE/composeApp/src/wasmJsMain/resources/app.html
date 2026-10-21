@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LayaMoE</title>
+    <link type="text/css" rel="stylesheet" href="styles.css">
+    <!-- Compose's Wasm/Skiko canvas needs cross-origin isolation (SharedArrayBuffer) for its
+         multi-threaded renderer, and the SIMD128 sidecar needs it for its pthreads build. GitHub
+         Pages can't set the COOP/COEP response headers that provides, so this shim sets them
+         client-side instead — registers a service worker on first load (which triggers one
+         reload), then every load after that is isolated. See THIRD_PARTY_LICENSES/NOTICE. -->
+    <script src="coi-serviceworker.js"></script>
+    <script type="application/javascript" src="composeApp.js"></script>
+</head>
+<body>
+</body>
+</html>

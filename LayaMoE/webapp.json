@@ -1,0 +1,14 @@
+{
+  "id": "layamoe",
+  "name": "LayaMoE",
+  "description": "Domain experts on top of the Laya decision model: one shared ModernBERT-large encoder, small expert heads fine-tuned for safety and customer-operations questions, and a router that picks one per request — typed choice / score / yes-no decisions about any text, computed in the browser in a Web Worker on the packed Q8_0 lane after a one-time 1.05 GB download.",
+  "platforms": ["android", "desktop", "wasm"],
+  "distDirs": [
+    "composeApp/build/dist/wasmJs/productionExecutable"
+  ],
+  "build": {
+    "command": "./gradlew :composeApp:wasmJsBrowserDistribution",
+    "description": "Builds the wasm browser distribution with the Laya mixture worker"
+  },
+  "screenshot": "docs/screenshots/web.png"
+}

@@ -1,0 +1,25 @@
+Third-party content used by the LayaMoE example
+================================================
+
+Laya decision model, laya-typed-decisions checkpoint (the base encoder and the general head)
+  https://huggingface.co/convaiinnovations/laya-typed-decisions  (revision e929ae5cf69bc34259cd2f95c9e91145b818b1f0)
+  Copyright Convai Innovations. Licensed under the Apache License, Version 2.0 (Apache-2.0.txt).
+  Its encoder is ModernBERT-large by Answer.AI and LightOn (https://huggingface.co/answerdotai/ModernBERT-large),
+  Apache License, Version 2.0.
+  Downloaded on first use (desktop, Android, browser); not redistributed in this repository.
+
+layaMOE expert heads, router, presets and evaluation cases
+  https://github.com/vishalmysore/layaMOE  (commit b5e8c932a99204590c32f2cf98847ed05a182555)
+  https://huggingface.co/VishalMysore/layaMOE  (revision 07b7776d4c628ce828bf03ce231268caa21cf244)
+  Copyright 2026 vishalmysore. Licensed under the Apache License, Version 2.0 (Apache-2.0.txt).
+  layaMOE is an unofficial experiment, not affiliated with or endorsed by ConvAI Innovations, Answer.AI or LightOn.
+  The expert heads (safety/, customer_ops/) are modified derivatives of the laya-typed-decisions decision head
+  (copied and fine-tuned on synthetic domain data, calibration temperatures refitted; the encoder is unchanged);
+  they are downloaded on first use and not redistributed here. The router question, the kind descriptions and the
+  kind-to-expert map (shared/.../LayaMoeRouter.kt), the seven presets (shared/.../Presets.kt) and the 108
+  evaluation cases (cli/src/main/resources/eval/, copied unchanged from data/eval/) are reproduced from that
+  repository under the same license.
+
+coi-serviceworker (web build)
+  https://github.com/gzuidhof/coi-serviceworker  MIT License, see the header of composeApp/src/wasmJsMain/resources/coi-serviceworker.js
+  (MIT-coi-serviceworker.txt).
