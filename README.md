@@ -109,6 +109,22 @@ browser it runs in a Web Worker on the packed Q8_0 lane after a one-time opt-in 
 
 ---
 
+### 🧭 LayaMoE
+
+Domain experts on top of the **Laya decision model**: one shared ModernBERT-large encoder, small
+expert heads fine-tuned for safety and customer-operations questions, and a router that picks one
+per request — the base head answers "what kind of text is this?" and the matching expert answers
+the typed `choice` / `score` / yes-no questions with its own calibration, the original head as the
+fallback. A port of layaMOE (Apache-2.0) on SKaiNET-transformers' expert-head API; the CLI replays
+its 108 hand-labelled cases. Desktop and Android load the 1.05 GB from a cache directory; the
+browser runs it in a Web Worker on the packed Q8_0 lane and the SIMD128 sidecar.
+
+<img src="LayaMoE/docs/screenshots/web.png" alt="LayaMoE — a routed request with per-option probabilities and the router's kinds" width="640" />
+
+📂 [`LayaMoE/`](LayaMoE/) · runs on Android · Desktop · Wasm
+
+---
+
 ### 💬 Kllama Demo
 
 A Qwen3 LLM **playground in the browser** — chat, completion, translation, tool

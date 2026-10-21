@@ -1,0 +1,56 @@
+name: LayaMoE CI
+
+on:
+  pull_request:
+    paths:
+      - "LayaMoE/**"
+      - "skainet-ui/**"
+      - ".github/workflows/layamoe-ci.yml"
+  push:
+    branches:
+      - develop
+    paths:
+      - "LayaMoE/**"
+      - "skainet-ui/**"
+      - ".github/workflows/layamoe-ci.yml"
+
+concurrency:
+  group: layamoe-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x LayaMoE/gradlew
+
+      # Unit tests on JVM + Android (no device, no checkpoint), the CLI, the Android debug APK,
+      # the desktop app, and the wasm compile of the shared module, the Web Worker and the app.
+      - name: Build and test
+        working-directory: LayaMoE
+        run: |
+          ./gradlew \
+            :shared:jvmTest \
+            :shared:testAndroidHostTest \
+            :cli:test \
+            :cli:installDist \
+            :composeApp:compileKotlinJvm \
+            :androidApp:assembleDebug \
+            :shared:compileKotlinWasmJs \
+            :webWorker:compileProductionExecutableKotlinWasmJs \
+            :composeApp:compileKotlinWasmJs \
+            --console=plain
