@@ -44,6 +44,12 @@ fun createMNISTMLP(): Module<FP32, Float> = sequential(evalCtx) {
  * - Output: 1568→10 (dense layer)
  */
 fun createMNISTCNN(): Module<FP32, Float> = sequential(evalCtx) {
+    // The per-sample input shape (channels, height, width). The DSL propagates it through the
+    // conv and pool layers, so flatten() knows it hands 32*7*7 = 1568 features to the dense
+    // layer; without it the output layer was built with zero input features and the GGUF
+    // weights could not be loaded.
+    input(intArrayOf(1, 28, 28))
+
     // Conv block 1: 1→16 channels (grayscale input has 1 channel)
     conv2d("stage1.conv1") {
         inChannels = 1
