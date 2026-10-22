@@ -9,7 +9,9 @@ androidx-lifecycle = "2.11.0"
 # pulls two Skiko versions onto the desktop classpath, which crashes with
 # UnsatisfiedLinkError (getAdapterMaxTextureSize) at first render on macOS/Metal.
 composeMultiplatform = "1.11.1"
-kotlin = "2.4.20"
+# At least the engine's Kotlin: the SIMD128 sidecar uses kotlin.wasm.unsafe.wasmMemory and an older
+# Kotlin/Wasm linker fails on it (engine 0.62.1 is built with 2.4.21).
+kotlin = "2.4.21"
 kotlinx-coroutines = "1.11.0"
 kotlinxIo = "0.9.1"
 # The transformers 0.58.0 pin; the catalog JSON and calibration files are read with it.
@@ -18,9 +20,11 @@ kotlinxSerialization = "1.11.0"
 # the engine BOM; the typed-decision contract, runtime and the Laya adapter need transformers 0.59.0+
 # (0.60.0 runs Laya's exact GELU through the engine's exact gelu op instead of a host-side loop;
 # 0.61.0 adds padded batches for the BERT and Laya encoders on engine 0.60.0; 0.62.1 on engine
-# 0.61.0 makes the Laya loader common code and adds the packed Q8_0 lane, opt-in).
-skainet = "0.61.0"
-skainet-transformers = "0.62.1"
+# 0.61.0 makes the Laya loader common code and adds the packed Q8_0 lane, opt-in; 0.63.0 on engine
+# 0.62.x adds Laya expert heads and routing, unused here, and rides on the fused SIMD128 kernels the
+# web verifier runs on).
+skainet = "0.62.1"
+skainet-transformers = "0.63.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
