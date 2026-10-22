@@ -18,10 +18,11 @@ kotlinxIo = "0.9.1"
 # IosModelProvider: skainet-data-source is JVM-only (KtorRemoteDataSourceFetcher lives in
 # its jvmMain), so the iOS download path talks to Ktor's Darwin engine on its own.
 ktorClientCore = "3.5.2"
-# SKaiNET-transformers 0.62.1 is built against engine 0.61.0; keep the two pins
+# SKaiNET-transformers 0.63.0 is built against engine 0.62.x (0.62.1 fixes the native packed-kernel
+# bindings the Q8_0 lane uses on the desktop JVM); keep the two pins
 # moving together (the transformers release notes name the engine version).
-skainet = "0.61.0"
-skainet-transformers = "0.62.1"
+skainet = "0.62.1"
+skainet-transformers = "0.63.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
