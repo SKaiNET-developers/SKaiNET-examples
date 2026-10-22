@@ -11,28 +11,32 @@ import sk.ainet.apps.kllama.chat.domain.model.LoadedModel
 import sk.ainet.apps.kllama.chat.domain.port.GeneratedToken
 import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
 import sk.ainet.apps.kllama.chat.logging.AppLogger
+import sk.ainet.apps.llm.OptimizedLLMRuntime
+import sk.ainet.apps.llm.Tokenizer
+import sk.ainet.apps.llm.sampleFromLogits
+import sk.ainet.lang.types.FP32
 import kotlin.concurrent.Volatile
 import kotlin.random.Random
 
 /**
  * Inference engine for LLM text generation using SKaiNET's published APIs.
  *
- * On JVM, uses:
- * - SKaiNET's [sk.ainet.apps.kllama.LlamaRuntime] with [sk.ainet.apps.kllama.CpuAttentionBackend]
- * - [sk.ainet.apps.kllama.chat.ChatMLTemplate] for prompt formatting
- * - [sk.ainet.apps.kllama.GGUFTokenizer] for proper BPE/SentencePiece tokenization
- * - [sk.ainet.apps.kllama.agent.sampleFromLogits] for sampling
+ * Uses:
+ * - SKaiNET-transformers' [OptimizedLLMRuntime] over the llama network built from the GGUF
+ * - the ChatML template of the agent module for prompt formatting (JVM, see [platformEncodePrompt])
+ * - the engine-backed [Tokenizer] read from the GGUF header
+ * - [sampleFromLogits] for sampling
  *
  * Falls back to demo mode when no runtime or tokenizer is available.
  *
  * @param model The loaded model metadata (or null for demo mode)
- * @param runtime SKaiNET InferenceRuntime (stored as Any for commonMain compatibility)
- * @param tokenizer SKaiNET GGUFTokenizer (stored as Any for commonMain compatibility)
+ * @param runtime the decoder runtime, null where the platform builds none
+ * @param tokenizer the model's tokenizer, null likewise
  */
 class LlamaInferenceEngine(
     private val model: LoadedModel?,
-    private val runtime: Any? = null,
-    private val tokenizer: Any? = null
+    private val runtime: OptimizedLLMRuntime<FP32>? = null,
+    private val tokenizer: Tokenizer? = null
 ) : InferenceEngine {
 
     @Volatile
@@ -55,7 +59,7 @@ class LlamaInferenceEngine(
             return@flow
         }
 
-        // Encode prompt using ChatMLTemplate + GGUFTokenizer
+        // Encode the prompt with the ChatML template and the model's tokenizer
         val promptTokens = platformEncodePrompt(tokenizer, session)
         if (promptTokens == null) {
             AppLogger.warn("Inference", "Platform encoding not supported, using demo mode")
@@ -63,7 +67,7 @@ class LlamaInferenceEngine(
             return@flow
         }
 
-        val eosTokenId = platformEosTokenId(tokenizer)
+        val eosTokenId = tokenizer.eosTokenId
 
         AppLogger.info("Inference", "Generation started", mapOf(
             "promptTokens" to "${promptTokens.size}",
@@ -90,14 +94,14 @@ class LlamaInferenceEngine(
         val rt = runtime ?: return@flow
         val tok = tokenizer ?: return@flow
 
-        platformResetRuntime(rt)
+        rt.reset()
         statisticsCollector.start(promptTokens.size)
 
         // Prefill: forward all prompt tokens, keep the sampled next token from the last one
         var nextToken = 0
         for (tokenId in promptTokens) {
             if (shouldStop || !currentCoroutineContext().isActive) return@flow
-            nextToken = platformForwardAndSample(rt, tokenId, config.temperature)
+            nextToken = sampleFromLogits(rt.forward(tokenId), config.temperature)
         }
 
         statisticsCollector.recordPrefillDone()
@@ -110,7 +114,7 @@ class LlamaInferenceEngine(
         while (generatedCount < config.maxNewTokens && !shouldStop && currentCoroutineContext().isActive) {
             if (nextToken == eosTokenId) break
 
-            val tokenText = platformDecodeToken(tok, nextToken) ?: ""
+            val tokenText = tok.decodeToken(nextToken)
             statisticsCollector.recordToken()
 
             emit(GeneratedToken(
@@ -121,7 +125,7 @@ class LlamaInferenceEngine(
 
             yield() // Allow cancellation between tokens
 
-            nextToken = platformForwardAndSample(rt, nextToken, config.temperature)
+            nextToken = sampleFromLogits(rt.forward(nextToken), config.temperature)
             generatedCount++
         }
 

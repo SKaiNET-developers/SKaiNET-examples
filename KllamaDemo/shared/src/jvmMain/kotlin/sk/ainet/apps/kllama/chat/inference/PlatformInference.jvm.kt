@@ -1,39 +1,15 @@
 package sk.ainet.apps.kllama.chat.inference
 
-import sk.ainet.apps.kllama.GGUFTokenizer
-import sk.ainet.apps.kllama.agent.InferenceRuntime
-import sk.ainet.apps.kllama.agent.sampleFromLogits
 import sk.ainet.apps.kllama.chat.ChatMLTemplate
 import sk.ainet.apps.kllama.chat.ChatMessage
 import sk.ainet.apps.kllama.chat.ChatRole
 import sk.ainet.apps.kllama.chat.domain.model.ChatSession
 import sk.ainet.apps.kllama.chat.domain.model.MessageRole
-import sk.ainet.lang.types.FP32
+import sk.ainet.apps.llm.Tokenizer
 
-actual fun platformEncodePrompt(tokenizer: Any, session: ChatSession): IntArray? {
-    val tok = tokenizer as GGUFTokenizer
+actual fun platformEncodePrompt(tokenizer: Tokenizer, session: ChatSession): IntArray? {
     val prompt = ChatMLTemplate().apply(buildSKaiNETMessages(session), emptyList(), true)
-    return tok.encode(prompt)
-}
-
-actual fun platformDecodeToken(tokenizer: Any, tokenId: Int): String? {
-    return (tokenizer as GGUFTokenizer).decode(tokenId)
-}
-
-actual fun platformEosTokenId(tokenizer: Any): Int {
-    return (tokenizer as GGUFTokenizer).eosTokenId
-}
-
-@Suppress("UNCHECKED_CAST")
-actual fun platformResetRuntime(runtime: Any) {
-    (runtime as InferenceRuntime<FP32>).reset()
-}
-
-@Suppress("UNCHECKED_CAST")
-actual fun platformForwardAndSample(runtime: Any, tokenId: Int, temperature: Float): Int {
-    val rt = runtime as InferenceRuntime<FP32>
-    val logits = rt.forward(tokenId)
-    return sampleFromLogits<FP32>(logits, temperature)
+    return tokenizer.encode(prompt)
 }
 
 private fun buildSKaiNETMessages(session: ChatSession): List<ChatMessage> {

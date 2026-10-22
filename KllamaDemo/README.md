@@ -117,3 +117,11 @@ works without any UI involvement:
 ```shell
 ./gradlew :shared:jvmTest --tests "*QwenSpike*"
 ```
+
+A second smoke test covers the chat path (GGUF → decoder loader → llama network →
+`OptimizedLLMRuntime`, tokenizer from the GGUF header, ChatML prompt, greedy decode). It needs a
+llama-family GGUF and skips when the variable is unset:
+
+```shell
+KLLAMA_CHAT_GGUF=/path/to/SmolLM2-135M-Instruct-Q8_0.gguf ./gradlew :shared:jvmTest --tests "*ChatRuntimeSmoke*"
+```

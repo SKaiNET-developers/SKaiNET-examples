@@ -10,13 +10,16 @@ import sk.ainet.apps.kllama.chat.domain.port.InferenceEngine
 import sk.ainet.apps.kllama.chat.domain.port.ModelRepository
 import sk.ainet.apps.kllama.chat.inference.LlamaInferenceEngine
 import sk.ainet.apps.kllama.chat.logging.AppLogger
+import sk.ainet.apps.llm.OptimizedLLMRuntime
+import sk.ainet.apps.llm.Tokenizer
+import sk.ainet.lang.types.FP32
 
 /**
  * Simple service locator for dependency injection.
  * Provides singleton instances of services.
  *
- * Runtime and tokenizer are stored as [Any] because their concrete types
- * (from skainet-kllama / skainet-llm) are only available on JVM.
+ * The runtime and tokenizer types come from SKaiNET-transformers' common API; the platforms
+ * that build none keep them null.
  */
 object ServiceLocator {
 
@@ -29,11 +32,11 @@ object ServiceLocator {
         ModelRepositoryImpl(platformLoader, modelDataSource, metadataCache)
     }
 
-    /** SKaiNET InferenceRuntime<FP32> — stored as Any for commonMain compatibility. */
-    private var currentRuntime: Any? = null
+    /** The decoder runtime of the loaded chat model, null until a model is loaded on a platform that runs one. */
+    private var currentRuntime: OptimizedLLMRuntime<FP32>? = null
 
-    /** SKaiNET Tokenizer (GGUFTokenizer) — stored as Any for commonMain compatibility. */
-    private var currentTokenizer: Any? = null
+    /** The loaded chat model's tokenizer, null likewise. */
+    private var currentTokenizer: Tokenizer? = null
 
     /**
      * Configure the service locator with platform-specific implementations.
@@ -61,26 +64,26 @@ object ServiceLocator {
     /**
      * Set the current InferenceRuntime (called by CommonModelLoader after loading).
      */
-    fun setRuntime(runtime: Any?) {
+    fun setRuntime(runtime: OptimizedLLMRuntime<FP32>?) {
         currentRuntime = runtime
     }
 
     /**
      * Get the current InferenceRuntime if available.
      */
-    fun getRuntime(): Any? = currentRuntime
+    fun getRuntime(): OptimizedLLMRuntime<FP32>? = currentRuntime
 
     /**
      * Set the current Tokenizer (called by CommonModelLoader after loading).
      */
-    fun setTokenizer(tokenizer: Any?) {
+    fun setTokenizer(tokenizer: Tokenizer?) {
         currentTokenizer = tokenizer
     }
 
     /**
      * Get the current Tokenizer if available.
      */
-    fun getTokenizer(): Any? = currentTokenizer
+    fun getTokenizer(): Tokenizer? = currentTokenizer
 
     /**
      * Create an inference engine for the given model.

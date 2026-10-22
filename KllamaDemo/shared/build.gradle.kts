@@ -60,9 +60,8 @@ kotlin {
             api(libs.skainet.io.core)
         }
         jvmMain.dependencies {
-            // SKaiNET KLlama (GGUFTokenizer, CpuAttentionBackend) - JVM only
-            implementation(libs.skainet.kllama)
-            // SKaiNET Agent APIs (ChatSession, ToolRegistry, ChatTemplate) - JVM only
+            // SKaiNET-transformers agent module (ChatMLTemplate, ChatMessage) for the chat prompt;
+            // the runtime and tokenizer come from the common llm/llama modules above.
             implementation(libs.skainet.kllama.agents)
         }
         commonTest.dependencies {
