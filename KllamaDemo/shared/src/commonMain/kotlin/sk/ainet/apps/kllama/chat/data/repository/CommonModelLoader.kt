@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.io.Source
 import kotlinx.io.buffered
+import kotlinx.io.readByteArray
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import sk.ainet.apps.kllama.chat.data.model.ModelFormatDetector
@@ -19,30 +20,33 @@ import sk.ainet.apps.kllama.chat.domain.model.ModelMetadata
 import sk.ainet.apps.kllama.chat.domain.model.currentTimeMillis
 import sk.ainet.apps.kllama.chat.domain.port.ModelLoadResult
 import sk.ainet.apps.kllama.chat.logging.AppLogger
+import sk.ainet.apps.llm.OptimizedLLMRuntime
+import sk.ainet.apps.llm.Tokenizer
 import sk.ainet.lang.nn.dsl.decoder.GgufDecoderMetadata
-import sk.ainet.models.llama.LlamaRuntimeWeights
 import sk.ainet.lang.nn.dsl.decoder.DecoderGgufWeightLoader
+import sk.ainet.lang.nn.dsl.decoder.DecoderGgufWeights
 import sk.ainet.lang.nn.dsl.decoder.decoderMetadataFromGguf
+import sk.ainet.io.ByteArrayRandomAccessSource
 import sk.ainet.io.gguf.StreamingGGUFReader
 import sk.ainet.io.openRandomAccessSource
-import sk.ainet.models.llama.LlamaWeightMapper
 import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.lang.types.FP32
 
 /**
- * Multiplatform model loader using SKaiNET's LlamaRuntime.
+ * Multiplatform model loader over SKaiNET-transformers' decoder loader.
  *
  * Uses [SystemFileSystem] for path-based loading (JVM, Android, iOS/Native)
  * and accepts a [Source] directly for platforms without filesystem paths (Web).
  *
- * On JVM, creates a real [sk.ainet.apps.kllama.LlamaRuntime] with
- * [sk.ainet.apps.kllama.CpuAttentionBackend] and [sk.ainet.apps.kllama.GGUFTokenizer].
+ * The GGUF tensors are read with `DecoderGgufWeightLoader`; [createRuntimeAndTokenizer] then
+ * builds the llama network and the `OptimizedLLMRuntime` over it and reads the tokenizer from
+ * the GGUF header (JVM; the other platforms return nulls and the chat stays in demo mode).
  */
 class CommonModelLoader : PlatformModelLoader {
 
-    private var currentRuntime: Any? = null
-    private var currentTokenizer: Any? = null
-    private var currentWeights: LlamaRuntimeWeights<FP32>? = null
+    private var currentRuntime: OptimizedLLMRuntime<FP32>? = null
+    private var currentTokenizer: Tokenizer? = null
+    private var currentWeights: DecoderGgufWeights<FP32, Float>? = null
     private var currentPath: String? = null
     private val ctx = DirectCpuExecutionContext()
 
@@ -113,32 +117,23 @@ class CommonModelLoader : PlatformModelLoader {
                 "elapsedMs" to "${currentTimeMillis() - weightStart}"
             ))
 
-            emit(ModelLoadingState.LoadingWeights(fileName, phase = "Mapping weights"))
-            AppLogger.debug("ModelLoader", "loadModelWithProgress: LlamaWeightMapper.map starting")
-
-            val mapStart = currentTimeMillis()
-            val runtimeWeights = LlamaWeightMapper.map(weights)
-            AppLogger.debug("ModelLoader", "loadModelWithProgress: LlamaWeightMapper.map done", mapOf(
-                "elapsedMs" to "${currentTimeMillis() - mapStart}"
-            ))
-
             emit(ModelLoadingState.InitializingRuntime(fileName))
             AppLogger.debug("ModelLoader", "loadModelWithProgress: createRuntimeAndTokenizer starting")
 
             val runtimeStart = currentTimeMillis()
-            val result = createRuntimeAndTokenizer(ctx, runtimeWeights, sourceProvider)
+            val result = createRuntimeAndTokenizer(ctx, weights) { openRandomAccessSource(path) }
             AppLogger.debug("ModelLoader", "loadModelWithProgress: createRuntimeAndTokenizer done", mapOf(
                 "elapsedMs" to "${currentTimeMillis() - runtimeStart}"
             ))
 
             currentRuntime = result.runtime
             currentTokenizer = result.tokenizer
-            currentWeights = runtimeWeights
+            currentWeights = weights
             currentPath = path
             ServiceLocator.setRuntime(result.runtime)
             ServiceLocator.setTokenizer(result.tokenizer)
 
-            val llamaMeta = runtimeWeights.metadata
+            val llamaMeta = weights.metadata
             val name = fileName.substringBeforeLast('.')
             val metadata = ModelMetadata(
                 name = name,
@@ -201,29 +196,22 @@ class CommonModelLoader : PlatformModelLoader {
                 "elapsedMs" to "${currentTimeMillis() - weightStart}"
             ))
 
-            val mapStart = currentTimeMillis()
-            AppLogger.debug("ModelLoader", "Mapping weights to runtime structure...")
-            val runtimeWeights = LlamaWeightMapper.map(weights)
-            AppLogger.info("ModelLoader", "Weights mapped", mapOf(
-                "elapsedMs" to "${currentTimeMillis() - mapStart}"
-            ))
-
             val runtimeStart = currentTimeMillis()
-            AppLogger.debug("ModelLoader", "Creating LlamaRuntime + GGUFTokenizer...")
-            val result = createRuntimeAndTokenizer(ctx, runtimeWeights, sourceProvider)
+            AppLogger.debug("ModelLoader", "Building the llama network, runtime and tokenizer...")
+            val result = createRuntimeAndTokenizer(ctx, weights) { openRandomAccessSource(path) }
             AppLogger.info("ModelLoader", "Runtime + tokenizer created", mapOf(
                 "elapsedMs" to "${currentTimeMillis() - runtimeStart}"
             ))
 
             currentRuntime = result.runtime
             currentTokenizer = result.tokenizer
-            currentWeights = runtimeWeights
+            currentWeights = weights
             currentPath = path
 
             ServiceLocator.setRuntime(result.runtime)
             ServiceLocator.setTokenizer(result.tokenizer)
 
-            val llamaMeta = runtimeWeights.metadata
+            val llamaMeta = weights.metadata
             val name = path.substringAfterLast('/').substringAfterLast('\\').substringBeforeLast('.')
             val metadata = ModelMetadata(
                 name = name,
@@ -285,37 +273,34 @@ class CommonModelLoader : PlatformModelLoader {
             val loader = DecoderGgufWeightLoader(sourceProvider = sourceProvider)
 
             val weightStart = currentTimeMillis()
-            AppLogger.info("ModelLoader", "Phase 1/3: loadToMap starting...")
+            AppLogger.info("ModelLoader", "Phase 1/2: loadToMap starting...")
             val weights = loader.loadToMap<FP32, Float>(ctx)
-            AppLogger.info("ModelLoader", "Phase 1/3: loadToMap done", mapOf(
+            AppLogger.info("ModelLoader", "Phase 1/2: loadToMap done", mapOf(
                 "elapsedMs" to "${currentTimeMillis() - weightStart}"
             ))
             delay(1) // yield to WASM event loop between phases
 
-            val mapStart = currentTimeMillis()
-            AppLogger.info("ModelLoader", "Phase 2/3: LlamaWeightMapper.map starting...")
-            val runtimeWeights = LlamaWeightMapper.map(weights)
-            AppLogger.info("ModelLoader", "Phase 2/3: LlamaWeightMapper.map done", mapOf(
-                "elapsedMs" to "${currentTimeMillis() - mapStart}"
-            ))
-            delay(1) // yield to WASM event loop between phases
-
             val runtimeStart = currentTimeMillis()
-            AppLogger.info("ModelLoader", "Phase 3/3: createRuntimeAndTokenizer starting...")
-            val result = createRuntimeAndTokenizer(ctx, runtimeWeights, sourceProvider)
-            AppLogger.info("ModelLoader", "Phase 3/3: createRuntimeAndTokenizer done", mapOf(
+            AppLogger.info("ModelLoader", "Phase 2/2: createRuntimeAndTokenizer starting...")
+            // The tokenizer needs random-access reads of the GGUF header; a sequential source
+            // is all this entry point has, so the bytes are wrapped once (JVM only: the other
+            // platforms build no tokenizer and never call this).
+            val result = createRuntimeAndTokenizer(ctx, weights) {
+                ByteArrayRandomAccessSource(sourceProvider().readByteArray())
+            }
+            AppLogger.info("ModelLoader", "Phase 2/2: createRuntimeAndTokenizer done", mapOf(
                 "elapsedMs" to "${currentTimeMillis() - runtimeStart}"
             ))
 
             currentRuntime = result.runtime
             currentTokenizer = result.tokenizer
-            currentWeights = runtimeWeights
+            currentWeights = weights
             currentPath = name
 
             ServiceLocator.setRuntime(result.runtime)
             ServiceLocator.setTokenizer(result.tokenizer)
 
-            val llamaMeta = runtimeWeights.metadata
+            val llamaMeta = weights.metadata
             val metadata = ModelMetadata(
                 name = name.substringBeforeLast("."),
                 parameterCount = estimateParamCount(llamaMeta),

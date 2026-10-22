@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-import kotlinx.io.Buffer
 import sk.ainet.apps.kllama.chat.playground.explainer.ArchitectureSummary
 import sk.ainet.apps.kllama.chat.playground.explainer.InstrumentedExecutionContext
 import sk.ainet.apps.kllama.chat.playground.explainer.StepSnapshot
@@ -14,7 +13,8 @@ import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.apps.llm.Tokenizer
 import sk.ainet.apps.llm.generate
-import sk.ainet.apps.llm.tokenizer.GGUFTokenizer
+import sk.ainet.apps.llm.tokenizer.TokenizerFactory
+import sk.ainet.io.ByteArrayRandomAccessSource
 import sk.ainet.lang.nn.topology.ModuleNode
 import sk.ainet.lang.types.FP32
 import sk.ainet.models.qwen.QwenNetworkLoader
@@ -52,7 +52,7 @@ class QwenModelHolder {
         _state.value = QwenLoadingState.Loading("Reading tokenizer from GGUF metadata...")
         val tokenizer = try {
             withContext(Dispatchers.Default) {
-                GGUFTokenizer.fromSource(Buffer().apply { write(bytes) })
+                TokenizerFactory.fromGgufSource(ByteArrayRandomAccessSource(bytes))
             }
         } catch (e: Throwable) {
             _state.value = QwenLoadingState.Failed(
