@@ -4,6 +4,7 @@ import kotlinx.io.Buffer
 import kotlinx.io.Source
 import sk.ainet.clean.data.image.GrayScale28To28Image
 import sk.ainet.context.DirectCpuExecutionContext
+import sk.ainet.context.ExecutionContext
 import sk.ainet.context.Phase
 import sk.ainet.context.observers.LatencyExecutionObserver
 import sk.ainet.lang.graph.DefaultGraphExecutionContext
@@ -27,12 +28,19 @@ private val evalCtx = DefaultGraphExecutionContext(
     phase = Phase.EVAL
 )
 
-fun createMNISTMLP(): Module<FP32, Float> = sequential(evalCtx) {
+/**
+ * The MLP of this sample: 784 -> 500 -> 10 with parameters `fc1.*` and `fc2.*`. The pretrained
+ * `mnist_mlp.gguf` fits it, and the trainer builds the same network (under its training context),
+ * so weights trained in the app load into the inference model without any mapping.
+ */
+fun mnistMlp(ctx: ExecutionContext): Module<FP32, Float> = sequential(ctx) {
     input(784)
     dense(500, "fc1") { weights { randn(std = 0.1f) } }
     activation { it.relu() }
     dense(10, "fc2") { weights { randn(std = 0.1f) } }
 }
+
+fun createMNISTMLP(): Module<FP32, Float> = mnistMlp(evalCtx)
 
 /**
  * Creates a CNN for MNIST classification matching the pretrained weights structure.

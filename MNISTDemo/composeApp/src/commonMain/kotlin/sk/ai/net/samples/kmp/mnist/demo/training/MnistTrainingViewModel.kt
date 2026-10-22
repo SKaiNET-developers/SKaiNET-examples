@@ -18,7 +18,6 @@ import sk.ainet.clean.domain.model.ModelId
 import kotlin.random.Random
 
 import sk.ainet.clean.di.ServiceLocator
-import sk.ainet.clean.data.source.ModelWeightsCacheDataSource
 
 data class MnistTrainingState(
     val epoch: Int = 0,
@@ -91,16 +90,12 @@ class MnistTrainingViewModel : ViewModel() {
                 .conflate()
                 .collect { progress ->
                     if (progress.isCompleted) {
-                        // Mark the currently selected model as RETRAINED in settings
-                        AppSettings.setModelStatus(AppSettings.selectedModelId.value, ModelStatus.RETRAINED)
-
-                        // If we are training MLP, update the weights in ServiceLocator cache
-                        if (AppSettings.selectedModelId.value == ModelId.MLP_MNIST) {
-                            val weights = trainer.exportWeights()
-                            viewModelScope.launch {
-                                ServiceLocator.modelWeightsRepository.putWeights(ModelId.MLP_MNIST, weights)
-                            }
-                        }
+                        // The trainer trains the MLP, whatever model the Draw screen has selected.
+                        // Store its weights first, then flip the status: the Draw screen reloads
+                        // on the status change and must find the new GGUF in the repository.
+                        val weights = trainer.exportWeights()
+                        ServiceLocator.modelWeightsRepository.putWeights(ModelId.MLP_MNIST, weights)
+                        AppSettings.setModelStatus(ModelId.MLP_MNIST, ModelStatus.RETRAINED)
                     }
 
                     _trainingState.update { state ->
@@ -118,6 +113,20 @@ class MnistTrainingViewModel : ViewModel() {
                     _modelUpdateCounter.update { it + 1 }
                     yield() // Extra yield after state update
                 }
+        }
+    }
+
+    /**
+     * Drops the trained MLP weights from the repository so the shipped `mnist_mlp.gguf` is used
+     * again, and marks the MLP as pretrained; the Draw screen reloads on the status change.
+     */
+    fun restorePretrained() {
+        viewModelScope.launch {
+            ServiceLocator.modelWeightsRepository.clearWeights(ModelId.MLP_MNIST)
+            AppSettings.setModelStatus(ModelId.MLP_MNIST, ModelStatus.PRETRAINED)
+            _trainingState.update {
+                it.copy(isCompleted = false, statusMessage = "Pretrained MLP weights restored")
+            }
         }
     }
 

@@ -9,4 +9,7 @@ interface ModelWeightsRepository {
 
     /** Store raw model weights for the given [modelId]. */
     suspend fun putWeights(modelId: ModelId, weights: ByteArray)
+
+    /** Forgets weights stored with [putWeights]; the next [getWeights] serves the shipped file again. */
+    suspend fun clearWeights(modelId: ModelId)
 }

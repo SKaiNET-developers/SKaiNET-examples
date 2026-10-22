@@ -11,4 +11,8 @@ class ModelWeightsCacheDataSource : ModelWeightsDataSource {
     suspend fun put(modelId: ModelId, bytes: ByteArray) {
         map[modelId.value] = bytes
     }
+
+    suspend fun remove(modelId: ModelId) {
+        map.remove(modelId.value)
+    }
 }

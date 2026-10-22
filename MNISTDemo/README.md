@@ -89,3 +89,14 @@ We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public S
 If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
 
 You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+
+Training tab
+- Trains the sample's MLP (784 → 500 → 10, the network `mnist_mlp.gguf` fits) with SKaiNET's training DSL
+  on synthetic digit patterns generated in the app; it demonstrates the training loop, not MNIST accuracy.
+- When a run completes, the trained weights are written as an FP32 GGUF (`GGUFWriter`) into the weights
+  repository and the MLP is marked *Custom Trained*; the Draw screen reloads the MLP from those bytes.
+  Select the MLP there to use them. "Restore pretrained MLP weights" drops them and the shipped file is
+  used again. The CNN ships pretrained only.
+- `MnistTrainerRoundTripTest` (`:shared:jvmTest`, `:shared:wasmJsBrowserTest`) pins the contract: the export
+  is a GGUF the sample's loader reads, every parameter round-trips bit for bit, and the inference MLP predicts
+  exactly what the trainer's model predicts.

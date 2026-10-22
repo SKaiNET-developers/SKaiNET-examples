@@ -57,10 +57,19 @@ class DrawingScreenViewModel(handleSource: () -> Source) : ViewModel() {
             }
         }
 
-        // Observe status changes
+        // Observe status changes. A flip for the selected model means its weights in the
+        // repository changed (trained, or restored to the shipped file), so the loaded module is
+        // stale: build a fresh classifier and let the screen load it again.
         viewModelScope.launch {
             AppSettings.modelStatuses.collect { statuses ->
-                selectedModelStatus = statuses[selectedModelId] ?: ModelStatus.PRETRAINED
+                val newStatus = statuses[selectedModelId] ?: ModelStatus.PRETRAINED
+                if (newStatus != selectedModelStatus) {
+                    selectedModelStatus = newStatus
+                    classifier = ServiceLocator.provideDigitClassifier(selectedModelId)
+                    isModelLoaded = false
+                    classificationResult = null
+                    loadModel()
+                }
             }
         }
     }
