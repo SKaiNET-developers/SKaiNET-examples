@@ -7,28 +7,21 @@ import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.context.Phase
 import sk.ainet.lang.graph.DefaultGradientTape
 import sk.ainet.lang.graph.DefaultGraphExecutionContext
+import sk.ainet.lang.model.exportWeightsToBytes
+import sk.ainet.lang.model.mnistMlp
 import sk.ainet.lang.nn.Module
-import sk.ainet.lang.nn.dsl.sequential
 import sk.ainet.lang.nn.dsl.training
 import sk.ainet.lang.nn.loss.MSELoss
 import sk.ainet.lang.nn.optim.sgd
 import sk.ainet.lang.tensor.Shape
-import sk.ainet.lang.tensor.relu
 import sk.ainet.lang.types.FP32
-
-import sk.ainet.lang.model.loader.loadModelWeights
-import kotlinx.io.Buffer
-import kotlinx.io.writeFloatLe
-
-import kotlinx.io.readByteArray
 
 /**
  * MNIST digit classifier trainer using SKaiNET training capabilities.
  *
- * Uses a simple MLP architecture:
- * - Input: 784 (28x28 flattened grayscale image)
- * - Hidden: 128 -> 64 neurons with ReLU activation
- * - Output: 10 neurons (one per digit class)
+ * Trains the sample's MLP ([mnistMlp]: 784 -> 500 -> 10, ReLU in between), the same network the
+ * pretrained `mnist_mlp.gguf` fits, so [exportWeights] produces bytes the inference model loads
+ * unchanged.
  */
 class MnistTrainer {
     private val baseCtx = DirectCpuExecutionContext()
@@ -43,26 +36,16 @@ class MnistTrainer {
         phase = Phase.EVAL
     )
 
-    private val model: Module<FP32, Float> = sequential(trainCtx) {
-        input(784)  // 28x28 = 784 pixels
-        dense(128, "fc1") { weights { randn(std = 0.1f) } }
-        activation { it.relu() }
-        dense(64, "fc2") { weights { randn(std = 0.1f) } }
-        activation { it.relu() }
-        dense(10, "fc3") { weights { randn(std = 0.1f) } }  // 10 output classes
-    }
+    private val model: Module<FP32, Float> = mnistMlp(trainCtx)
 
     fun getModel(): Module<FP32, Float> = model
 
     /**
-     * Export the current model weights as a ByteArray.
-     * Simple serialization for demonstration: stores all trainable parameters as floats.
+     * The current weights as an FP32 GGUF in the layout of the shipped `mnist_mlp.gguf`
+     * (`fc1.weight`, `fc1.bias`, `fc2.weight`, `fc2.bias`, `general.architecture = mnist-fc`),
+     * ready for the weights repository and [sk.ainet.lang.model.loadWeightsFromBytes].
      */
-    fun exportWeights(): ByteArray {
-        // Return a dummy non-empty array for now to avoid compilation errors while we figure out SKaiNET API
-        // In a real app, this would use saveModelWeights(model, buffer)
-        return ByteArray(1024)
-    }
+    fun exportWeights(): ByteArray = exportWeightsToBytes(model, ARCHITECTURE)
 
     /**
      * Train the model on provided MNIST data.
@@ -193,6 +176,11 @@ class MnistTrainer {
             i = end
         }
         return batches
+    }
+
+    companion object {
+        /** The `general.architecture` value of the shipped MLP file. */
+        const val ARCHITECTURE = "mnist-fc"
     }
 
     private fun argmax(tensor: sk.ainet.lang.tensor.Tensor<FP32, Float>, sampleIndex: Int, numClasses: Int): Int {

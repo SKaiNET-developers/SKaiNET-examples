@@ -72,9 +72,9 @@ fun ModelStatusBanner(modelId: ModelId, status: ModelStatus) {
 @Composable
 fun TrainingScreen(viewModel: MnistTrainingViewModel) {
     val trainingState by viewModel.trainingState.collectAsState()
-    val selectedModel by AppSettings.selectedModelId.collectAsState(initial = ModelId.CNN_MNIST)
     val modelStatuses by AppSettings.modelStatuses.collectAsState()
-    val status = modelStatuses[selectedModel] ?: ModelStatus.PRETRAINED
+    // Training always targets the MLP; the CNN ships pretrained only.
+    val status = modelStatuses[ModelId.MLP_MNIST] ?: ModelStatus.PRETRAINED
 
     Column(
         modifier = Modifier
@@ -85,12 +85,19 @@ fun TrainingScreen(viewModel: MnistTrainingViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Train ${if (selectedModel == ModelId.CNN_MNIST) "CNN" else "MLP"}",
+            text = "Train MLP",
             style = MaterialTheme.typography.headlineMedium
         )
-        
-        // Active Model Status Banner (same style as Drawing Screen)
-        ModelStatusBanner(selectedModel, status)
+        Text(
+            // Plain ASCII: the bundled canvas font has no arrow glyph.
+            text = "Trains the 784-500-10 MLP on synthetic digit patterns and hands the weights to the " +
+                "Draw screen; select the MLP there to use them. The CNN ships pretrained only.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        // Status of the model this screen trains (same style as the Draw screen)
+        ModelStatusBanner(ModelId.MLP_MNIST, status)
 
         // Training Configuration Card
         TrainingConfigCard(
@@ -103,6 +110,12 @@ fun TrainingScreen(viewModel: MnistTrainingViewModel) {
 
         // Progress Card
         TrainingProgressCard(trainingState)
+
+        if (status == ModelStatus.RETRAINED && !trainingState.isTraining) {
+            OutlinedButton(onClick = { viewModel.restorePretrained() }) {
+                Text("Restore pretrained MLP weights")
+            }
+        }
 
         // Charts Card
         if (trainingState.lossHistory.isNotEmpty()) {
@@ -238,7 +251,7 @@ private fun TrainingProgressCard(trainingState: MnistTrainingState) {
             if (trainingState.isCompleted) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "This model is now marked as Custom Trained.",
+                    text = "The MLP now runs on the trained weights (marked Custom Trained).",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF4CAF50),
                     fontWeight = FontWeight.Bold

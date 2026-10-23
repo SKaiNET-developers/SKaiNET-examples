@@ -35,6 +35,10 @@ class ADigitClassifier(
         override suspend fun putWeights(modelId: ModelId, weights: ByteArray) {
             // No-op for the compatibility shim
         }
+
+        override suspend fun clearWeights(modelId: ModelId) {
+            // No-op for the compatibility shim
+        }
     }
 
     // Inline minimal DigitClassifier implementation to avoid depending on shared strategy package

@@ -37,4 +37,8 @@ class ModelWeightsRepositoryImpl(
     override suspend fun putWeights(modelId: ModelId, weights: ByteArray) {
         cache?.put(modelId, weights)
     }
+
+    override suspend fun clearWeights(modelId: ModelId) {
+        cache?.remove(modelId)
+    }
 }
