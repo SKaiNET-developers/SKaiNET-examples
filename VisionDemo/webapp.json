@@ -1,7 +1,12 @@
 {
   "id": "visiondemo",
   "name": "Vision Demo",
-  "description": "Live camera object detection from a SKaiNET cartridge — YOLOv8n compiled through IREE on the phone's GPU (~17 fps on a Pixel 8a), consumed via the published sk.ainet.cartridge artifacts. Android only; the AGPL weights never ship — you materialize your own pack.",
-  "platforms": ["android"],
+  "description": "Live camera object detection from a SKaiNET cartridge \u2014 YOLOv8n compiled through IREE on the phone's GPU (~17 fps on a Pixel 8a), consumed via the published sk.ainet.cartridge artifacts. Android only; the AGPL weights never ship \u2014 you materialize your own pack.",
+  "platforms": [
+    "android",
+    "arm64-v8a",
+    "vulkan",
+    "cpu"
+  ],
   "screenshot": "docs/screenshots/detections.png"
 }
