@@ -1,0 +1,48 @@
+name: VisionDemo CI
+
+on:
+  pull_request:
+    paths:
+      - "VisionDemo/**"
+      - "skainet-ui/**"
+      - ".github/workflows/visiondemo-ci.yml"
+  push:
+    branches:
+      - develop
+    paths:
+      - "VisionDemo/**"
+      - "skainet-ui/**"
+      - ".github/workflows/visiondemo-ci.yml"
+
+concurrency:
+  group: visiondemo-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x VisionDemo/gradlew
+
+      # The debug APK assembly proves the whole chain — the published cartridge artifacts
+      # resolve from Central, the KMP library compiles against the yolo/v1 contract, and the
+      # JNI runner packaging merges. Deliberately no packs and no weights in CI (they are
+      # AGPL-materialized locally; bundlePacks is a no-op on a bare checkout), and no
+      # instrumented tests (needs a device).
+      - name: Build
+        working-directory: VisionDemo
+        run: ./gradlew :androidApp:assembleDebug --console=plain
