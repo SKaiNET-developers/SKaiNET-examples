@@ -50,9 +50,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toPixelMap
@@ -307,12 +309,7 @@ private fun Header(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Box(
-                Modifier.size(32.dp)
-                    .shadow(10.dp, RoundedCornerShape(8.dp), spotColor = dt.primaryGlow, ambientColor = dt.primaryGlow)
-                    .background(dt.primary, RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center,
-            ) { Icon(icons.bolt, null, Modifier.size(16.dp), tint = Color.White) }
+            LensChip()
             Column {
                 Text("SKaiNET", fontFamily = display, fontWeight = FontWeight.Bold, fontSize = 14.sp,
                     letterSpacing = 3.sp, color = dt.foreground, maxLines = 1, softWrap = false)
@@ -321,6 +318,31 @@ private fun Header(
             }
         }
         BackendSwitch(display, icons, packs, selected, onSelect)
+    }
+}
+
+/** The lens mark as the 32dp header chip — same geometry as the launcher icon's monochrome layer. */
+@Composable
+private fun LensChip() {
+    val dt = LocalDt.current
+    Canvas(
+        Modifier.size(32.dp)
+            .shadow(10.dp, RoundedCornerShape(8.dp), spotColor = dt.primaryGlow, ambientColor = dt.primaryGlow)
+            .background(Color(0xFF222325), RoundedCornerShape(8.dp)),
+    ) {
+        val s = size.minDimension / 108f // the monochrome layer's 108-viewport
+        val c = center
+        val w = 5f * s
+        drawCircle(Color(0xFFC9CCD1), radius = 16f * s, center = c, style = Stroke(width = w))
+        drawCircle(dt.primaryGlow, radius = 7.5f * s, center = c)
+        val b = 25f * s
+        val arm = 11f * s
+        for ((sx, sy) in listOf(-1f to -1f, 1f to -1f, 1f to 1f, -1f to 1f)) {
+            val cx = c.x + sx * b
+            val cy = c.y + sy * b
+            drawLine(dt.primary, Offset(cx, cy), Offset(cx - sx * arm, cy), strokeWidth = w, cap = StrokeCap.Round)
+            drawLine(dt.primary, Offset(cx, cy), Offset(cx, cy - sy * arm), strokeWidth = w, cap = StrokeCap.Round)
+        }
     }
 }
 
@@ -679,7 +701,6 @@ private fun StatCard(display: FontFamily, k: String, v: String, modifier: Modifi
 
 /** The icon set, supplied per platform entry point (material-icons-extended on Android). */
 data class AppIcons(
-    val bolt: ImageVector,
     val cpu: ImageVector,
     val activity: ImageVector,
     val camera: ImageVector,

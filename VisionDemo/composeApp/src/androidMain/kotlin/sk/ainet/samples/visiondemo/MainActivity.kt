@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FlipCameraAndroid
 import androidx.compose.material.icons.filled.Memory
@@ -29,7 +28,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 AppIcons(
-                    bolt = Icons.Filled.Bolt,
                     cpu = Icons.Filled.Memory,
                     activity = Icons.Filled.MonitorHeart,
                     camera = Icons.Filled.PhotoCamera,
