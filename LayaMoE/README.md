@@ -43,7 +43,7 @@ The first run downloads about 1.05 GB (the base checkpoint, 843 MB F16, and two 
 LAYAMOE_LANE=q8 ./gradlew :composeApp:run       # packed Q8_0 lane, less memory, same answers to within quantization noise
 ```
 
-> The Q8_0 lane on the desktop JVM needs SKaiNET 0.62.1 (the pin here): on 0.62.0 the native FFM bindings
+> The Q8_0 lane on the desktop JVM needs SKaiNET 0.62.1 or later (the pin here is 0.62.2): on 0.62.0 the native FFM bindings
 > of the Q8_0 / Q4_0 / Q5_0 / Q5_1 kernels zeroed every row but the last of a multi-row product, so a Laya
 > request on that lane answered every question with uniform probabilities. Found while building this
 > example, fixed in SKaiNET 0.62.1 (PR #1436). The FP32 lane was unaffected, and so was the browser's
@@ -126,6 +126,11 @@ about 1 min 50 s after "Load model" on a cached visit and about 3 min 30 s on th
 answers exactly like the desktop within quantization noise: destructive 67.2 % (FP32: 65.1 %),
 needs_human 21.7 % (23.3 %), risk 2.12 (2.11), routed to `safety` at 0.746 on `agent_action`.
 
+**Desktop, FP32 lane on SKaiNET 0.62.2** (same machine, 2026-10-24): the same preset answers in 6.5 s per request
+(three questions plus the router, 370 tokens; 6495 / 6469 / 6424 ms over three repetitions after a warm-up) against
+13.0 s on 0.62.1. The engine's dense FP32 `x · Wᵀ` kernel, two thirds of a request, now runs on every core and, on
+x86-64, on AVX2/FMA; routing and answers are unchanged.
+
 **Desktop, Q8_0 lane** (same machine, SKaiNET 0.62.1): the "drop a production table" preset
 answers like the FP32 lane within quantization noise (destructive 67.2 %, needs_human 21.7 %, risk 2.12 —
 the browser's Q8_0 figures to the digit) but takes 25.3 s per request against 13.0 s on FP32: on the eager
@@ -154,7 +159,7 @@ LayaMoE/
 └── THIRD_PARTY_LICENSES/
 ```
 
-Library pieces this example rests on (SKaiNET-transformers 0.63.0, SKaiNET 0.62.1):
+Library pieces this example rests on (SKaiNET-transformers 0.63.0, SKaiNET 0.62.2):
 `LayaModelLoader` (common, any `RandomAccessSource`), `LayaExpertLoader` / `LayaExpert`,
 `LayaRouterSpec`, `LayaMixtureAgent`, `LayaMixtureDecisionAdapter` for the typed decision
 runtime, `LayaWeightForms.q8_0For` for the packed lane, `JsBlobRandomAccessSource.openSync`
