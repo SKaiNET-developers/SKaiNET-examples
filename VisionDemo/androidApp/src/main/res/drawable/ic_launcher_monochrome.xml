@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Themed-icon (Android 13) layer: the lens mark reduced to one color — detection
+     brackets, lens ring, trigger dot. Kept inside the 66dp adaptive safe zone. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
     <path
+        android:strokeColor="#FFFFFF" android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M31,41 V35 q0,-4 4,-4 h6 M67,31 h6 q4,0 4,4 v6 M77,67 v6 q0,4 -4,4 h-6 M41,77 h-6 q-4,0 -4,-4 v-6" />
+    <path
+        android:strokeColor="#FFFFFF" android:strokeWidth="3.5"
+        android:pathData="M38,54 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0" />
+    <path
         android:fillColor="#FFFFFF"
-        android:pathData="M58.5,30 L40,61 h11 L48,80 L66.5,49 h-11 z" />
+        android:pathData="M47,54 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0" />
 </vector>

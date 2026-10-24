@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The design system's near-black background. -->
-    <color name="ic_launcher_background">#06070A</color>
+    <!-- Mid-point of the icon art's own background gradient; the foreground layer carries
+         the full gradient, so this only shows during adaptive-icon parallax overshoot. -->
+    <color name="ic_launcher_background">#222325</color>
 </resources>
