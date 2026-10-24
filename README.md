@@ -157,6 +157,8 @@ pack it runs is materialized locally from the
 [detection blueprint](https://github.com/SKaiNET-developers/SKaiNET-cartridge-blueprints) —
 the AGPL-3.0 weights never ship, and a fresh clone builds and runs pack-less.
 
+<img src="VisionDemo/docs/screenshots/detections.png" alt="Vision Demo — detections viewer with people and vehicles boxed at a bus stop" width="640" />
+
 📂 [`VisionDemo/`](VisionDemo/) · runs on Android
 
 ---

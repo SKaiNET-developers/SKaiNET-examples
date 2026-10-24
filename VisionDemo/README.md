@@ -9,6 +9,11 @@ path beside the live feed.
 Verified on a Pixel 8a: **~57 ms per frame (≈17 fps) live** on the 320-input Vulkan pack,
 ~174 ms on the 640 one; boxes and labels map 1:1 onto the analyzed frames.
 
+<img src="docs/screenshots/detections.png" alt="Detections viewer: people and vehicles found at a bus stop" width="640" />
+
+*Test image: [Commuters and vehicles at the second bus stop, Obafemi Awolowo University](https://commons.wikimedia.org/wiki/File:Commuters_and_vehicles_at_the_second_bus_stop,_Obafemi_Awolowo_University.jpg)
+(Wikimedia Commons, CC0).*
+
 ## How it consumes the model
 
 This example owns **no model code and no weights**. It depends on two small libraries from
