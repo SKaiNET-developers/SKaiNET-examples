@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mid-point of the icon art's own background gradient; the foreground layer carries
+         the full gradient, so this only shows during adaptive-icon parallax overshoot. -->
+    <color name="ic_launcher_background">#222325</color>
+</resources>

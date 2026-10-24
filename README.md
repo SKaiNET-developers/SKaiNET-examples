@@ -147,6 +147,20 @@ Confidence: 98.3%
 
 📂 [`MnistJavaDemo/`](MnistJavaDemo/) · command-line · Java 21+
 
+### 📷 Vision Demo
+
+Live camera **object detection** from a SKaiNET cartridge: YOLOv8n (COCO, 80 classes)
+compiled through IREE runs on the phone's GPU — ~57 ms per frame (≈17 fps) on a Pixel 8a —
+with a glass HUD, FPS sparkline, CPU/Vulkan backend switch, capture gallery and detections
+viewer. The app consumes the published `sk.ainet.cartridge` artifacts (code only); the
+pack it runs is materialized locally from the
+[detection blueprint](https://github.com/SKaiNET-developers/SKaiNET-cartridge-blueprints) —
+the AGPL-3.0 weights never ship, and a fresh clone builds and runs pack-less.
+
+📂 [`VisionDemo/`](VisionDemo/) · runs on Android
+
+---
+
 ### 🌸 Iris Classifier
 
 The classic Iris dataset as the smallest possible **training loop**: a two-layer dense
