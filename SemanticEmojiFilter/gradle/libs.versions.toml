@@ -10,7 +10,7 @@ androidx-lifecycle = "2.11.0"
 # UnsatisfiedLinkError (getAdapterMaxTextureSize) at first render on macOS/Metal.
 composeMultiplatform = "1.11.1"
 # At least the engine's Kotlin: the SIMD128 sidecar uses kotlin.wasm.unsafe.wasmMemory and an older
-# Kotlin/Wasm linker fails on it (engine 0.62.1 is built with 2.4.21).
+# Kotlin/Wasm linker fails on it (engine 0.62.2 is built with 2.4.21).
 kotlin = "2.4.21"
 kotlinx-coroutines = "1.11.0"
 kotlinxIo = "0.9.1"
@@ -23,7 +23,7 @@ kotlinxSerialization = "1.11.0"
 # 0.61.0 makes the Laya loader common code and adds the packed Q8_0 lane, opt-in; 0.63.0 on engine
 # 0.62.x adds Laya expert heads and routing, unused here, and rides on the fused SIMD128 kernels the
 # web verifier runs on).
-skainet = "0.62.1"
+skainet = "0.62.2"
 skainet-transformers = "0.63.0"
 
 [libraries]

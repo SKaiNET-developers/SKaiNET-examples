@@ -16,10 +16,11 @@ kotlinx-coroutines = "1.11.0"
 kotlinxIo = "0.9.1"
 kotlinxSerialization = "1.11.0"
 kotlinxBrowser = "0.5.0"
-# Engine 0.62.1 (0.62.0 + the native packed-kernel binding fix): Blob sources with worker-side blocking reads, PlannerProfile.BROWSER, the fused
+# Engine 0.62.2 (0.62.1 + the dense FP32 x·Wᵀ kernel on every core and, on x86-64, on AVX2/FMA; 0.62.1 fixed the
+# native packed-kernel bindings): Blob sources with worker-side blocking reads, PlannerProfile.BROWSER, the fused
 # SIMD128 / FFM kernels and skainet-data-source on the web. Transformers 0.63.0: Laya expert heads,
 # the prompted router and the mixture adapter (LayaExpertLoader, LayaMixtureAgent).
-skainet = "0.62.1"
+skainet = "0.62.2"
 skainet-transformers = "0.63.0"
 
 [libraries]
