@@ -17,7 +17,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-        // Resolve everything from Maven Central (SKaiNET 0.62.1 is published there).
+        // Resolve everything from Maven Central (SKaiNET 0.62.2 is published there).
         // No mavenLocal: an unrestricted mavenLocal is consulted first and can contain
         // a partial kotlin-stdlib (JVM jar + POM, no klib variants) that shadows
         // Central's variant-aware metadata, breaking JS/wasm with "Missing stdlib class".

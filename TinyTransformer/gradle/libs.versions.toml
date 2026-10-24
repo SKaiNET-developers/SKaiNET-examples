@@ -13,13 +13,13 @@ composeHotReload = "1.0.0"
 # render on macOS/Metal. AGP must also match skainet-ui's — Gradle composite
 # builds reject mixed AGP versions.
 composeMultiplatform = "1.11.1"
-# Keep in step with the Kotlin version SKaiNET is built with: SKaiNET 0.62.1 ships
+# Keep in step with the Kotlin version SKaiNET is built with: SKaiNET 0.62.2 ships
 # klibs compiled with Kotlin 2.4.21 (readable by 2.4.10); an older compiler line cannot read them.
 kotlin = "2.4.10"
 kotlinx-coroutines = "1.10.2"
 # SKaiNET BOM version — published to Maven Central. The BOM pins every
 # sk.ainet.core:* artifact so individual libraries are declared without versions.
-skainet = "0.62.1"
+skainet = "0.62.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
