@@ -43,7 +43,7 @@ The first run downloads about 1.05 GB (the base checkpoint, 843 MB F16, and two 
 LAYAMOE_LANE=q8 ./gradlew :composeApp:run       # packed Q8_0 lane, less memory, same answers to within quantization noise
 ```
 
-> The Q8_0 lane on the desktop JVM needs SKaiNET 0.62.1 or later (the pin here is 0.62.2): on 0.62.0 the native FFM bindings
+> The Q8_0 lane on the desktop JVM needs SKaiNET 0.62.1 or later (the pin here is 0.62.4): on 0.62.0 the native FFM bindings
 > of the Q8_0 / Q4_0 / Q5_0 / Q5_1 kernels zeroed every row but the last of a multi-row product, so a Laya
 > request on that lane answered every question with uniform probabilities. Found while building this
 > example, fixed in SKaiNET 0.62.1 (PR #1436). The FP32 lane was unaffected, and so was the browser's
@@ -159,7 +159,7 @@ LayaMoE/
 └── THIRD_PARTY_LICENSES/
 ```
 
-Library pieces this example rests on (SKaiNET-transformers 0.63.0, SKaiNET 0.62.2):
+Library pieces this example rests on (SKaiNET-transformers 0.63.0, SKaiNET 0.62.4):
 `LayaModelLoader` (common, any `RandomAccessSource`), `LayaExpertLoader` / `LayaExpert`,
 `LayaRouterSpec`, `LayaMixtureAgent`, `LayaMixtureDecisionAdapter` for the typed decision
 runtime, `LayaWeightForms.q8_0For` for the packed lane, `JsBlobRandomAccessSource.openSync`
