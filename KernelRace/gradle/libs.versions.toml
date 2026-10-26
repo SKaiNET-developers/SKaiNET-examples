@@ -19,10 +19,10 @@ kotlinxIo = "0.9.1"
 # its jvmMain), so the iOS download path talks to Ktor's Darwin engine on its own.
 ktorClientCore = "3.5.2"
 # SKaiNET-transformers 0.63.0 is built against engine 0.62.x (0.62.1 fixes the native packed-kernel
-# bindings the Q8_0 lane uses on the desktop JVM, 0.62.2 runs the dense FP32 kernel on every core and
-# on AVX2); keep the two pins
+# bindings the Q8_0 lane uses on the desktop JVM; 0.62.2–0.62.4 run the dense FP32 kernels on every core,
+# with AVX2/FMA tiles on x86-64, NEON tiles on arm64 and Accelerate on the macOS JVM); keep the two pins
 # moving together (the transformers release notes name the engine version).
-skainet = "0.62.2"
+skainet = "0.62.4"
 skainet-transformers = "0.63.0"
 
 [libraries]

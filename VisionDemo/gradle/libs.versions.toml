@@ -17,7 +17,7 @@ kotlin = "2.4.21"
 kotlinx-coroutines = "1.11.0"
 # The engine under the cartridge runtime — resolved transitively, named here for the
 # "Powered by SKaiNET" line (generateBuildInfo in composeApp).
-skainet = "0.62.1"
+skainet = "0.62.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
