@@ -1,13 +1,12 @@
 package sk.ainet.apps.kllama.chat.spike
 
-import kotlinx.io.Buffer
 import kotlin.time.TimeSource
+import sk.ainet.apps.kllama.chat.qwen.loadQwen
 import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.apps.llm.generate
 import sk.ainet.context.DirectCpuExecutionContext
 import sk.ainet.lang.types.FP32
-import sk.ainet.models.qwen.QwenNetworkLoader
 
 sealed interface QwenSpikeResult {
     data class Success(
@@ -31,10 +30,7 @@ suspend fun runQwenSpike(modelBytes: ByteArray): QwenSpikeResult {
 
     val model = try {
         val loadStart = timeSource.markNow()
-        val sourceProvider = { Buffer().apply { write(modelBytes) } }
-        val m = QwenNetworkLoader
-            .fromGguf(sourceProvider)
-            .load<FP32, Float>(ctx)
+        val m = loadQwen(ctx, modelBytes)
         loadStart to m
     } catch (e: Throwable) {
         return QwenSpikeResult.Failure(

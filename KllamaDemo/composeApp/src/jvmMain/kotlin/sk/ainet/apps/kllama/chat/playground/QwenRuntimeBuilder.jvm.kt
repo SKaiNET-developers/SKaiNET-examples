@@ -12,7 +12,7 @@ import sk.ainet.models.qwen.QwenNetworkLoader
 
 private val QWEN_ARCHS = setOf("qwen2", "qwen3", "qwen35")
 
-internal actual suspend fun buildQwenRuntime(
+internal actual suspend fun buildQwenRuntimePacked(
     ctx: ExecutionContext,
     bytes: ByteArray,
     bosTokenId: Int,

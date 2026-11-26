@@ -90,10 +90,12 @@ under the **Apache License 2.0**.
 
 ## Known issues
 
-- **Q4_1 quantization is not supported.** Loading a GGUF with Q4_1 tensors logs
-  `unsupported quant type Q4_1 ... passing through unchanged` and the forward pass
-  then fails at `matmul`. Use a Q3_K_S / Q4_0 / Q8_0 / F16 model instead. Tracked
-  upstream in [SKaiNET#654](https://github.com/SKaiNET-developers/SKaiNET/issues/654).
+- **Q4_1 tensors force the slow path.** The packed loader does not serve Q4_1,
+  so a GGUF containing any Q4_1 tensor is dequantized to FP32 at load instead:
+  several times the memory and a much slower load. `Qwen3-0.6B-Q4_0.gguf` from
+  unsloth is such a file (three `ffn_down` tensors are Q4_1). Prefer a GGUF
+  whose tensors are all F32 / F16 / Q4_0 / Q4_K / Q5_K / Q6_K / Q8_0, such as
+  the Q4_K_M build.
 
 ## Project structure
 

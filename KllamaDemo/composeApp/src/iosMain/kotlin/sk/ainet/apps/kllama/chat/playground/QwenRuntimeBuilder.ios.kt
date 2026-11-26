@@ -4,8 +4,8 @@ import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.context.ExecutionContext
 import sk.ainet.lang.types.FP32
 
-internal actual suspend fun buildQwenRuntime(
+internal actual suspend fun buildQwenRuntimePacked(
     ctx: ExecutionContext,
     bytes: ByteArray,
     bosTokenId: Int,
-): OptimizedLLMRuntime<FP32> = buildQwenRuntimeFallback(ctx, bytes, bosTokenId)
+): OptimizedLLMRuntime<FP32> = buildQwenRuntimePackedInMemory(ctx, bytes, bosTokenId)
