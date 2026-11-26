@@ -25,7 +25,7 @@ class QwenSpikeJvmTest {
         "commonMain",
         "composeResources",
         "files",
-        "qwen3-0.6b-Q4_0.gguf",
+        "qwen3-0.6b-Q4_K_M.gguf",
     ).normalize()
 
     @Test

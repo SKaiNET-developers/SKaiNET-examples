@@ -1,5 +1,6 @@
 package sk.ainet.apps.kllama.chat.playground
 
+import sk.ainet.apps.kllama.chat.qwen.ggufBosTokenId
 import sk.ainet.apps.kllama.chat.qwen.ggufLoadsPacked
 import sk.ainet.apps.kllama.chat.qwen.loadQwenDequantizedToFp32
 import sk.ainet.apps.kllama.chat.qwen.loadQwenPacked
@@ -20,18 +21,21 @@ internal suspend fun buildQwenRuntime(
     ctx: ExecutionContext,
     bytes: ByteArray,
     bosTokenId: Int,
-): OptimizedLLMRuntime<FP32> =
-    if (ggufLoadsPacked(bytes)) {
-        buildQwenRuntimePacked(ctx, bytes, bosTokenId)
+): OptimizedLLMRuntime<FP32> {
+    // Qwen's tokenizer reports no BOS (-1), which would crash generation.
+    val bos = bosTokenId.takeIf { it >= 0 } ?: ggufBosTokenId(bytes)
+    return if (ggufLoadsPacked(bytes)) {
+        buildQwenRuntimePacked(ctx, bytes, bos)
     } else {
         OptimizedLLMRuntime(
             model = loadQwenDequantizedToFp32(ctx, bytes),
             ctx = ctx,
             mode = OptimizedLLMMode.DIRECT,
             dtype = FP32::class,
-            bos = bosTokenId,
+            bos = bos,
         )
     }
+}
 
 /**
  * Packed-weights build. The platforms differ only in where the bytes live:

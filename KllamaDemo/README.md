@@ -3,7 +3,7 @@
 A Compose Multiplatform / KMP / SKaiNET analog of the
 [Polo Club Transformer Explainer](https://poloclub.github.io/transformer-explainer/),
 running fully in the browser (and on JVM desktop, Android, iOS). The app
-ships with an embedded **Qwen3-0.6B** model (Q3_K_S GGUF, ~280 MB) and
+ships with an embedded **Qwen3-0.6B** model (Q4_K_M GGUF, ~400 MB) and
 visualizes what the transformer is doing as it produces each token.
 
 ## What it demonstrates
@@ -35,7 +35,7 @@ fetch script before building:
 ./scripts/fetch-qwen-model.sh
 ```
 
-The script downloads `Qwen3-0.6B-Q3_K_S.gguf` from
+The script downloads `Qwen3-0.6B-Q4_K_M.gguf` from
 [unsloth/Qwen3-0.6B-GGUF](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF)
 into `composeApp/src/commonMain/composeResources/files/`. It's
 idempotent and skips on subsequent runs.
@@ -48,8 +48,8 @@ idempotent and skips on subsequent runs.
 ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
 ```
 
-The first page load downloads the full ~295 MB bundle including the
-embedded Q3_K_S model. Subsequent loads hit the browser HTTP cache.
+The first page load downloads the full ~400 MB bundle including the
+embedded Q4_K_M model. Subsequent loads hit the browser HTTP cache.
 
 ### Desktop (JVM)
 
@@ -57,9 +57,8 @@ embedded Q3_K_S model. Subsequent loads hit the browser HTTP cache.
 ./gradlew :composeApp:run
 ```
 
-Model load takes ~30 s on first launch (FP32 dequantization of 600M
-parameters from the smaller Q3_K_S quant). Subsequent chat tokens
-stream at ~1-3 tok/s on CPU.
+The weights stay packed and memory-mapped, and the packed matmuls run on
+the native kernels from `skainet-backend-native-cpu`.
 
 ### Android
 
@@ -76,6 +75,19 @@ model into an `assetPack` for AAB builds.
 Open `iosApp/iosApp.xcodeproj` in Xcode. The model ships as part of the
 iOS framework — the same caveat about bundle size applies.
 
+## Packed weights and native kernels
+
+Every platform keeps the quantized weights packed in memory instead of
+dequantizing them to FP32, and runs the matmuls on a native kernel backend:
+
+| Platform | Kernel backend |
+| --- | --- |
+| Desktop (JVM) | `skainet-backend-native-cpu` (FFM) |
+| Android | `skainet-backend-jni-cpu` (JNI, ARM NEON) |
+| iOS | `skainet-backend-native-cpu` (cinterop, ARM NEON) |
+| Browser (wasmJs) | `skainet-backend-wasm-simd` (SIMD128 sidecar) |
+| Browser (JS) | none, scalar kernels |
+
 ## Model & license
 
 This app bundles **Qwen3-0.6B** by Alibaba Cloud / Qwen team, licensed
@@ -84,7 +96,7 @@ under the **Apache License 2.0**.
 - Model card: https://huggingface.co/Qwen/Qwen3-0.6B
 - GGUF build used:
   [unsloth/Qwen3-0.6B-GGUF](https://huggingface.co/unsloth/Qwen3-0.6B-GGUF)
-  (Q3_K_S quantization)
+  (Q4_K_M quantization)
 - License text: [THIRD_PARTY_LICENSES/Apache-2.0.txt](./THIRD_PARTY_LICENSES/Apache-2.0.txt)
 - Attribution: [THIRD_PARTY_LICENSES/NOTICE](./THIRD_PARTY_LICENSES/NOTICE)
 
@@ -93,9 +105,8 @@ under the **Apache License 2.0**.
 - **Q4_1 tensors force the slow path.** The packed loader does not serve Q4_1,
   so a GGUF containing any Q4_1 tensor is dequantized to FP32 at load instead:
   several times the memory and a much slower load. `Qwen3-0.6B-Q4_0.gguf` from
-  unsloth is such a file (three `ffn_down` tensors are Q4_1). Prefer a GGUF
-  whose tensors are all F32 / F16 / Q4_0 / Q4_K / Q5_K / Q6_K / Q8_0, such as
-  the Q4_K_M build.
+  unsloth is such a file (three `ffn_down` tensors are Q4_1), which is why the
+  demo bundles the Q4_K_M build.
 
 ## Project structure
 

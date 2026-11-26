@@ -20,6 +20,22 @@ fun ggufLoadsPacked(bytes: ByteArray): Boolean {
 }
 
 /**
+ * The BOS token id from the GGUF metadata, or 1 when the file records none —
+ * the same default the decoder weight loader applies. Qwen GGUFs record none
+ * and Qwen's tokenizer reports -1, which is not a usable token id.
+ */
+fun ggufBosTokenId(bytes: ByteArray): Int {
+    val reader = StreamingGGUFReader.open(ByteArrayRandomAccessSource(bytes))
+    val id = when (val raw = reader.fields["tokenizer.ggml.bos_token_id"]) {
+        is Number -> raw.toInt()
+        is UInt -> raw.toInt()
+        is ULong -> raw.toInt()
+        else -> -1
+    }
+    return if (id >= 0) id else 1
+}
+
+/**
  * Default loader: keeps quantized tensors packed and reads them in place from
  * [bytes]. The matmuls run on the packed bytes and the working set stays
  * close to the file size. Works on every Kotlin target.

@@ -42,12 +42,15 @@ class QwenModelHolder {
     private val _state = MutableStateFlow<QwenLoadingState>(QwenLoadingState.Idle)
     val state: StateFlow<QwenLoadingState> = _state.asStateFlow()
 
-    private val instrumented = InstrumentedExecutionContext()
-    private val ctx = instrumented.ctx
+    // Created on first use, after load() has installed the platform kernels:
+    // a context only picks up kernels that were registered before it was built.
+    private val instrumented by lazy { InstrumentedExecutionContext() }
+    private val ctx get() = instrumented.ctx
 
     suspend fun load(bytes: ByteArray) {
         if (_state.value is QwenLoadingState.Ready) return
         val startMs = kotlin.time.TimeSource.Monotonic.markNow()
+        installPlatformKernels()
 
         _state.value = QwenLoadingState.Loading("Reading tokenizer from GGUF metadata...")
         val tokenizer = try {
@@ -62,7 +65,7 @@ class QwenModelHolder {
             return
         }
 
-        _state.value = QwenLoadingState.Loading("Loading 600M-parameter weights (Q4_0 packed; first call can take ~20-40s)...")
+        _state.value = QwenLoadingState.Loading("Loading 600M-parameter weights (Q4_K_M, kept packed)...")
         val runtime = try {
             withContext(Dispatchers.Default) {
                 buildQwenRuntime(ctx, bytes, tokenizer.bosTokenId)
@@ -104,6 +107,7 @@ class QwenModelHolder {
         instrumented.reset()
         instrumented.captureEnabled = true
         val startMs = kotlin.time.TimeSource.Monotonic.markNow()
+        installPlatformKernels()
         val logits = try {
             ready.runtime.forward(tokenId)
         } finally {
