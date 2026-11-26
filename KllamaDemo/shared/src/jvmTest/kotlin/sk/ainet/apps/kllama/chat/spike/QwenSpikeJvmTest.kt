@@ -1,9 +1,11 @@
 package sk.ainet.apps.kllama.chat.spike
 
 import kotlinx.coroutines.runBlocking
+import sk.ainet.apps.kllama.chat.qwen.QwenModelSource
 import java.nio.file.Files
 import java.nio.file.Paths
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
@@ -25,7 +27,7 @@ class QwenSpikeJvmTest {
         "commonMain",
         "composeResources",
         "files",
-        "qwen3-0.6b-Q4_0.gguf",
+        "qwen3-0.6b-Q4_K_M.gguf",
     ).normalize()
 
     @Test
@@ -47,5 +49,21 @@ class QwenSpikeJvmTest {
                 fail("[spike] failed at stage='${result.stage}': ${result.message}")
             }
         }
+    }
+
+    /** The file-backed path Android uses: weights memory-mapped, the file never read whole. */
+    @Test
+    fun loads_model_from_file_and_generates_same_tokens() = runBlocking {
+        if (!Files.exists(modelPath)) {
+            println("[spike] model not present at $modelPath - run scripts/fetch-qwen-model.sh; skipping")
+            return@runBlocking
+        }
+
+        val fromFile = runQwenSpike(QwenModelSource.OnDisk(modelPath.toString()))
+        val fromMemory = runQwenSpike(Files.readAllBytes(modelPath))
+        if (fromFile !is QwenSpikeResult.Success) fail("[spike] file-backed load failed: $fromFile")
+        if (fromMemory !is QwenSpikeResult.Success) fail("[spike] in-memory load failed: $fromMemory")
+        println("[spike] file-backed OK - tokens=${fromFile.tokenIds} loadMs=${fromFile.loadMillis} genMs=${fromFile.generateMillis}")
+        assertEquals(fromMemory.tokenIds, fromFile.tokenIds)
     }
 }

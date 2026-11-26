@@ -67,6 +67,11 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        jvmTest.dependencies {
+            // The same native kernels :composeApp ships on desktop, so the spike runs the
+            // packed matmuls the way the app does instead of on the scalar reference kernels.
+            implementation(libs.skainet.backend.native.cpu)
+        }
         wasmJsMain.dependencies {
             implementation(libs.kotlinx.browser)
         }
@@ -80,6 +85,7 @@ tasks.withType<Test>().configureEach {
     jvmArgs(
         "--add-modules", "jdk.incubator.vector",
         "--enable-preview",
+        "--enable-native-access=ALL-UNNAMED",
         "-Dskainet.cpu.vector.enabled=true",
     )
 }

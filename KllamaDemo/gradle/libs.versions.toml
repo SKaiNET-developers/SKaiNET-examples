@@ -62,9 +62,11 @@ skainet-lang-core = { module = "sk.ainet.core:skainet-lang-core", version.ref = 
 skainet-lang-models = { module = "sk.ainet.core:skainet-lang-models", version.ref = "skainet" }
 skainet-compile-core = { module = "sk.ainet.core:skainet-compile-core", version.ref = "skainet" }
 skainet-backend-cpu = { module = "sk.ainet.core:skainet-backend-cpu", version.ref = "skainet" }
-# JVM only: FFM row-major kernel packs that serve packed (Q4_0 / Q8_0 / K-quant) GGUF weights
-# zero-copy; discovered by the engine via ServiceLoader on the first dispatch.
+# Native kernels that serve packed (Q4_0 / Q8_0 / K-quant) GGUF weights, one backend per platform:
+# JVM (FFM) and iOS (cinterop NEON), Android (JNI NEON), wasmJs (SIMD128 sidecar).
 skainet-backend-native-cpu = { module = "sk.ainet.core:skainet-backend-native-cpu", version.ref = "skainet" }
+skainet-backend-jni-cpu = { module = "sk.ainet.core:skainet-backend-jni-cpu", version.ref = "skainet" }
+skainet-backend-wasm-simd = { module = "sk.ainet.core:skainet-backend-wasm-simd", version.ref = "skainet" }
 skainet-io-core = { module = "sk.ainet.core:skainet-io-core", version.ref = "skainet" }
 skainet-io-gguf = { module = "sk.ainet.core:skainet-io-gguf", version.ref = "skainet" }
 

@@ -32,6 +32,12 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
+        // Packages composeResources (the bundled GGUF) into the Android artifact;
+        // the KMP library plugin leaves resources out unless asked.
+        androidResources {
+            enable = true
+        }
+
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -85,6 +91,18 @@ kotlin {
             // runs the packed matmuls natively instead of the slow decoding reference kernel.
             implementation(libs.skainet.backend.native.cpu)
         }
+        androidMain.dependencies {
+            // Hand-written ARM NEON kernels for the packed matmuls, discovered via ServiceLoader.
+            implementation(libs.skainet.backend.jni.cpu)
+        }
+        iosMain.dependencies {
+            // The same NEON kernels for Kotlin/Native; registered by installPlatformKernels().
+            implementation(libs.skainet.backend.native.cpu)
+        }
+        wasmJsMain.dependencies {
+            // SIMD128 sidecar kernels; loaded by installPlatformKernels().
+            implementation(libs.skainet.backend.wasm.simd)
+        }
         named("webMain").configure {
             dependencies {
                 implementation(libs.kotlinx.browser)
@@ -125,7 +143,7 @@ val fetchQwenModel by tasks.registering(Exec::class) {
     commandLine("bash", scriptPath.asFile.absolutePath)
     inputs.file(scriptPath)
     val modelFile = rootProject.layout.projectDirectory.file(
-        "composeApp/src/commonMain/composeResources/files/qwen3-0.6b-Q4_0.gguf"
+        "composeApp/src/commonMain/composeResources/files/qwen3-0.6b-Q4_K_M.gguf"
     )
     outputs.file(modelFile)
     onlyIf { !modelFile.asFile.exists() || modelFile.asFile.length() < 300L * 1024 * 1024 }

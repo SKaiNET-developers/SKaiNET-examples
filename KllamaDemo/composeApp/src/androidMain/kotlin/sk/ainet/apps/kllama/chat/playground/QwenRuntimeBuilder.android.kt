@@ -1,14 +1,14 @@
 package sk.ainet.apps.kllama.chat.playground
 
+import sk.ainet.apps.kllama.chat.qwen.QwenModelSource
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.context.ExecutionContext
 import sk.ainet.lang.types.FP32
 
-// Android API 35 still does not ship java.lang.foreign, so the JVM
-// fast path (memory-mapped streaming loader over a temp file) is not used here. Fall back to
-// the multiplatform Buffer-based loader.
-internal actual suspend fun buildQwenRuntime(
+// The bundled model arrives as a file (see BundledModel.android.kt), so the
+// loader memory-maps the packed weights instead of holding them on the ART heap.
+internal actual suspend fun buildQwenRuntimePacked(
     ctx: ExecutionContext,
-    bytes: ByteArray,
+    source: QwenModelSource,
     bosTokenId: Int,
-): OptimizedLLMRuntime<FP32> = buildQwenRuntimeFallback(ctx, bytes, bosTokenId)
+): OptimizedLLMRuntime<FP32> = buildQwenRuntimePackedFromSource(ctx, source, bosTokenId)

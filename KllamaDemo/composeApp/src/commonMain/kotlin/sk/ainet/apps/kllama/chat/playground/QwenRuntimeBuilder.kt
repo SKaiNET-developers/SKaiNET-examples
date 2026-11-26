@@ -1,53 +1,62 @@
 package sk.ainet.apps.kllama.chat.playground
 
-import kotlinx.io.Buffer
+import sk.ainet.apps.kllama.chat.qwen.QwenModelSource
+import sk.ainet.apps.kllama.chat.qwen.ggufBosTokenId
+import sk.ainet.apps.kllama.chat.qwen.ggufLoadsPacked
+import sk.ainet.apps.kllama.chat.qwen.loadQwenDequantizedToFp32
+import sk.ainet.apps.kllama.chat.qwen.loadQwenPacked
 import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.context.ExecutionContext
 import sk.ainet.lang.types.FP32
-import sk.ainet.models.qwen.QwenNetworkLoader
 
 /**
- * Platform-split loader. On JVM we take the fast path:
- * `JvmRandomAccessSource` over a temp file → the engine's streaming GGUF
- * loader keeps Q4_0 / Q8_0 tensors packed and memory-mapped, and the
- * engine's row-major kernel packs run the matmuls on the packed bytes, no
- * per-call dequant.
+ * Builds the Qwen runtime from the bundled GGUF.
  *
- * On wasmJs / iOS / Android we fall back to [buildQwenRuntimeFallback]:
- * a sequential `kotlinx.io.Source` over the byte buffer, which always
- * dequantizes to FP32. Same correctness, much slower
- * throughput — the SIMD/MemSeg kernels are JVM-only.
+ * Packed weights are the default on every platform: quantized tensors stay
+ * in their stored block encoding and the matmuls run on the packed bytes.
+ * Dequantizing to FP32 is a compatibility escape hatch, taken only when the
+ * GGUF contains a tensor type the packed loader does not serve.
  */
-internal expect suspend fun buildQwenRuntime(
+internal suspend fun buildQwenRuntime(
     ctx: ExecutionContext,
-    bytes: ByteArray,
+    source: QwenModelSource,
+    bosTokenId: Int,
+): OptimizedLLMRuntime<FP32> {
+    // Qwen's tokenizer reports no BOS (-1), which would crash generation.
+    val bos = bosTokenId.takeIf { it >= 0 } ?: ggufBosTokenId(source)
+    return if (ggufLoadsPacked(source)) {
+        buildQwenRuntimePacked(ctx, source, bos)
+    } else {
+        OptimizedLLMRuntime(
+            model = loadQwenDequantizedToFp32(ctx, source),
+            ctx = ctx,
+            mode = OptimizedLLMMode.DIRECT,
+            dtype = FP32::class,
+            bos = bos,
+        )
+    }
+}
+
+/**
+ * Packed-weights build. Weights are memory-mapped when the model is a file:
+ * always on JVM, which stages in-memory bytes to a temp file, and on Android,
+ * where the bundled model is a file. iOS and web read the bytes in place.
+ */
+internal expect suspend fun buildQwenRuntimePacked(
+    ctx: ExecutionContext,
+    source: QwenModelSource,
     bosTokenId: Int,
 ): OptimizedLLMRuntime<FP32>
 
-/**
- * Slow but multiplatform fallback used by wasmJs / iOS / Android.
- * Dequantizes Q4_0 weights to FP32 during load (~1.5 GB working set for
- * Qwen3-0.6B). Forward pass is then plain FP32 matmul, no SIMD packed
- * kernels — perceptibly slow on a CPU. The JVM `actual` skips this and
- * uses the packed-quant path; everywhere else this is the best we can do
- * until upstream lands a wasmJs/Native SIMD backend.
- */
-internal suspend fun buildQwenRuntimeFallback(
+internal suspend fun buildQwenRuntimePackedFromSource(
     ctx: ExecutionContext,
-    bytes: ByteArray,
+    source: QwenModelSource,
     bosTokenId: Int,
-): OptimizedLLMRuntime<FP32> {
-    val sourceProvider = { Buffer().apply { write(bytes) } }
-    val model = QwenNetworkLoader
-        .fromGguf(sourceProvider)
-        .load<FP32, Float>(ctx)
-
-    return OptimizedLLMRuntime(
-        model = model,
-        ctx = ctx,
-        mode = OptimizedLLMMode.DIRECT,
-        dtype = FP32::class,
-        bos = bosTokenId,
-    )
-}
+): OptimizedLLMRuntime<FP32> = OptimizedLLMRuntime(
+    model = loadQwenPacked(ctx, source),
+    ctx = ctx,
+    mode = OptimizedLLMMode.DIRECT,
+    dtype = FP32::class,
+    bos = bosTokenId,
+)
