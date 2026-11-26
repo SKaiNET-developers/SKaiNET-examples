@@ -2,6 +2,7 @@ package sk.ainet.apps.kllama.chat.playground
 
 import java.nio.file.Files
 import java.nio.file.Path
+import sk.ainet.apps.kllama.chat.qwen.QwenModelSource
 import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.context.ExecutionContext
@@ -14,23 +15,24 @@ private val QWEN_ARCHS = setOf("qwen2", "qwen3", "qwen35")
 
 internal actual suspend fun buildQwenRuntimePacked(
     ctx: ExecutionContext,
-    bytes: ByteArray,
+    source: QwenModelSource,
     bosTokenId: Int,
 ): OptimizedLLMRuntime<FP32> {
-    // DecoderGgufWeightLoader's streaming path needs random-access reads,
-    // but we got our bytes via Res.readBytes() from
-    // Compose Resources — an in-memory ByteArray. Stage it to a temp file
-    // so JvmRandomAccessSource (which uses FileChannel) can serve it.
-    // The temp file is reused across the loader's metadata + tensor passes,
-    // then deleted on JVM exit.
-    val tempFile: Path = stageBytesToTempFile(bytes)
+    // Memory-mapping needs a file. The bundled model arrives as an in-memory
+    // ByteArray from Compose Resources, so it is staged to a temp file that
+    // is reused across the loader's metadata + tensor passes and deleted on
+    // JVM exit.
+    val modelPath: String = when (source) {
+        is QwenModelSource.InMemory -> stageBytesToTempFile(source.bytes).toString()
+        is QwenModelSource.OnDisk -> source.path
+    }
 
     // The default WeightForm (null) keeps quantized tensors packed in their stored
     // block encoding, memory-mapped; the engine's row-major kernel packs serve the
     // matmuls on those bytes. Token embeddings stay packed too and are
     // dequantized row by row on gather.
     val loader = DecoderGgufWeightLoader(
-        randomAccessProvider = { JvmRandomAccessSource.open(tempFile.toString()) },
+        randomAccessProvider = { JvmRandomAccessSource.open(modelPath) },
         acceptedArchitectures = QWEN_ARCHS,
     )
 

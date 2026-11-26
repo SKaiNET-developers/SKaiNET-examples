@@ -1,6 +1,7 @@
 package sk.ainet.apps.kllama.chat.spike
 
 import kotlin.time.TimeSource
+import sk.ainet.apps.kllama.chat.qwen.QwenModelSource
 import sk.ainet.apps.kllama.chat.qwen.loadQwen
 import sk.ainet.apps.llm.OptimizedLLMMode
 import sk.ainet.apps.llm.OptimizedLLMRuntime
@@ -24,13 +25,16 @@ sealed interface QwenSpikeResult {
  * Tokenizer is intentionally skipped — this test only proves the
  * model + runtime pipeline works on the current target.
  */
-suspend fun runQwenSpike(modelBytes: ByteArray): QwenSpikeResult {
+suspend fun runQwenSpike(modelBytes: ByteArray): QwenSpikeResult =
+    runQwenSpike(QwenModelSource.InMemory(modelBytes))
+
+suspend fun runQwenSpike(source: QwenModelSource): QwenSpikeResult {
     val ctx = DirectCpuExecutionContext()
     val timeSource = TimeSource.Monotonic
 
     val model = try {
         val loadStart = timeSource.markNow()
-        val m = loadQwen(ctx, modelBytes)
+        val m = loadQwen(ctx, source)
         loadStart to m
     } catch (e: Throwable) {
         return QwenSpikeResult.Failure(

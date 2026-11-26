@@ -14,7 +14,7 @@ import sk.ainet.apps.llm.OptimizedLLMRuntime
 import sk.ainet.apps.llm.Tokenizer
 import sk.ainet.apps.llm.generate
 import sk.ainet.apps.llm.tokenizer.TokenizerFactory
-import sk.ainet.io.ByteArrayRandomAccessSource
+import sk.ainet.apps.kllama.chat.qwen.QwenModelSource
 import sk.ainet.lang.nn.topology.ModuleNode
 import sk.ainet.lang.types.FP32
 import sk.ainet.models.qwen.QwenNetworkLoader
@@ -47,7 +47,15 @@ class QwenModelHolder {
     private val instrumented by lazy { InstrumentedExecutionContext() }
     private val ctx get() = instrumented.ctx
 
-    suspend fun load(bytes: ByteArray) {
+    /** Reports a failure that happened before [load] could start, such as reading the model. */
+    fun fail(stage: String, cause: Throwable) {
+        _state.value = QwenLoadingState.Failed(
+            stage = stage,
+            message = "${cause::class.simpleName}: ${cause.message ?: "no message"}",
+        )
+    }
+
+    suspend fun load(source: QwenModelSource) {
         if (_state.value is QwenLoadingState.Ready) return
         val startMs = kotlin.time.TimeSource.Monotonic.markNow()
         installPlatformKernels()
@@ -55,7 +63,7 @@ class QwenModelHolder {
         _state.value = QwenLoadingState.Loading("Reading tokenizer from GGUF metadata...")
         val tokenizer = try {
             withContext(Dispatchers.Default) {
-                TokenizerFactory.fromGgufSource(ByteArrayRandomAccessSource(bytes))
+                source.open().use { TokenizerFactory.fromGgufSource(it) }
             }
         } catch (e: Throwable) {
             _state.value = QwenLoadingState.Failed(
@@ -68,7 +76,7 @@ class QwenModelHolder {
         _state.value = QwenLoadingState.Loading("Loading 600M-parameter weights (Q4_K_M, kept packed)...")
         val runtime = try {
             withContext(Dispatchers.Default) {
-                buildQwenRuntime(ctx, bytes, tokenizer.bosTokenId)
+                buildQwenRuntime(ctx, source, tokenizer.bosTokenId)
             }
         } catch (e: Throwable) {
             _state.value = QwenLoadingState.Failed(

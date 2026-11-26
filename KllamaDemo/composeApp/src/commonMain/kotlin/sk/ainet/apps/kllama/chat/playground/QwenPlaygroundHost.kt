@@ -20,10 +20,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kllamademo.composeapp.generated.resources.Res
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import sk.ainet.ui.components.LoadingIndicator
 
 private const val MODEL_RESOURCE_PATH = "files/qwen3-0.6b-Q4_K_M.gguf"
@@ -32,16 +30,21 @@ private const val MODEL_RESOURCE_PATH = "files/qwen3-0.6b-Q4_K_M.gguf"
  * Top-level Qwen3-0.6B playground host. Owns the singleton [QwenModelHolder]
  * and renders a TabRow with the playground demo modes.
  */
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun QwenPlaygroundHost() {
     val holder = remember { QwenModelHolder() }
+    val openModel = rememberBundledModel(MODEL_RESOURCE_PATH)
     val state by holder.state.collectAsState()
 
     LaunchedEffect(Unit) {
         if (state is QwenLoadingState.Idle) {
-            val bytes = withContext(Dispatchers.Default) { Res.readBytes(MODEL_RESOURCE_PATH) }
-            holder.load(bytes)
+            val source = try {
+                withContext(Dispatchers.Default) { openModel() }
+            } catch (e: Throwable) {
+                holder.fail("model-read", e)
+                return@LaunchedEffect
+            }
+            holder.load(source)
         }
     }
 
